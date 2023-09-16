@@ -1,0 +1,151 @@
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+
+namespace G3.Models
+{
+    public partial class SWPContext : DbContext
+    {
+        public SWPContext()
+        {
+        }
+
+        public SWPContext(DbContextOptions<SWPContext> options)
+            : base(options)
+        {
+        }
+
+        public virtual DbSet<Setting> Settings { get; set; } = null!;
+        public virtual DbSet<Subject> Subjects { get; set; } = null!;
+        public virtual DbSet<Subjectsetting> Subjectsettings { get; set; } = null!;
+        public virtual DbSet<User> Users { get; set; } = null!;
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseMySQL("server=localhost;uid=root;pwd=123456;database=SWP");
+            }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Setting>(entity =>
+            {
+                entity.ToTable("setting");
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("'1'");
+
+                entity.Property(e => e.Name).HasMaxLength(191);
+
+                entity.Property(e => e.Type).HasMaxLength(191);
+
+                entity.Property(e => e.Value).HasMaxLength(191);
+            });
+
+            modelBuilder.Entity<Subject>(entity =>
+            {
+                entity.HasKey(e => e.SubjectCode)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("subject");
+
+                entity.HasIndex(e => e.ManagerId, "Subject_ManagerId_fkey");
+
+                entity.Property(e => e.SubjectCode).HasMaxLength(191);
+
+                entity.Property(e => e.Name).HasMaxLength(191);
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasDefaultValueSql("'1'");
+
+                entity.HasOne(d => d.Manager)
+                    .WithMany(p => p.Subjects)
+                    .HasForeignKey(d => d.ManagerId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("Subject_ManagerId_fkey");
+            });
+
+            modelBuilder.Entity<Subjectsetting>(entity =>
+            {
+                entity.ToTable("subjectsetting");
+
+                entity.HasIndex(e => e.SubjectId, "SubjectSetting_SubjectId_fkey");
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("'1'");
+
+                entity.Property(e => e.Name).HasMaxLength(191);
+
+                entity.Property(e => e.SubjectId).HasMaxLength(191);
+
+                entity.Property(e => e.Type).HasMaxLength(191);
+
+                entity.Property(e => e.Value).HasMaxLength(191);
+
+                entity.HasOne(d => d.Subject)
+                    .WithMany(p => p.Subjectsettings)
+                    .HasForeignKey(d => d.SubjectId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("SubjectSetting_SubjectId_fkey");
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("user");
+
+                entity.HasIndex(e => e.DomainSettingId, "User_DomainSettingId_fkey");
+
+                entity.HasIndex(e => e.RoleSettingId, "User_RoleSettingId_fkey");
+
+                entity.Property(e => e.Address).HasMaxLength(191);
+
+                entity.Property(e => e.Avatar).HasMaxLength(191);
+
+                entity.Property(e => e.ConfirmToken).HasMaxLength(191);
+
+                entity.Property(e => e.ConfirmTokenVerifyAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime(3)")
+                    .HasDefaultValueSql("'CURRENT_TIMESTAMP(3)'");
+
+                entity.Property(e => e.DateOfBirth).HasColumnType("datetime(3)");
+
+                entity.Property(e => e.Email).HasMaxLength(191);
+
+                entity.Property(e => e.Hash).HasMaxLength(191);
+
+                entity.Property(e => e.Name).HasMaxLength(191);
+
+                entity.Property(e => e.Phone).HasMaxLength(15);
+
+                entity.Property(e => e.ResetPassToken).HasMaxLength(191);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime(3)");
+
+                entity.HasOne(d => d.DomainSetting)
+                    .WithMany(p => p.UserDomainSettings)
+                    .HasForeignKey(d => d.DomainSettingId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("User_DomainSettingId_fkey");
+
+                entity.HasOne(d => d.RoleSetting)
+                    .WithMany(p => p.UserRoleSettings)
+                    .HasForeignKey(d => d.RoleSettingId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("User_RoleSettingId_fkey");
+            });
+
+            OnModelCreatingPartial(modelBuilder);
+        }
+
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    }
+}
