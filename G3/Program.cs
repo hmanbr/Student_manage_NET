@@ -1,7 +1,11 @@
+using G3;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+
 builder.Services.AddDbContext<SWPContext>(options => new SWPContext());
 
 var app = builder.Build();
