@@ -1,0 +1,142 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.banner {
+    width: 100%;
+    height: 100vh;
+    background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(/img/top-view-pencil-with-coffee-beans-dry-cinnamon-plant-white-background-horizontal.jpg);
+    background-size: cover;
+    background-position: center;
+    animation: change 10s infinite step-end;
+}
+
+.navBar {
+    width: 90%;
+    margin: auto;
+    padding: 5px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    .navBar ul li {
+        list-style: none;
+        display: inline-block;
+        margin-right: 60px;
+        position: relative;
+    }
+
+        .navBar ul li a {
+            text-decoration: none;
+            color: white;
+        }
+
+        .navBar ul li::after {
+            content: '';
+            height: 3px;
+            width: 0;
+            background: #009688;
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            transition: 0.5s;
+        }
+
+
+        .navBar ul li:hover::after {
+            width: 100%;
+        }
+
+
+.login {
+    padding: 12px 0;
+    margin-left: 60%;
+}
+
+    .login ul li {
+        list-style: none;
+        display: inline-block;
+        margin-right: 10px;
+        position: relative;
+        border: 2px solid white;
+        border-radius: 25px;
+        width: 100px;
+        text-align: center;
+    }
+
+        .login ul li a {
+            text-decoration: none;
+            color: white;
+        }
+
+        .login ul li::after {
+            content: '';
+            height: 3px;
+            width: 0%;
+            background: #009688;
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            transition: 0.5s
+        }
+
+        .login ul li:hover::after {
+            width: 100%;
+        }
+
+@keyframes change {
+    0%,75% {
+        background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),url(/img/top-view-pencil-with-coffee-beans-dry-cinnamon-plant-white-background-horizontal.jpg);
+    }
+
+    25%,100% {
+        background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),url(/img/flat-lay-composition-bed-with-coffee-notepad.jpg);
+    }
+}
+
+.banner .content {
+    color: white;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+    position: absolute;
+    width: 100%;
+}
+
+
+button {
+    width: 150px;
+    padding: 10px 0;
+    text-align: center;
+    margin: 20px 10px;
+    border-radius: 25px;
+    border: 2px solid white;
+    background: transparent;
+    color: white;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+span {
+    background: #009688;
+    height: 100%;
+    width: 0%;
+    border-radius: 25px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: -1;
+    transition: 0.3s;
+}
+
+button:hover span {
+    width: 100%;
+}
