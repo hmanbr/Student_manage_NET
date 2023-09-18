@@ -8,5 +8,11 @@ namespace G3.Controllers
         {
             return View();
         }
+
+        [Route("/home")]
+        public IActionResult ViewLanding() { 
+        
+            return View();
+        }
     }
 }
