@@ -50,5 +50,12 @@ namespace G3.Controllers
 
             return View("/Views/Admin/Details.cshtml", user);
         }
+
+        [Route("/Admin/RolesList")]
+        public async Task<IActionResult> RolesList()
+        {
+            var sWPContext = _context.Users.Include(u => u.DomainSetting).Include(u => u.RoleSetting);
+            return View("/Views/Admin/RolesList.cshtml", await sWPContext.ToListAsync());
+        }
     }
 }
