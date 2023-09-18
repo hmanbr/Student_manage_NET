@@ -9,7 +9,7 @@ namespace G3.Controllers
             return View();
         }
 
-        [Route("/home")]
+        [Route("/landingPage")]
         public IActionResult ViewLanding() { 
         
             return View();

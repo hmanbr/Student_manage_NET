@@ -46,7 +46,7 @@ namespace G3.Controllers
         }
 
         // GET: Subjects/Create
-        //[Route("/Subjects/create")]
+        [Route("/create")]
         public IActionResult Create()
         {
             ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id");
@@ -71,6 +71,7 @@ namespace G3.Controllers
         }
 
         // GET: Subjects/Edit/5
+        [Route("/Subjects/edit")]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null || _context.Subjects == null)
