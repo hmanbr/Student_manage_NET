@@ -46,6 +46,7 @@ namespace G3.Controllers
             return View(subject);
         }
 
+
         // GET: Subjects/Create
         [Route("/createSubject")]
         public IActionResult Create()
