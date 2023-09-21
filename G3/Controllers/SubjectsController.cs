@@ -19,7 +19,7 @@ namespace G3.Controllers
         }
 
         // GET: Subjects
-        [Route("/Subjects/index")]
+        [Route("/Subjects/Index")]
         public async Task<IActionResult> Index()
         {
             var sWPContext = _context.Subjects.Include(s => s.Manager);
@@ -27,7 +27,7 @@ namespace G3.Controllers
         }
 
         // GET: Subjects/Details/5
-        [Route("/detail")]
+        [Route("/Subjects/Details")]
         public async Task<IActionResult> Details(string id)
         {
             if (id == null || _context.Subjects == null)
@@ -48,7 +48,7 @@ namespace G3.Controllers
 
 
         // GET: Subjects/Create
-        [Route("/createSubject")]
+        [Route("/Subjects/Create")]
         public IActionResult Create()
         {
             ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id");
@@ -58,6 +58,7 @@ namespace G3.Controllers
         // POST: Subjects/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Route("/Subjects/Create")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("SubjectCode,Name,Status,ManagerId")] Subject subject)
@@ -73,7 +74,7 @@ namespace G3.Controllers
         }
 
         // GET: Subjects/Edit/5
-        [Route("/editSubject")]
+        [Route("/Subjects/Edit")]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null || _context.Subjects == null)
@@ -93,6 +94,7 @@ namespace G3.Controllers
         // POST: Subjects/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Route("/Subjects/Edit")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("SubjectCode,Name,Status,ManagerId")] Subject subject)
@@ -127,6 +129,7 @@ namespace G3.Controllers
         }
 
         // GET: Subjects/Delete/5
+        [Route("/Subjects/Delete")]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null || _context.Subjects == null)
@@ -144,7 +147,7 @@ namespace G3.Controllers
 
             return View(subject);
         }
-
+        [Route("/Subjects/Delete")]
         // POST: Subjects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
