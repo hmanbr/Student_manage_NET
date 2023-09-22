@@ -1,15 +1,19 @@
 ﻿@model G3.Models.Setting
 
 @{
+    ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/AdminLayout.cshtml";
 }
 
-<h4>Add New</h4>
+<h1>Edit</h1>
+
+<h4>Setting</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="AddNewEmailDM">
+        <form asp-action="Edit_confirm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="SettingId" />
             <div class="form-group">
                 <label asp-for="Type" class="control-label"></label>
                 <input asp-for="Type" class="form-control" />
@@ -26,14 +30,21 @@
                 <span asp-validation-for="Value" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <label asp-for="IsActive" class="control-label"></label>
+                <input asp-for="IsActive" class="form-control" />
+                <span asp-validation-for="IsActive" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a href="/listEmail">Back to list</a>
-    @*<a asp-action="Index">Back to List</a>*@
+    <a asp-action="ListEmailDM">Back to List</a>
 </div>
 
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
