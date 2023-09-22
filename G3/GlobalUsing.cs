@@ -1,3 +1,4 @@
 ﻿global using System.ComponentModel.DataAnnotations;
-global using G3.Models;
 global using Microsoft.EntityFrameworkCore;
+global using G3.Models;
+global using G3.Dtos;
