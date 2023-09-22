@@ -1,4 +1,4 @@
-﻿@model IEnumerable<G3.Models.User>
+﻿@model IEnumerable<G3.Models.Setting>
 
 @{
 	ViewData["Title"] = "RolesList";
@@ -7,119 +7,64 @@
 
 <h1>Role List</h1>
 
-<p>
-	<a asp-action="Create">Create New</a>
-</p>
 <table class="table">
 	<thead>
 		<tr>
 			<th>
-				UID
+				Role Id
 			</th>
 			<th>
-				Full Name
+				Role name
 			</th>
 			<th>
-				Role
+				Role value
+			</th>
+			<th>
+				Status
 			</th>
 			<th></th>
 		</tr>
 	</thead>
-	@* temp data *@
+
 	<tbody>
-		<tr>
-			<td>
-				1
-			</td>
-			<td>
-				Bruh bruh
-			</td>
-			<td>
-				Student
-			</td>
-			<td>
-				<a>Edit</a> |
-				<a>Details</a> |
-				<a>Delete</a>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				2
-			</td>
-			<td>
-				cat cat
-			</td>
-			<td>
-				Student
-			</td>
-			<td>
-				<a>Edit</a> |
-				<a>Details</a> |
-				<a>Delete</a>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				3
-			</td>
-			<td>
-				Dog Dog
-			</td>
-			<td>
-				Mentor
-			</td>
-			<td>
-				<a>Edit</a> |
-				<a>Details</a> |
-				<a>Delete</a>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				4
-			</td>
-			<td>
-				bird bird
-			</td>
-			<td>
-				Admin
-			</td>
-			<td>
-				<a>Edit</a> |
-				<a>Details</a> |
-				<a>Delete</a>
-			</td>
-		</tr>
+		@if (Model != null)
+		{
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>
+						@Html.DisplayFor(modelItem => item.SettingId)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Name)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Value)
+					</td>
+					<td>
+						@{
+							if(item.IsActive == true)
+							{
+								<span class="text-success">Active</span>
+							}
+							else
+							{
+								<span class="text-danger">Deactive</span>
+							}
+						}
+					</td>
+					<td>
+						<a asp-action="Edit" asp-route-id="@item.SettingId">Edit</a> |
+						<a asp-action="Delete" asp-route-id="@item.SettingId">Delete</a> @* need an alert prompt before delete *@
+					</td>
+				</tr>
+			}
+		}
+		else
+		{
+			<tr>
+				<td colspan="9" align="center">No data found</td>
+			</tr>
+		}
 	</tbody>
-	@* <tbody>
-	@if (Model != null)
-	{
-	@foreach (var item in Model)
-	{
-	<tr>
-	<td>
-	@Html.DisplayFor(modelItem => item.Id)
-	</td>
-	<td>
-	@Html.DisplayFor(modelItem => item.Name)
-	</td>
-	<td>
-	@Html.DisplayFor(modelItem => item.RoleSetting.Value)
-	</td>
-	<td>
-	<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-	<a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-	<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-	</td>
-	</tr>
-	}
-	}
-	else
-	{
-	<tr>
-	<td colspan="9" align="center">No data found</td>
-	</tr>
-	}
-	</tbody> *@
 </table>
