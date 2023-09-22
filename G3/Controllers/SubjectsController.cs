@@ -127,7 +127,7 @@ namespace G3.Controllers
             return View(subject);
         }
 
-        // GET: Subjects/Delete/5
+         //GET: Subjects/Delete/5
         [Route("/Subjects/Delete")]
         public async Task<IActionResult> Delete(string id)
         {
