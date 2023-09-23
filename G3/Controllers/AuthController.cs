@@ -6,8 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using G3.Models;
+using NuGet.Protocol;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace G3.Controllers {
+    [Route("/auth")]
     public class AuthController : Controller {
         private readonly SWPContext _context;
 
@@ -121,6 +125,9 @@ namespace G3.Controllers {
                 ViewBag.AlertMessage = "User alredy not confirm";
                 return View();
             }
+
+            string userJsonString = JsonSerializer.Serialize(user!);
+            HttpContext.Session.SetString("User", userJsonString);
             return View();
         }
 
@@ -128,6 +135,17 @@ namespace G3.Controllers {
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ChangePassword([Bind("OldPassword,NewPassword,ConfirmPassword")] ChangePasswordDto changePasswordDto) {
+            string? userJsonString = HttpContext.Session.GetString("User");
+            if (userJsonString == null) {
+                return SignIn();
+            }
+
+            User? user = JsonSerializer.Deserialize<User>(userJsonString);
+            if (user == null) {
+                return SignIn();
+            }
+
+            
             return View();
         }
     }
