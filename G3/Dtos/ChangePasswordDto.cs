@@ -4,7 +4,12 @@ namespace G3.Dtos {
         [Required]
         [MinLength(8)]
         [MaxLength(64)]
-        public string Password { get; set; } = null!;
+        public string OldPassword { get; set; } = null!;
+
+        [Required]
+        [MinLength(8)]
+        [MaxLength(64)]
+        public string NewPassword { get; set; } = null!;
 
         [Required]
         [MinLength(8)]
