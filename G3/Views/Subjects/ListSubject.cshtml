@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<G3.Models.Subject>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "ListSubject";
     Layout = "~/Views/Shared/AdminLayout.cshtml";
 }
 
@@ -13,6 +13,9 @@
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SubjectCode)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
@@ -28,6 +31,9 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SubjectCode)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
