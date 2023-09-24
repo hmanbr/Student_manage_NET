@@ -25,7 +25,19 @@ namespace G3.Controllers {
 
         [Route("confirm/{token}")]
         public IActionResult Confirm(string token) {
-            return View();
+            User? user = _context.Users.FirstOrDefault(user => user.ConfirmToken == token);
+
+            if (user == null) {
+                ViewBag.AlertMessage = "Password not match";
+                return View();
+            }
+
+            user.ConfirmToken = null;
+            user.Confirmed = true;
+            user.ConfirmTokenVerifyAt = DateTime.Now;
+
+            _context.SaveChangesAsync();
+            return RedirectToAction(nameof(SignIn));
         }
 
         [Route("sign-in")]
