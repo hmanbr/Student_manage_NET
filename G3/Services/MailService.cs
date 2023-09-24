@@ -27,6 +27,24 @@ namespace G3.Services {
             client.Send(message);
             client.Disconnect(true);
         }
+
+        public void SendResetPassword(string email, string hash)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Admin", "tunahe140525@fpt.edu.vn"));
+            message.To.Add(new MailboxAddress(email, email));
+            message.Subject = "Reset password";
+
+            message.Body = new TextPart("plain") {
+                Text = "https://localhost:7200/auth/reset-password/" + hash,
+            };
+
+            using var client = new SmtpClient();
+            client.Connect("smtp.gmail.com", 587, false);
+            client.Authenticate("tunahe140525@fpt.edu.vn", "wmmzcmllqvjnfrul");
+            client.Send(message);
+            client.Disconnect(true);
+        }
     }
 }
 

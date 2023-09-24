@@ -13,7 +13,7 @@
                     <div class="card-body p-md-5">
                         <div class="row justify-content-center">
                             <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
-                                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
+                                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign in</p>
                                 <form asp-action="SignIn" class="mx-1 mx-md-4">
                                     <div class="form-group mb-3">
                                         <label asp-for="Email">Email</label>
@@ -33,11 +33,13 @@
                                         </div>
 
                                         <div class="col">
-                                            <a href="#!">Forgot password?</a>
+                                            <a href="/auth/forgot-password">Forgot password?</a>
                                         </div>
                                     </div>
 
-                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="submit" class="btn btn-primary w-100 mb-3">Submit</button>
+
+                                    <a href="/auth/sign-up">Do not have an account?</a>
                                 </form>
 
                             </div>
