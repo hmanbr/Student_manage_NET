@@ -79,11 +79,11 @@ ALTER TABLE `Subject` ADD CONSTRAINT `Subject_ManagerId_fkey` FOREIGN KEY (`Mana
 -- AddForeignKey
 ALTER TABLE `SubjectSetting` ADD CONSTRAINT `SubjectSetting_SubjectId_fkey` FOREIGN KEY (`SubjectId`) REFERENCES `Subject`(`SubjectCode`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
-INSERT INTO `spp_schema`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Administrator', 'ADMIN');
-INSERT INTO `spp_schema`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Subject Manager', 'SUBJECT_MANAGER');
-INSERT INTO `spp_schema`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Class Manager', 'CLASS_MAMAGER');
-INSERT INTO `spp_schema`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Mentor', 'MENTOR');
-INSERT INTO `spp_schema`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Student', 'STUDENT');
-INSERT INTO `spp_schema`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'fpt.edu.vn', 'fpt.edu.vn');
-INSERT INTO `spp_schema`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Confirmed`, `Blocked`, `ConfirmToken`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K', '0', '0', '2167d991d3fc472c75ceeeaf87886eb06be2e1e55a21c15fdbecbcf1501f0d6f', 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Administrator', 'ADMIN');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Subject Manager', 'SUBJECT_MANAGER');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Class Manager', 'CLASS_MAMAGER');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Mentor', 'MENTOR');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Student', 'STUDENT');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'fpt.edu.vn', 'fpt.edu.vn');
+INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Confirmed`, `Blocked`, `ConfirmToken`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K', '0', '0', '2167d991d3fc472c75ceeeaf87886eb06be2e1e55a21c15fdbecbcf1501f0d6f', 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
 
