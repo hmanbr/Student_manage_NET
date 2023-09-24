@@ -18,16 +18,14 @@ namespace G3.Models
 
         public virtual DbSet<Setting> Settings { get; set; } = null!;
         public virtual DbSet<Subject> Subjects { get; set; } = null!;
-        public virtual DbSet<Subjectsetting> Subjectsettings { get; set; } = null!;
+        public virtual DbSet<SubjectSetting> SubjectSettings { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-           string connection =  Provider.Instance().GetConnectionString();
-
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySQL(connection);
+                optionsBuilder.UseMySQL("server=localhost;uid=root;pwd=123456789;database=SWP");
             }
         }
 
@@ -35,7 +33,14 @@ namespace G3.Models
         {
             modelBuilder.Entity<Setting>(entity =>
             {
-                entity.ToTable("setting");
+                entity.ToTable("Setting", "SWP");
+
+                entity.HasIndex(e => e.SettingId, "Setting_SettingId_idx");
+
+                entity.HasIndex(e => new { e.Type, e.Value }, "Setting_Type_Value_idx");
+
+                entity.HasIndex(e => new { e.Type, e.Value }, "Setting_Type_Value_key")
+                    .IsUnique();
 
                 entity.Property(e => e.IsActive)
                     .IsRequired()
@@ -53,9 +58,11 @@ namespace G3.Models
                 entity.HasKey(e => e.SubjectCode)
                     .HasName("PRIMARY");
 
-                entity.ToTable("subject");
+                entity.ToTable("Subject", "SWP");
 
                 entity.HasIndex(e => e.ManagerId, "Subject_ManagerId_fkey");
+
+                entity.HasIndex(e => e.SubjectCode, "Subject_SubjectCode_idx");
 
                 entity.Property(e => e.SubjectCode).HasMaxLength(191);
 
@@ -72,9 +79,9 @@ namespace G3.Models
                     .HasConstraintName("Subject_ManagerId_fkey");
             });
 
-            modelBuilder.Entity<Subjectsetting>(entity =>
+            modelBuilder.Entity<SubjectSetting>(entity =>
             {
-                entity.ToTable("subjectsetting");
+                entity.ToTable("SubjectSetting", "SWP");
 
                 entity.HasIndex(e => e.SubjectId, "SubjectSetting_SubjectId_fkey");
 
@@ -91,7 +98,7 @@ namespace G3.Models
                 entity.Property(e => e.Value).HasMaxLength(191);
 
                 entity.HasOne(d => d.Subject)
-                    .WithMany(p => p.Subjectsettings)
+                    .WithMany(p => p.SubjectSettings)
                     .HasForeignKey(d => d.SubjectId)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("SubjectSetting_SubjectId_fkey");
@@ -99,9 +106,16 @@ namespace G3.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("user");
+                entity.ToTable("User", "SWP");
 
                 entity.HasIndex(e => e.DomainSettingId, "User_DomainSettingId_fkey");
+
+                entity.HasIndex(e => e.Email, "User_Email_idx");
+
+                entity.HasIndex(e => e.Email, "User_Email_key")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.Id, "User_Id_idx");
 
                 entity.HasIndex(e => e.RoleSettingId, "User_RoleSettingId_fkey");
 
@@ -121,6 +135,10 @@ namespace G3.Models
 
                 entity.Property(e => e.Email).HasMaxLength(191);
 
+                entity.Property(e => e.Gender)
+                    .IsRequired()
+                    .HasDefaultValueSql("'1'");
+
                 entity.Property(e => e.Hash).HasMaxLength(191);
 
                 entity.Property(e => e.Name).HasMaxLength(191);
@@ -134,13 +152,13 @@ namespace G3.Models
                 entity.HasOne(d => d.DomainSetting)
                     .WithMany(p => p.UserDomainSettings)
                     .HasForeignKey(d => d.DomainSettingId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("User_DomainSettingId_fkey");
 
                 entity.HasOne(d => d.RoleSetting)
                     .WithMany(p => p.UserRoleSettings)
                     .HasForeignKey(d => d.RoleSettingId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("User_RoleSettingId_fkey");
             });
 

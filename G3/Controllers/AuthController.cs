@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using G3.Models;
 using NuGet.Protocol;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -21,6 +20,11 @@ namespace G3.Controllers {
 
         [Route("sign-up")]
         public IActionResult SignUp() {
+            return View();
+        }
+
+        [Route("confirm/{token}")]
+        public IActionResult Confirm(string token) {
             return View();
         }
 
@@ -145,8 +149,12 @@ namespace G3.Controllers {
                 return SignIn();
             }
 
-            
+
             return View();
         }
+
+
+
+
     }
 }

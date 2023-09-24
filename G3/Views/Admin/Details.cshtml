@@ -6,14 +6,14 @@
 }
 
 <section style="background-color: #eee;">
-    
+
     <div class="container py-5">
         <div class="mb-4">
             <a asp-action="UsersList">
                 <button type="button" class="btn btn-outline-primary">Back to list</button>
             </a>
         </div>
-        
+
         <div class="row">
             <div class="col-lg-4">
                 <div class="card mb-4">
@@ -58,7 +58,11 @@
                                 <p class="mb-0">Date of Birth</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">@Model.DateOfBirth.Value.ToShortDateString()</p>
+                                @if (Model.DateOfBirth != null)
+                                {
+
+                                    <p class="text-muted mb-0">@Model.DateOfBirth.Value.ToShortDateString()</p>
+                                }
                             </div>
                         </div>
                         <hr>
@@ -76,7 +80,7 @@
                                 <p class="mb-0">Gender</p>
                             </div>
                             <div class="col-sm-9">
-                                @if (Model.Gender)
+                                @if (Model.Gender == true)
                                 {
                                     <p class="text-muted mb-0">Male</p>
                                 }

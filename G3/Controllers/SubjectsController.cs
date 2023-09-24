@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using G3.Models;
 
 namespace G3.Controllers
 {
@@ -162,14 +161,14 @@ namespace G3.Controllers
             {
                 _context.Subjects.Remove(subject);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool SubjectExists(string id)
         {
-          return (_context.Subjects?.Any(e => e.SubjectCode == id)).GetValueOrDefault();
+            return (_context.Subjects?.Any(e => e.SubjectCode == id)).GetValueOrDefault();
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace G3.Models
 {
-    public partial class Subjectsetting
+    public partial class SubjectSetting
     {
         public int SubjectSettingId { get; set; }
         public string SubjectId { get; set; } = null!;

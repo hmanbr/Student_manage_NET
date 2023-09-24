@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using G3.Models;
 
 namespace G3.Controllers
 {
@@ -22,7 +21,7 @@ namespace G3.Controllers
 
 
         // GET: Users/Details/5
-        
+
 
         // GET: Users/Create
         public IActionResult Create()
@@ -139,14 +138,14 @@ namespace G3.Controllers
             {
                 _context.Users.Remove(user);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool UserExists(int id)
         {
-          return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
