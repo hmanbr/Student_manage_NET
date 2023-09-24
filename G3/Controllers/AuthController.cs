@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using NuGet.Common;
+using G3.Dtos;
 
 namespace G3.Controllers {
     [Route("/auth")]
@@ -28,7 +30,7 @@ namespace G3.Controllers {
             User? user = _context.Users.FirstOrDefault(user => user.ConfirmToken == token);
 
             if (user == null) {
-                ViewBag.AlertMessage = "Password not match";
+                ViewBag.AlertMessage = "Token invalid";
                 return View();
             }
 
@@ -56,7 +58,7 @@ namespace G3.Controllers {
             return View();
         }
 
-        [Route("reset-password")]
+        [Route("reset-password/{token}")]
         public IActionResult ResetPassword() {
             return View();
         }
@@ -65,6 +67,7 @@ namespace G3.Controllers {
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SignUp([Bind("Email,Password,ConfirmPassword,Name,DateOfBirth,Phone,Address,Gender")] SignUpDto signUpDto, [FromServices] IMailService mailService, [FromServices] IHashService hashService) {
+            if (!ModelState.IsValid) return View();
             if (signUpDto.Password != signUpDto.ConfirmPassword) {
                 ViewBag.AlertMessage = "Password not match";
                 return View();
@@ -127,6 +130,8 @@ namespace G3.Controllers {
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult SignIn([Bind("Email,Password")] SignInDto signInDto, [FromServices] IHashService hashService) {
+            if (!ModelState.IsValid) return View();
+
             User? user = _context.Users.FirstOrDefault(user => user.Email == signInDto.Email);
 
             if (user == null) {
@@ -150,23 +155,80 @@ namespace G3.Controllers {
         [Route("change-password")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ChangePassword([Bind("OldPassword,NewPassword,ConfirmPassword")] ChangePasswordDto changePasswordDto) {
-            string? userJsonString = HttpContext.Session.GetString("User");
-            if (userJsonString == null) {
-                return SignIn();
+        [AuthActionFilter]
+        public async Task<IActionResult> ChangePassword([Bind("OldPassword,NewPassword,ConfirmPassword")] ChangePasswordDto dto, [FromServices] IHashService hashService) {
+            if (!ModelState.IsValid) return View();
+
+            if (dto.NewPassword != dto.ConfirmPassword) {
+                ViewBag.AlertMessage = "Password not match";
+                return View();
             }
 
-            User? user = JsonSerializer.Deserialize<User>(userJsonString);
-            if (user == null) {
-                return SignIn();
+            string userJsonString = HttpContext.Session.GetString("User")!;
+            int userId = JsonSerializer.Deserialize<User>(userJsonString)!.Id;
+
+
+            User? user = _context.Users.FirstOrDefault(user => user.Id == userId);
+
+            if(user == null) {
+                return View();
             }
+
+            if(!hashService.Verify(dto.OldPassword, user.Hash)) {
+                ViewBag.AlertMessage = "Password incorrect";
+                return View();
+            }
+
+            user.Hash = hashService.HashPassword(dto.NewPassword);
+            await _context.SaveChangesAsync();
+           
 
 
             return View();
         }
 
+        [Route("forgot-password")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword([Bind("Email")] ForgotPasswordDto dto, [FromServices] IMailService mailService, [FromServices] IHashService hashService) {
+            User? user = _context.Users.FirstOrDefault(user => user.Email == dto.Email);
+
+            if (user == null) {
+                ViewBag.AlertMessage = "Email invalid";
+                return View();
+            }
+
+            string hash = hashService.RandomHash();
+
+            user.ResetPassToken = hash;
+            await _context.SaveChangesAsync();
+            mailService.SendResetPassword(dto.Email, hash);
+
+            return View();
+        }
 
 
+        [Route("reset-password/{token}")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword([Bind("Passsword,ConfirmPassword")] ResetPasswordDto dto, [FromServices] IHashService hashService, string token) {
+            if (dto.Password != dto.ConfirmPassword) {
+                ViewBag.AlertMessage = "Password not match";
+                return View();
+            }
 
+            User? user = _context.Users.FirstOrDefault(user => user.ResetPassToken == token);
+
+            if (user == null) {
+                ViewBag.AlertMessage = "Token invalid";
+                return View();
+            }
+
+            user.ResetPassToken = null;
+            user.Hash = hashService.HashPassword(dto.Password);
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(SignIn));
+        }
     }
 }
