@@ -16,7 +16,7 @@ namespace G3.Controllers
         [Route("/Subjects/Index")]
         public async Task<IActionResult> Index()
         {
-            var sWPContext = _context.Subjects.Include(s => s.Manager);
+            var sWPContext = _context.Subjects.Include(s => s.Mentor);
             return View(await sWPContext.ToListAsync());
         }
 
@@ -30,7 +30,7 @@ namespace G3.Controllers
             }
 
             var subject = await _context.Subjects
-                .Include(s => s.Manager)
+                .Include(s => s.Mentor)
                 .FirstOrDefaultAsync(m => m.SubjectCode == id);
             if (subject == null)
             {
@@ -45,7 +45,7 @@ namespace G3.Controllers
         [Route("/Subjects/Create")]
         public IActionResult Create()
         {
-            ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -55,7 +55,7 @@ namespace G3.Controllers
         [Route("/Subjects/Create")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SubjectCode,Name,Status,ManagerId")] Subject subject)
+        public async Task<IActionResult> Create([Bind("SubjectCode,Name,Status,MentorId")] Subject subject)
         {
             if (ModelState.IsValid)
             {
@@ -63,7 +63,7 @@ namespace G3.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id", subject.ManagerId);
+            ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id", subject.MentorId);
             return View(subject);
         }
 
@@ -81,7 +81,7 @@ namespace G3.Controllers
             {
                 return NotFound();
             }
-            ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id", subject.ManagerId);
+            ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id", subject.MentorId);
             return View(subject);
         }
 
@@ -91,7 +91,7 @@ namespace G3.Controllers
         [Route("/Subjects/Edit")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("SubjectCode,Name,Status,ManagerId")] Subject subject)
+        public async Task<IActionResult> Edit(string id, [Bind("SubjectCode,Name,Status,MentorId")] Subject subject)
         {
             if (id != subject.SubjectCode)
             {
@@ -118,7 +118,7 @@ namespace G3.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id", subject.ManagerId);
+            ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id", subject.MentorId);
             return View(subject);
         }
 
@@ -132,7 +132,7 @@ namespace G3.Controllers
             }
 
             var subject = await _context.Subjects
-                .Include(s => s.Manager)
+                .Include(s => s.Mentor)
                 .FirstOrDefaultAsync(m => m.SubjectCode == id);
             if (subject == null)
             {
