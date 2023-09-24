@@ -9,6 +9,7 @@ using G3.Models;
 
 namespace G3.Controllers
 {
+    [AuthActionFilter]
     public class AdminController : Controller
     {
         private readonly SWPContext _context;
