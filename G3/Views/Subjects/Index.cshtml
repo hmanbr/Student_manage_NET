@@ -60,7 +60,17 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Status)
+                @*@Html.DisplayFor(modelItem => item.Status)*@
+                    @{
+                        if ( item.Status == true)
+                        {
+                            <span class="text-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">Deactive</span>
+                        }
+                    }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Mentor.Id)
