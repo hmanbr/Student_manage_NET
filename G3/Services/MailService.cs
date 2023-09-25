@@ -60,6 +60,14 @@ namespace G3.Services {
             }
         }
 
+        public string? GetAddress(string email) {
+            try {
+                return new System.Net.Mail.MailAddress(email).Address;
+            } catch (FormatException) {
+                return null;
+            }
+        }
+
     }
 }
 
