@@ -124,7 +124,7 @@ namespace G3.Controllers {
 
             User? user = _context.Users.FirstOrDefault(user => user.Email == signInDto.Email);
 
-            if (user == null || hashService.Verify(signInDto.Password, user.Hash)) {
+            if (user == null || !hashService.Verify(signInDto.Password, user.Hash)) {
                 ViewBag.AlertMessage = "Please check email or password";
                 return View();
             }
