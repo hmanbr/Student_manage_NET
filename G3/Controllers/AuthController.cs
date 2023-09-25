@@ -1,3 +1,4 @@
+using G3.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -28,7 +29,7 @@ namespace G3.Controllers {
         }
 
         [Route("google/callback")]
-        public async Task<ActionResult> GoogleCallback([FromQuery] string code) {
+        public async Task<ActionResult> GoogleCallback([FromQuery] string code, [FromServices] IMailService mailService) {
 
             string authorizationCode = code;
 
@@ -49,7 +50,36 @@ namespace G3.Controllers {
             var peopleResponse = await httpClient.GetAsync("https://www.googleapis.com/oauth2/v2/userinfo");
             string mailContent = await peopleResponse.Content.ReadAsStringAsync();
             MailInfo mailInfo = JsonSerializer.Deserialize<MailInfo>(mailContent)!;
-            string mail = mailInfo.email;
+            string email = mailInfo.email;
+
+            string? domain = mailService.GetDomain(email);
+            if (domain == null) {
+                ViewBag.AlertMessage = "Email Domain False";
+                return View();
+            }
+
+            Setting? domainSetting = _context.Settings.FirstOrDefault(setting => setting.Type == "DOMAIN" && setting.Value == domain);
+            if (domainSetting == null) {
+                ViewBag.AlertMessage = "Email Domain Not Accept";
+                return View();
+            }
+
+            User? user = _context.Users.FirstOrDefault(user => user.Email == email);
+
+            if (user != null && user.Blocked) {
+                ViewBag.AlertMessage = "User Blocked";
+            }
+
+            if (user != null && user.Confirmed) {
+                ViewBag.AlertMessage = "Email already used";
+            }
+
+            Setting? roleSetting = _context.Settings.FirstOrDefault(setting => setting.Type == "ROLE" && setting.Value == "STUDENT");
+            if (roleSetting == null) {
+                ViewBag.AlertMessage = "Student Role Not Found";
+                return View();
+            }
+
 
             return View();
         }
@@ -165,7 +195,7 @@ namespace G3.Controllers {
 
             User? user = _context.Users.FirstOrDefault(user => user.Email == signInDto.Email);
 
-            if (user == null || !hashService.Verify(signInDto.Password, user.Hash)) {
+            if (user == null || !hashService.Verify(signInDto.Password, user.Hash!)) {
                 ViewBag.AlertMessage = "Please check email or password";
                 return View();
             }
