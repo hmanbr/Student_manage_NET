@@ -267,7 +267,7 @@ namespace G3.Controllers {
         public async Task<IActionResult> ForgotPassword([Bind("Email")] ForgotPasswordDto dto, [FromServices] IMailService mailService, [FromServices] IHashService hashService) {
             if (!ModelState.IsValid) return View();
 
-            User? user = _context.Users.FirstOrDefault(user => user.Email == dto.Email);
+            User? user = _context.Users.FirstOrDefault(user => user.Email == dto.Email && user.Hash != string.Empty);
 
             if (user == null) {
                 ViewBag.AlertMessage = "Email invalid";
