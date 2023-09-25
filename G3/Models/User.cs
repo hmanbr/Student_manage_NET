@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace G3.Models
 {
@@ -9,7 +10,6 @@ namespace G3.Models
         {
             Subjects = new HashSet<Subject>();
         }
-
         public int Id { get; set; }
         public string Email { get; set; } = null!;
         public int DomainSettingId { get; set; }

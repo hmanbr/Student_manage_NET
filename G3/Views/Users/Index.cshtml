@@ -1,0 +1,77 @@
+﻿@model IEnumerable<G3.Models.User>
+
+@{
+    ViewData["Title"] = "User List";
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+<p>
+    <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                UID
+            </th>
+            <th>
+                Full Name
+            </th>
+            <th>
+                Role
+            </th>
+            <th>
+                Created At
+            </th>
+            <th>
+                Last Updated
+            </th>
+            <th>
+                Gender
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoleSetting.Value)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreatedAt)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UpdatedAt)
+                    </td>
+                    @if (item.Gender)
+                    {
+                        <td>Male</td>
+                    }
+                    else
+                    {
+                        <td>Female</td>
+                    }
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="9" align="center">No data found</td>
+            </tr>
+        }
+    </tbody>
+</table>
