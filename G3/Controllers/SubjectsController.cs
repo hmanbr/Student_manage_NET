@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using G3.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using G3.Models;
 
 namespace G3.Controllers
 {
@@ -19,18 +19,30 @@ namespace G3.Controllers
         }
 
         // GET: Subjects
-        [Route("/Subject/ListSubject")]
-        public async Task<IActionResult> ListSubject()
+        [Route("/Subjects/Index")]
+        public async Task<IActionResult> Index()
         {
-            var sWPContext = _context.Subjects.Include(s => s.Manager);
+            var sWPContext = _context.Subjects.Include(m => m.Mentor);
+            
+           
             return View(await sWPContext.ToListAsync());
         }
-      
-
+        [Route("/Subjects/Index")]
+        [HttpPost]
+        public async Task<IActionResult> Index(string search)
+        {
+            ViewData["search"] = search;
+            var SearchQuery = from x in _context.Subjects select x;
+            if (!String.IsNullOrEmpty(search))
+            {
+                SearchQuery = SearchQuery.Where(x => x.SubjectCode.Contains(search));
+            }
+            return View(await SearchQuery.ToListAsync());
+        }
 
         // GET: Subjects/Details/5
-        [Route("/Subject/Details")]
-        public async Task<IActionResult> Details(string id)
+        [Route("/Subjects/Details")]
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Subjects == null)
             {
@@ -38,8 +50,8 @@ namespace G3.Controllers
             }
 
             var subject = await _context.Subjects
-                .Include(s => s.Manager)
-                .FirstOrDefaultAsync(m => m.SubjectCode == id);
+                .Include(s => s.Mentor)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (subject == null)
             {
                 return NotFound();
@@ -49,54 +61,38 @@ namespace G3.Controllers
         }
 
         // GET: Subjects/Create
-        [Route("/Subject/Create")]
+        [Route("/Subjects/Create")]
         public IActionResult Create()
         {
-            ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
         // POST: Subjects/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        /*  [Route("/Subject/Create")]
-          [HttpPost]
-          [ValidateAntiForgeryToken]
-          public async Task<IActionResult> Create([Bind("SubjectCode,Name,Status,ManagerId")] Subject subject)
-          {
-              if (ModelState.IsValid)
-              {
-                  _context.Add(subject);
-                  await _context.SaveChangesAsync();
-                  return RedirectToAction(nameof(ListSubject));
-              }
-              ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id", subject.ManagerId);
-              return View(subject);
-          }*/
-        [Route("/Subject/Create")]
+        [Route("/Subjects/Create")]
         [HttpPost]
-        public IActionResult Create(Subject s)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,SubjectCode,Name,Status,MentorId")] Subject s)
         {
-            try
+            if (_context.Subjects.Any(p => p.SubjectCode == s.SubjectCode))
             {
-                _context.Subjects.Add(s);
-                _context.SaveChanges();
-                //ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id", s.ManagerId);
-                
-                return RedirectToAction(nameof(ListSubject));
-                //return View(ListSubject);
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-               
-                Console.WriteLine("The subject code already exists.");
+                ViewData["exist"] = "The subject code already exists";
+                ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id");
                 return View();
+               
             }
+            _context.Add(s);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            
+            
         }
 
         // GET: Subjects/Edit/5
-        [Route("/Subject/Edit")]
-        public async Task<IActionResult> Edit(string id)
+        [Route("/Subjects/Edit")]
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Subjects == null)
             {
@@ -108,25 +104,31 @@ namespace G3.Controllers
             {
                 return NotFound();
             }
-            ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id", subject.ManagerId);
+            ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id", subject.MentorId);
             return View(subject);
         }
 
         // POST: Subjects/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        /*[Route("/Subject/Edit")]
+        [Route("/Subjects/Edit")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("SubjectCode,Name,Status,ManagerId")] Subject subject)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,SubjectCode,Name,Status,MentorId")] Subject subject)
         {
-            if (id != subject.SubjectCode)
+            if (id != subject.Id)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            if (_context.Subjects.Any(p => p.SubjectCode == subject.SubjectCode &&  p.Id != id))
             {
+                ViewData["exist"] = "The subject code already exists";
+                ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id");
+                return View();
+
+            }
+            else {
+
                 try
                 {
                     _context.Update(subject);
@@ -134,7 +136,7 @@ namespace G3.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SubjectExists(subject.SubjectCode))
+                    if (!SubjectExists(subject.Id))
                     {
                         return NotFound();
                     }
@@ -142,31 +144,16 @@ namespace G3.Controllers
                     {
                         throw;
                     }
+
                 }
-                return RedirectToAction(nameof(ListSubject));
             }
-            ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id", subject.ManagerId);
-            return View(subject);
-        }*/
-        [Route("/Subject/Edit")]
-        [HttpPost]
-        public IActionResult Edit(Subject s)
-        {
-            var sub = _context.Subjects.Where(x=>x.SubjectCode==s.SubjectCode).FirstOrDefault();
-            if(sub != null)
-            {
-                sub.SubjectCode = s.SubjectCode;
-                sub.Name = s.Name;
-                sub.Status = s.Status;
-                sub.ManagerId = s.ManagerId;
-                _context.SaveChanges();
-            }
-            return RedirectToAction(nameof(ListSubject));
+            //ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id", subject.MentorId);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Subjects/Delete/5
-        [Route("/Subject/Delete")]
-        public async Task<IActionResult> Delete(string id)
+        [Route("/Subjects/Delete")]
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Subjects == null)
             {
@@ -174,8 +161,8 @@ namespace G3.Controllers
             }
 
             var subject = await _context.Subjects
-                .Include(s => s.Manager)
-                .FirstOrDefaultAsync(m => m.SubjectCode == id);
+                .Include(s => s.Mentor)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (subject == null)
             {
                 return NotFound();
@@ -184,11 +171,11 @@ namespace G3.Controllers
             return View(subject);
         }
 
+        [Route("/Subjects/Delete")]
         // POST: Subjects/Delete/5
-        [Route("/Subject/Delete")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Subjects == null)
             {
@@ -199,14 +186,14 @@ namespace G3.Controllers
             {
                 _context.Subjects.Remove(subject);
             }
-
+            
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(ListSubject));
+            return RedirectToAction(nameof(Index));
         }
 
-        private bool SubjectExists(string id)
+        private bool SubjectExists(int id)
         {
-            return (_context.Subjects?.Any(e => e.SubjectCode == id)).GetValueOrDefault();
+          return (_context.Subjects?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

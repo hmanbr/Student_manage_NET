@@ -25,6 +25,7 @@ namespace G3.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseMySQL("server=localhost;uid=root;pwd=123456789;database=SWP");
             }
         }
@@ -55,16 +56,9 @@ namespace G3.Models
 
             modelBuilder.Entity<Subject>(entity =>
             {
-                entity.HasKey(e => e.SubjectCode)
-                    .HasName("PRIMARY");
-
                 entity.ToTable("Subject", "SWP");
 
-                entity.HasIndex(e => e.ManagerId, "Subject_ManagerId_fkey");
-
-                entity.HasIndex(e => e.SubjectCode, "Subject_SubjectCode_idx");
-
-                entity.Property(e => e.SubjectCode).HasMaxLength(191);
+                entity.HasIndex(e => e.MentorId, "Subject_MentorId_fkey");
 
                 entity.Property(e => e.Name).HasMaxLength(191);
 
@@ -72,18 +66,20 @@ namespace G3.Models
                     .IsRequired()
                     .HasDefaultValueSql("'1'");
 
-                entity.HasOne(d => d.Manager)
+                entity.Property(e => e.SubjectCode).HasMaxLength(191);
+
+                entity.HasOne(d => d.Mentor)
                     .WithMany(p => p.Subjects)
-                    .HasForeignKey(d => d.ManagerId)
+                    .HasForeignKey(d => d.MentorId)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("Subject_ManagerId_fkey");
+                    .HasConstraintName("Subject_MentorId_fkey");
             });
 
             modelBuilder.Entity<SubjectSetting>(entity =>
             {
                 entity.ToTable("SubjectSetting", "SWP");
 
-                entity.HasIndex(e => e.SubjectId, "SubjectSetting_SubjectId_fkey");
+                entity.HasIndex(e => e.SubjectId, "SubjectSetting_subjectId_fkey");
 
                 entity.Property(e => e.IsActive)
                     .IsRequired()
@@ -91,7 +87,7 @@ namespace G3.Models
 
                 entity.Property(e => e.Name).HasMaxLength(191);
 
-                entity.Property(e => e.SubjectId).HasMaxLength(191);
+                entity.Property(e => e.SubjectId).HasColumnName("subjectId");
 
                 entity.Property(e => e.Type).HasMaxLength(191);
 
@@ -100,8 +96,8 @@ namespace G3.Models
                 entity.HasOne(d => d.Subject)
                     .WithMany(p => p.SubjectSettings)
                     .HasForeignKey(d => d.SubjectId)
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("SubjectSetting_SubjectId_fkey");
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("SubjectSetting_subjectId_fkey");
             });
 
             modelBuilder.Entity<User>(entity =>

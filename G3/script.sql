@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS SWP;
 
-CREATE DATABASE IF NOT EXISTS SWP;
+CREATE DATABASE SWP;
 
 USE SWP;
 
@@ -46,25 +46,25 @@ CREATE TABLE `Setting` (
 
 -- CreateTable
 CREATE TABLE `Subject` (
+    `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `SubjectCode` VARCHAR(191) NOT NULL,
     `Name` VARCHAR(191) NOT NULL,
     `Status` BOOLEAN NOT NULL DEFAULT true,
-    `ManagerId` INTEGER NOT NULL,
+    `MentorId` INTEGER NOT NULL,
 
-    INDEX `Subject_SubjectCode_idx`(`SubjectCode`),
-    PRIMARY KEY (`SubjectCode`)
+    PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `SubjectSetting` (
-    `SubjectSettingId` INTEGER NOT NULL AUTO_INCREMENT,
-    `SubjectId` VARCHAR(191) NOT NULL,
+    `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `Type` VARCHAR(191) NOT NULL,
     `Name` VARCHAR(191) NOT NULL,
     `Value` VARCHAR(191) NOT NULL,
     `IsActive` BOOLEAN NOT NULL DEFAULT true,
+    `subjectId` INTEGER NULL,
 
-    PRIMARY KEY (`SubjectSettingId`)
+    PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
@@ -74,11 +74,12 @@ ALTER TABLE `User` ADD CONSTRAINT `User_DomainSettingId_fkey` FOREIGN KEY (`Doma
 ALTER TABLE `User` ADD CONSTRAINT `User_RoleSettingId_fkey` FOREIGN KEY (`RoleSettingId`) REFERENCES `Setting`(`SettingId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Subject` ADD CONSTRAINT `Subject_ManagerId_fkey` FOREIGN KEY (`ManagerId`) REFERENCES `User`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Subject` ADD CONSTRAINT `Subject_MentorId_fkey` FOREIGN KEY (`MentorId`) REFERENCES `User`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `SubjectSetting` ADD CONSTRAINT `SubjectSetting_SubjectId_fkey` FOREIGN KEY (`SubjectId`) REFERENCES `Subject`(`SubjectCode`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `SubjectSetting` ADD CONSTRAINT `SubjectSetting_subjectId_fkey` FOREIGN KEY (`subjectId`) REFERENCES `Subject`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
+<<<<<<< HEAD
 INSERT INTO `swp`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Administrator', 'ADMIN');
 INSERT INTO `swp`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Subject Manager', 'SUBJECT_MANAGER');
 INSERT INTO `swp`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Class Manager', 'CLASS_MAMAGER');
@@ -86,4 +87,16 @@ INSERT INTO `swp`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Mentor', 
 INSERT INTO `swp`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Student', 'STUDENT');
 INSERT INTO `swp`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'fpt.edu.vn', 'fpt.edu.vn');
 INSERT INTO `swp`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Confirmed`, `Blocked`, `ConfirmToken`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K', '0', '0', '2167d991d3fc472c75ceeeaf87886eb06be2e1e55a21c15fdbecbcf1501f0d6f', 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
+=======
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Administrator', 'ADMIN');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Subject Manager', 'SUBJECT_MANAGER');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Class Manager', 'CLASS_MAMAGER');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Mentor', 'MENTOR');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Student', 'STUDENT');
+
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'fpt.edu.vn', 'fpt.edu.vn');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'gmail.com', 'gmail.com');
+
+INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Confirmed`, `Blocked`, `ConfirmToken`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K', '0', '0', '2167d991d3fc472c75ceeeaf87886eb06be2e1e55a21c15fdbecbcf1501f0d6f', 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
+>>>>>>> b5b01044922cb37a9e668c32f11c7e63427f5006
 
