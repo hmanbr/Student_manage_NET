@@ -107,7 +107,7 @@ namespace G3.Controllers {
         }
 
         [Route("confirm/{token}")]
-        public IActionResult Confirm(string token) {
+        public async Task<IActionResult> Confirm(string token) {
             User? user = _context.Users.FirstOrDefault(user => user.ConfirmToken == token);
 
             if (user == null) {
@@ -119,7 +119,7 @@ namespace G3.Controllers {
             user.Confirmed = true;
             user.ConfirmTokenVerifyAt = DateTime.Now;
 
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(SignIn));
         }
 
@@ -306,6 +306,15 @@ namespace G3.Controllers {
             user.Hash = hashService.HashPassword(dto.Password);
 
             await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(SignIn));
+        }
+
+        [Route("/logout")]
+        [HttpPost]
+        public IActionResult Logout() {
+
+            HttpContext.Session.Remove("User");
+
             return RedirectToAction(nameof(SignIn));
         }
     }

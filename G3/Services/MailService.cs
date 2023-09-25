@@ -15,7 +15,7 @@ namespace G3.Services {
         public MailService(IConfiguration configuration) {
             Configuration = configuration;
 
-            host = Configuration["MailSetting:Email"];
+            host = Configuration["MailSetting:Host"];
             port = int.Parse(Configuration["MailSetting:Port"]);
             useSsl = bool.Parse(Configuration["MailSetting:UseSsl"]);
             emailSender = Configuration["MailSetting:Email"];
