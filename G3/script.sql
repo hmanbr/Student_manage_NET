@@ -97,6 +97,10 @@ INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Student',
 INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'fpt.edu.vn', 'fpt.edu.vn');
 INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'gmail.com', 'gmail.com');
 
+<<<<<<< HEAD
 INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Confirmed`, `Blocked`, `ConfirmToken`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K', '0', '0', '2167d991d3fc472c75ceeeaf87886eb06be2e1e55a21c15fdbecbcf1501f0d6f', 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
 >>>>>>> b5b01044922cb37a9e668c32f11c7e63427f5006
+=======
+INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Confirmed`, `Blocked`, `ConfirmToken`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K', '1', '0', '', 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
+>>>>>>> a6a0e97137040ad0824e2544217ff41cfc8581f6
 
