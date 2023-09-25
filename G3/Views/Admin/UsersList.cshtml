@@ -55,7 +55,11 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.UpdatedAt)
                     </td>
-                    @if (item.Gender)
+                    @if (item.Gender == null)
+                    {
+                        <td>Nonbinary</td>
+                    }
+                    else if (item.Gender == true)
                     {
                         <td>Male</td>
                     }

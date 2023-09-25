@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using G3.Models;
 
 namespace G3.Controllers
 {
@@ -23,9 +22,9 @@ namespace G3.Controllers
         [Route("/admin/listEmailDM")]
         public async Task<IActionResult> ListEmailDM()
         {
-              return _context.Settings != null ? 
-                          View(await _context.Settings.ToListAsync()) :
-                          Problem("Entity set 'SWPContext.Settings'  is null.");
+            return _context.Settings != null ?
+                        View(await _context.Settings.ToListAsync()) :
+                        Problem("Entity set 'SWPContext.Settings'  is null.");
         }
 
         // GET: Settings/Details/5
@@ -154,14 +153,14 @@ namespace G3.Controllers
             {
                 _context.Settings.Remove(setting);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ListEmailDM));
         }
 
         private bool SettingExists(int id)
         {
-          return (_context.Settings?.Any(e => e.SettingId == id)).GetValueOrDefault();
+            return (_context.Settings?.Any(e => e.SettingId == id)).GetValueOrDefault();
         }
     }
 }

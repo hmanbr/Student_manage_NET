@@ -12,25 +12,25 @@ namespace G3.Models
 
         public int Id { get; set; }
         public string Email { get; set; } = null!;
-        public int? DomainSettingId { get; set; }
-        public int? RoleSettingId { get; set; }
+        public int DomainSettingId { get; set; }
+        public int RoleSettingId { get; set; }
         public string Hash { get; set; } = null!;
         public bool Confirmed { get; set; }
         public bool Blocked { get; set; }
         public string? ConfirmToken { get; set; }
         public DateTime? ConfirmTokenVerifyAt { get; set; }
         public string? ResetPassToken { get; set; }
-        public string Avatar { get; set; } = null!;
+        public string? Avatar { get; set; }
         public string Name { get; set; } = null!;
         public DateTime? DateOfBirth { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
-        public bool Gender { get; set; }
+        public bool? Gender { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public virtual Setting? DomainSetting { get; set; }
-        public virtual Setting? RoleSetting { get; set; }
+        public virtual Setting DomainSetting { get; set; } = null!;
+        public virtual Setting RoleSetting { get; set; } = null!;
         public virtual ICollection<Subject> Subjects { get; set; }
     }
 }

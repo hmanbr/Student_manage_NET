@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using G3.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using G3.Models;
 
 namespace G3.Controllers
 {
@@ -25,6 +25,8 @@ namespace G3.Controllers
             var sWPContext = _context.Subjects.Include(s => s.Manager);
             return View(await sWPContext.ToListAsync());
         }
+      
+
 
         // GET: Subjects/Details/5
         [Route("/Subject/Details")]
@@ -80,7 +82,7 @@ namespace G3.Controllers
                 _context.Subjects.Add(s);
                 _context.SaveChanges();
                 //ViewData["ManagerId"] = new SelectList(_context.Users, "Id", "Id", s.ManagerId);
-                Console.WriteLine("Student Add successfully.");
+                
                 return RedirectToAction(nameof(ListSubject));
                 //return View(ListSubject);
             }
@@ -88,7 +90,7 @@ namespace G3.Controllers
             {
                
                 Console.WriteLine("The subject code already exists.");
-                return View(ListSubject);
+                return View();
             }
         }
 
@@ -197,14 +199,14 @@ namespace G3.Controllers
             {
                 _context.Subjects.Remove(subject);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ListSubject));
         }
 
         private bool SubjectExists(string id)
         {
-          return (_context.Subjects?.Any(e => e.SubjectCode == id)).GetValueOrDefault();
+            return (_context.Subjects?.Any(e => e.SubjectCode == id)).GetValueOrDefault();
         }
     }
 }
