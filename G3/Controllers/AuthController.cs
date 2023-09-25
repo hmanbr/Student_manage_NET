@@ -1,5 +1,7 @@
 using G3.Dtos;
+using G3.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Policy;
 using System.Text.Json;
 
 namespace G3.Controllers {
@@ -68,10 +70,12 @@ namespace G3.Controllers {
 
             if (user != null && user.Blocked) {
                 ViewBag.AlertMessage = "User Blocked";
+                return RedirectToAction(nameof(SignIn), "Auth");
             }
 
             if (user != null && user.Confirmed) {
                 ViewBag.AlertMessage = "Email already used";
+                return RedirectToAction(nameof(SignIn), "Auth");
             }
 
             Setting? roleSetting = _context.Settings.FirstOrDefault(setting => setting.Type == "ROLE" && setting.Value == "STUDENT");
@@ -79,9 +83,22 @@ namespace G3.Controllers {
                 ViewBag.AlertMessage = "Student Role Not Found";
                 return View();
             }
+            if (user == null) {
+                user = new() {
+                    Email = email,
+                    DomainSettingId = domainSetting.SettingId,
+                    RoleSettingId = roleSetting.SettingId,
+                    Name = mailService.GetAddress(email)!,
+                };
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
 
+            }
 
-            return View();
+            string userJsonString = JsonSerializer.Serialize(user!);
+            HttpContext.Session.SetString("User", userJsonString);
+
+            return RedirectToAction("AdminHome", "Admin");
         }
 
         [Route("sign-up")]

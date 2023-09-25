@@ -130,10 +130,6 @@ namespace G3.Models
 
                 entity.Property(e => e.Email).HasMaxLength(191);
 
-                entity.Property(e => e.Gender)
-                    .IsRequired()
-                    .HasDefaultValueSql("'1'");
-
                 entity.Property(e => e.Hash).HasMaxLength(191);
 
                 entity.Property(e => e.Name).HasMaxLength(191);
