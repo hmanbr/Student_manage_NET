@@ -1,16 +1,57 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using NuGet.Common;
-using G3.Dtos;
 
 namespace G3.Controllers {
     [Route("/auth")]
     public class AuthController : Controller {
         private readonly SWPContext _context;
+        private readonly string clientId;
+        private readonly string clientSecret;
+        private readonly string redirectUri;
 
-        public AuthController(SWPContext context) {
+        private readonly IConfiguration Configuration;
+
+        public AuthController(SWPContext context, IConfiguration configuration) {
+            Configuration = configuration;
+            clientId = Configuration["Authentication:Google:ClientId"];
+            clientSecret = Configuration["Authentication:Google:ClientSecret"];
+            redirectUri = Configuration["Authentication:Google:RedirectUri"];
+
             _context = context;
+        }
+
+        [HttpPost]
+        public ActionResult Google() {
+            var state = Guid.NewGuid().ToString();
+            var authorizeUrl = string.Format("https://accounts.google.com/o/oauth2/auth?client_id={0}&redirect_uri={1}&response_type=code&scope=email profile&state={2}", clientId, redirectUri, state);
+            return Redirect(authorizeUrl);
+        }
+
+        [Route("google/callback")]
+        public async Task<ActionResult> GoogleCallback([FromQuery] string code) {
+
+            string authorizationCode = code;
+
+            var httpClient = new HttpClient();
+            var tokenRequest = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                { "code", authorizationCode },
+                { "client_id", clientId },
+                { "client_secret", clientSecret },
+                { "redirect_uri", redirectUri },
+                { "grant_type", "authorization_code" }
+            });
+            var tokenResponse = await httpClient.PostAsync("https://accounts.google.com/o/oauth2/token", tokenRequest);
+            var tokenContent = await tokenResponse.Content.ReadAsStringAsync();
+            GoogloInfo tokenInfo = JsonSerializer.Deserialize<GoogloInfo>(tokenContent)!;
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", tokenInfo.access_token);
+            var peopleResponse = await httpClient.GetAsync("https://www.googleapis.com/oauth2/v2/userinfo");
+            string mailContent = await peopleResponse.Content.ReadAsStringAsync();
+            MailInfo mailInfo = JsonSerializer.Deserialize<MailInfo>(mailContent)!;
+            string mail = mailInfo.email;
+
+            return View();
         }
 
         [Route("sign-up")]
