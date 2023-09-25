@@ -52,13 +52,20 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.UpdatedAt)
                     </td>
-                    @if (item.Gender)
+                    @if (item.Gender == null)
                     {
-                        <td>Male</td>
+                        <td>Nonbinary</td>
                     }
                     else
                     {
-                        <td>Female</td>
+                        if (item.Gender == true)
+                        {
+                            <td>Male</td>
+                        }
+                        else if (item.Gender == false)
+                        {
+                            <td>Female</td>
+                        }
                     }
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

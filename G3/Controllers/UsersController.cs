@@ -29,6 +29,17 @@ namespace G3.Controllers
                 return NotFound();
             }
 
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var DomainSettings = _context.Settings.Where(ds => ds.Type == "DOMAIN").ToList();
+            ViewData["DomainSettingId"] = new SelectList(DomainSettings, "SettingId", "Value");
+            var RoleSettings = _context.Settings.Where(rs => rs.Type == "ROLE").ToList();
+            ViewData["RoleSettingId"] = new SelectList(RoleSettings, "SettingId", "Value");
+            return View("/Views/Users/Details.cshtml", user);
+        }
         // GET: Users/Details/5
 
 
@@ -127,7 +138,7 @@ namespace G3.Controllers
                     {
                         await avatarFile.CopyToAsync(stream);
                     }
-                    user.Avatar = "/avatars/" + fileName; 
+                    user.Avatar = "/avatars/" + fileName;
                 }
                 try
                 {
@@ -151,7 +162,7 @@ namespace G3.Controllers
             ViewData["RoleSettingId"] = new SelectList(_context.Settings, "SettingId", "SettingId", user.RoleSettingId);
             return View(user);
         }
-        
+
         [HttpPost]
         [Route("/Admin/Delete")]
         [ValidateAntiForgeryToken]

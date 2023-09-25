@@ -76,13 +76,20 @@
                                 <p class="mb-0">Gender</p>
                             </div>
                             <div class="col-sm-9">
-                                @if (Model.Gender)
+                                @if (Model.Gender == null)
                                 {
-                                    <p class="text-muted mb-0">Male</p>
+                                    <p class="text-muted mb-0">Nonbinary</p>
                                 }
                                 else
                                 {
-                                    <p class="text-muted mb-0">Female</p>
+                                    if (Model.Gender == true)
+                                    {
+                                        <p class="text-muted mb-0">Male</p>
+                                    }
+                                    else if (Model.Gender == false)
+                                    {
+                                        <p class="text-muted mb-0">Female</p>
+                                    }
                                 }
                             </div>
                         </div>
