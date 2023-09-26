@@ -49,7 +49,6 @@
             </li>
 
             <!-- Divider -->
-           
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
@@ -67,14 +66,8 @@
             </li>
 
             <!-- Nav Item - Utilities Collapse Menu -->
-           
-
             <!-- Divider -->
-            
-
             <!-- Nav Item - Pages Collapse Menu -->
-           
-
             <!-- Nav Item - Charts -->
             <li class="nav-item">
                 <a class="nav-link" href="/Admin/UserList">
@@ -100,7 +93,7 @@
             </div>
 
             <!-- Sidebar Message -->
-           
+
 
         </ul>
         <!-- End of Sidebar -->
@@ -309,10 +302,12 @@
                                     Activity Log
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
-                                </a>
+                                <form asp-action="Logout" asp-controller="Auth">
+                                    <button class="btn btn-link dropdown-item">
+                                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Logout
+                                    </button>
+                                </form>
                             </div>
                         </li>
 
@@ -321,22 +316,22 @@
                 </nav>
                 <!-- End of Topbar -->
                 <!-- Begin Page Content -->
-                
+
                 <div class="container-fluid">
                     <div>
                     </div>
 
                     <!-- Page Heading -->
                     @*<div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        
-<<<<<<< G3/Views/Shared/AdminLayout.cshtml
-                        
-                    </div>
-=======
-                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-                            <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
-                        </a>
-                    </div>*@
+
+                        <<<<<<< G3/Views/Shared/AdminLayout.cshtml
+
+                                            </div>
+                        =======
+                                                <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                                                    <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
+                                                </a>
+                                            </div>*@
 
                     @RenderBody()
                     <!-- Content Row -->

@@ -9,7 +9,7 @@ CREATE TABLE `User` (
     `Email` VARCHAR(191) NOT NULL,
     `DomainSettingId` INTEGER NOT NULL,
     `RoleSettingId` INTEGER NOT NULL,
-    `Hash` VARCHAR(191) NOT NULL,
+    `Hash` VARCHAR(191) NULL,
     `Confirmed` BOOLEAN NOT NULL DEFAULT false,
     `Blocked` BOOLEAN NOT NULL DEFAULT false,
     `ConfirmToken` VARCHAR(191) NULL,
@@ -20,7 +20,7 @@ CREATE TABLE `User` (
     `DateOfBirth` DATETIME(3) NULL,
     `Phone` VARCHAR(15) NULL,
     `Address` VARCHAR(191) NULL,
-    `Gender` BOOLEAN NOT NULL DEFAULT true,
+    `Gender` BOOLEAN NULL,
     `CreatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `UpdatedAt` DATETIME(3) NOT NULL,
 

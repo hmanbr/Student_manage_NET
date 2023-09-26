@@ -24,7 +24,7 @@ namespace G3.Dtos {
 
         public string? Address { get; set; }
 
-        public bool Gender { get; set; }
+        public bool? Gender { get; set; }
     }
 }
 

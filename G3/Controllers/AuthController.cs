@@ -1,16 +1,104 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using NuGet.Common;
 using G3.Dtos;
+using G3.Services;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Policy;
+using System.Text.Json;
 
 namespace G3.Controllers {
     [Route("/auth")]
     public class AuthController : Controller {
         private readonly SWPContext _context;
+        private readonly string clientId;
+        private readonly string clientSecret;
+        private readonly string redirectUri;
 
-        public AuthController(SWPContext context) {
+        private readonly IConfiguration Configuration;
+
+        public AuthController(SWPContext context, IConfiguration configuration) {
+            Configuration = configuration;
+            clientId = Configuration["Authentication:Google:ClientId"];
+            clientSecret = Configuration["Authentication:Google:ClientSecret"];
+            redirectUri = Configuration["Authentication:Google:RedirectUri"];
+
             _context = context;
+        }
+
+        [HttpPost]
+        public ActionResult Google() {
+            var state = Guid.NewGuid().ToString();
+            var authorizeUrl = string.Format("https://accounts.google.com/o/oauth2/auth?client_id={0}&redirect_uri={1}&response_type=code&scope=email profile&state={2}", clientId, redirectUri, state);
+            return Redirect(authorizeUrl);
+        }
+
+        [Route("google/callback")]
+        public async Task<ActionResult> GoogleCallback([FromQuery] string code, [FromServices] IMailService mailService) {
+
+            string authorizationCode = code;
+
+            var httpClient = new HttpClient();
+            var tokenRequest = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                { "code", authorizationCode },
+                { "client_id", clientId },
+                { "client_secret", clientSecret },
+                { "redirect_uri", redirectUri },
+                { "grant_type", "authorization_code" }
+            });
+            var tokenResponse = await httpClient.PostAsync("https://accounts.google.com/o/oauth2/token", tokenRequest);
+            var tokenContent = await tokenResponse.Content.ReadAsStringAsync();
+            GoogloInfo tokenInfo = JsonSerializer.Deserialize<GoogloInfo>(tokenContent)!;
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", tokenInfo.access_token);
+            var peopleResponse = await httpClient.GetAsync("https://www.googleapis.com/oauth2/v2/userinfo");
+            string mailContent = await peopleResponse.Content.ReadAsStringAsync();
+            MailInfo mailInfo = JsonSerializer.Deserialize<MailInfo>(mailContent)!;
+            string email = mailInfo.email;
+
+            string? domain = mailService.GetDomain(email);
+            if (domain == null) {
+                ViewBag.AlertMessage = "Email Domain False";
+                return View();
+            }
+
+            Setting? domainSetting = _context.Settings.FirstOrDefault(setting => setting.Type == "DOMAIN" && setting.Value == domain);
+            if (domainSetting == null) {
+                ViewBag.AlertMessage = "Email Domain Not Accept";
+                return View();
+            }
+
+            User? user = _context.Users.FirstOrDefault(user => user.Email == email);
+
+            if (user != null && user.Blocked) {
+                ViewBag.AlertMessage = "User Blocked";
+                return RedirectToAction(nameof(SignIn), "Auth");
+            }
+
+            if (user != null && user.Confirmed) {
+                ViewBag.AlertMessage = "Email already used";
+                return RedirectToAction(nameof(SignIn), "Auth");
+            }
+
+            Setting? roleSetting = _context.Settings.FirstOrDefault(setting => setting.Type == "ROLE" && setting.Value == "STUDENT");
+            if (roleSetting == null) {
+                ViewBag.AlertMessage = "Student Role Not Found";
+                return View();
+            }
+            if (user == null) {
+                user = new() {
+                    Email = email,
+                    DomainSettingId = domainSetting.SettingId,
+                    RoleSettingId = roleSetting.SettingId,
+                    Name = mailService.GetAddress(email)!,
+                };
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+            }
+
+            string userJsonString = JsonSerializer.Serialize(user!);
+            HttpContext.Session.SetString("User", userJsonString);
+
+            return RedirectToAction("AdminHome", "Admin");
         }
 
         [Route("sign-up")]
@@ -19,7 +107,7 @@ namespace G3.Controllers {
         }
 
         [Route("confirm/{token}")]
-        public IActionResult Confirm(string token) {
+        public async Task<IActionResult> Confirm(string token) {
             User? user = _context.Users.FirstOrDefault(user => user.ConfirmToken == token);
 
             if (user == null) {
@@ -31,7 +119,7 @@ namespace G3.Controllers {
             user.Confirmed = true;
             user.ConfirmTokenVerifyAt = DateTime.Now;
 
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(SignIn));
         }
 
@@ -124,7 +212,7 @@ namespace G3.Controllers {
 
             User? user = _context.Users.FirstOrDefault(user => user.Email == signInDto.Email);
 
-            if (user == null || !hashService.Verify(signInDto.Password, user.Hash)) {
+            if (user == null || !hashService.Verify(signInDto.Password, user.Hash!)) {
                 ViewBag.AlertMessage = "Please check email or password";
                 return View();
             }
@@ -179,7 +267,7 @@ namespace G3.Controllers {
         public async Task<IActionResult> ForgotPassword([Bind("Email")] ForgotPasswordDto dto, [FromServices] IMailService mailService, [FromServices] IHashService hashService) {
             if (!ModelState.IsValid) return View();
 
-            User? user = _context.Users.FirstOrDefault(user => user.Email == dto.Email);
+            User? user = _context.Users.FirstOrDefault(user => user.Email == dto.Email && user.Hash != string.Empty);
 
             if (user == null) {
                 ViewBag.AlertMessage = "Email invalid";
@@ -218,6 +306,15 @@ namespace G3.Controllers {
             user.Hash = hashService.HashPassword(dto.Password);
 
             await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(SignIn));
+        }
+
+        [Route("/logout")]
+        [HttpPost]
+        public IActionResult Logout() {
+
+            HttpContext.Session.Remove("User");
+
             return RedirectToAction(nameof(SignIn));
         }
     }
