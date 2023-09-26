@@ -2,7 +2,7 @@
 
 namespace G3.Controllers
 {
-    /*[AuthActionFilter]*/
+    [AuthActionFilter]
     public class AdminController : Controller
     {
         private readonly SWPContext _context;
@@ -12,7 +12,7 @@ namespace G3.Controllers
             _context = context;
         }
 
-        [Route("/")]
+        [Route("/Admin/AdminHome")]
         public IActionResult AdminHome()
         {
             return View();
