@@ -1,5 +1,6 @@
-﻿
+﻿using G3.Dtos;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace G3.Controllers
 {
@@ -56,8 +57,12 @@ namespace G3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("SettingId,Type,Name,Value,IsActive")] Setting setting)
         {
+
             if (ModelState.IsValid)
             {
+                setting.Type = "DOMAIN";
+                setting.Value = setting.Name;
+
                 _context.Add(setting);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(ListEmailDM));
@@ -95,6 +100,7 @@ namespace G3.Controllers
             {
                 try
                 {
+                    setting.Value = setting.Name;
                     _context.Update(setting);
                     await _context.SaveChangesAsync();
                 }

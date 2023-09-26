@@ -5,14 +5,39 @@
     Layout = "~/Views/Shared/AdminLayout.cshtml";
 }
 
-<h1>Index</h1>
 
+<div class="container mt-5">
+    
+    @*<form asp-action="Index" method="post">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Nhập từ khóa tìm kiếm" name="search" value="@ViewData["search"]">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+            </div>
+        </div>
+    </form>*@
+    <form asp-action="Index" method="post" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+        <div class="input-group">
+
+            <input  type="text"  class="form-control small" placeholder="Search for Subject Code...."
+                   aria-label="Search" aria-describedby="basic-addon2" name="search" value="@ViewData["search"]" style="margin-left:200px; width:500px; font-size: 15px; background-color:#f8f9fc;">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search fa-sm"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
 <p>
     <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SubjectCode)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
@@ -29,18 +54,31 @@
 @foreach (var item in Model) {
         <tr>
             <td>
+                @Html.DisplayFor(modelItem => item.SubjectCode)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Status)
+                @*@Html.DisplayFor(modelItem => item.Status)*@
+                    @{
+                        if ( item.Status == true)
+                        {
+                            <span class="text-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">Deactive</span>
+                        }
+                    }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Mentor.Id)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.SubjectCode">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.SubjectCode">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.SubjectCode">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }

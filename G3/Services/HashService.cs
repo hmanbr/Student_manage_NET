@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -20,7 +20,7 @@ namespace G3.Services {
             byte[] inputBytes = Encoding.UTF8.GetBytes(randomString);
             byte[] hashBytes = sha256.ComputeHash(inputBytes);
 
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new();
             foreach (byte b in hashBytes) {
                 stringBuilder.Append(b.ToString("x2"));
             }

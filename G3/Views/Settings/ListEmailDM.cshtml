@@ -30,25 +30,35 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Value)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.SettingId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.SettingId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.SettingId">Delete</a>
-            </td>
-        </tr>
+            @if(item.Type == "DOMAIN")
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Type)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Value)
+                    </td>
+                    <td>
+                        @if(@item.IsActive == true){
+                            <b style="color:lawngreen">Active</b>
+                        }
+                        else{
+                        <b style="color:red">Deactive</b>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.SettingId">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.SettingId">Details</a>
+                        @*| <a asp-action="Delete" asp-route-id ="@item.SettingId">Delete</a>*@
+                        
+                    </td>
+                </tr>
+            }
+            
 }
     </tbody>
 </table>

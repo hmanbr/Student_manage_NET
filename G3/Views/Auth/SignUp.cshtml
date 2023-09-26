@@ -51,19 +51,22 @@
                                         <input asp-for="Address" class="form-control" />
                                         <span asp-validation-for="Address" class="text-danger"></span>
                                     </div>
-                                    <div class="form-group form-check">
-                                        <label class="form-check-label">
-                                            <label asp-for="Gender" class="control-label">Male</label>
-                                            <input class="form-check-input" asp-for="Gender" />
-                                        </label>
+                                    <div class="mb-3">
+                                        @foreach (var gender in new bool[] { true, false })
+                                        {
+                                            <div class="form-check" style="padding-left: 0px !important">
+                                                <input type="radio" asp-for="Gender" value="@gender" id="Gender@(gender)" />@if (gender)
+                                                {
+                                                    <label for="Gender@(gender)">Male</label>
+                                                }
+                                                else
+                                                {
+                                                    <label for="Gender@(gender)">Female</label>
+                                                }
+                                            </div>
+                                        }
                                     </div>
-                                    <div class="form-check d-flex justify-content-center mb-5">
-                                        <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3c" />
-                                        <label class="form-check-label" for="form2Example3">
-                                            I agree all statements in <a href="#!">Terms of service</a>
-                                        </label>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="submit" class="btn btn-primary w-100">Submit</button>
                                 </form>
 
                             </div>
@@ -89,10 +92,9 @@
         </button>
     </div>
 
-    <script>// Close the alert after a few seconds (optional)
-        setTimeout(function () {
+    <script>setTimeout(function () {
             $(".alert").alert('close');
-        }, 5000); // 5000 milliseconds = 5 seconds</script>
+        }, 5000);</script>
 }
 
 
