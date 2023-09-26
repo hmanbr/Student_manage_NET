@@ -9,7 +9,7 @@ CREATE TABLE `User` (
     `Email` VARCHAR(191) NOT NULL,
     `DomainSettingId` INTEGER NOT NULL,
     `RoleSettingId` INTEGER NOT NULL,
-    `Hash` VARCHAR(191) NOT NULL,
+    `Hash` VARCHAR(191) NULL,
     `Confirmed` BOOLEAN NOT NULL DEFAULT false,
     `Blocked` BOOLEAN NOT NULL DEFAULT false,
     `ConfirmToken` VARCHAR(191) NULL,
@@ -20,7 +20,7 @@ CREATE TABLE `User` (
     `DateOfBirth` DATETIME(3) NULL,
     `Phone` VARCHAR(15) NULL,
     `Address` VARCHAR(191) NULL,
-    `Gender` BOOLEAN NOT NULL DEFAULT true,
+    `Gender` BOOLEAN NULL,
     `CreatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `UpdatedAt` DATETIME(3) NOT NULL,
 
@@ -79,15 +79,6 @@ ALTER TABLE `Subject` ADD CONSTRAINT `Subject_MentorId_fkey` FOREIGN KEY (`Mento
 -- AddForeignKey
 ALTER TABLE `SubjectSetting` ADD CONSTRAINT `SubjectSetting_subjectId_fkey` FOREIGN KEY (`subjectId`) REFERENCES `Subject`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
-<<<<<<< HEAD
-INSERT INTO `swp`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Administrator', 'ADMIN');
-INSERT INTO `swp`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Subject Manager', 'SUBJECT_MANAGER');
-INSERT INTO `swp`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Class Manager', 'CLASS_MAMAGER');
-INSERT INTO `swp`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Mentor', 'MENTOR');
-INSERT INTO `swp`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Student', 'STUDENT');
-INSERT INTO `swp`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'fpt.edu.vn', 'fpt.edu.vn');
-INSERT INTO `swp`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Confirmed`, `Blocked`, `ConfirmToken`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K', '0', '0', '2167d991d3fc472c75ceeeaf87886eb06be2e1e55a21c15fdbecbcf1501f0d6f', 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
-=======
 INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Administrator', 'ADMIN');
 INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Subject Manager', 'SUBJECT_MANAGER');
 INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Class Manager', 'CLASS_MAMAGER');
@@ -97,10 +88,5 @@ INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Student',
 INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'fpt.edu.vn', 'fpt.edu.vn');
 INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'gmail.com', 'gmail.com');
 
-<<<<<<< HEAD
-INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Confirmed`, `Blocked`, `ConfirmToken`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K', '0', '0', '2167d991d3fc472c75ceeeaf87886eb06be2e1e55a21c15fdbecbcf1501f0d6f', 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
->>>>>>> b5b01044922cb37a9e668c32f11c7e63427f5006
-=======
 INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Confirmed`, `Blocked`, `ConfirmToken`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K', '1', '0', '', 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
->>>>>>> a6a0e97137040ad0824e2544217ff41cfc8581f6
 

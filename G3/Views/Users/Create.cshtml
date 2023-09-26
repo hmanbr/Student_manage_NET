@@ -1,0 +1,105 @@
+﻿@model G3.Models.User
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<div class="container bootstrap snippets bootdey">
+    <h1 class="text-primary">Create a new user</h1>
+    <hr>
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-3">
+                <div class="text-center">
+                    <input asp-for="Avatar" type="hidden" value="https://img.freepik.com/premium-vector/account-icon-user-icon-vector-graphics_292645-552.jpg" />
+                    <img src="https://img.freepik.com/premium-vector/account-icon-user-icon-vector-graphics_292645-552.jpg" alt="avatar"
+                         class="rounded-circle img-fluid" style="width: 150px;">
+                    <h6>Upload a different photo...</h6>
+                    <input name="AvatarFile" type="file" accept="image/*" />
+                    <span asp-validation-for="Avatar" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Domain:</label>
+                    <div class="col-lg-12">
+                        <select asp-for="DomainSettingId" class="form-control" asp-items="ViewBag.DomainSettingId"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Role:</label>
+                    <div class="col-lg-12">
+                        <select asp-for="RoleSettingId" class="form-control" asp-items="ViewBag.RoleSettingId"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Gender:</label>
+                    <div class="col-lg-12">
+                        <div class="ui-select">
+                            <select asp-for="Gender" id="user_time_zone" class="form-control">
+                                <option asp-for="Gender" value=@true>Male</option>
+                                <option asp-for="Gender" value=@false>Female</option>
+                            </select>
+                            <span asp-validation-for="Gender" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- edit form column -->
+            <div class="col-md-9 personal-info">
+                <div class="alert alert-info alert-dismissable">
+                    <a class="panel-close close" data-dismiss="alert">×</a>
+                    <i class="fa fa-coffee"></i>
+                    Default password is 123
+                </div>
+                <h3>Personal info</h3>
+                <div class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Full name:</label>
+                        <div class="col-lg-12">
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Date of birth:</label>
+                        <div class="col-lg-12">
+                            <input asp-for="DateOfBirth" class="form-control" type="date" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Phone:</label>
+                        <div class="col-lg-12">
+                            <input asp-for="Phone" class="form-control" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Address:</label>
+                        <div class="col-lg-12">
+                            <input asp-for="Address" class="form-control" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Email:</label>
+                        <div class="col-lg-12">
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <input asp-for="Hash" class="form-control" type="hidden" value="123" />
+                    <div class="form-group" align="center">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <a asp-action="Index" class="btn btn-outline-primary">Back to list</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
