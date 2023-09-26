@@ -12,6 +12,7 @@ namespace G3.Controllers
             _context = context;
         }
 
+        [Route("/")]
         [Route("/Admin/AdminHome")]
         public IActionResult AdminHome()
         {
