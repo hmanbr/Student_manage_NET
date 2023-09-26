@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Controller;
 
 namespace G3.Controllers
 {
@@ -28,7 +31,6 @@ namespace G3.Controllers
             {
                 return NotFound();
             }
-
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
@@ -40,8 +42,6 @@ namespace G3.Controllers
             ViewData["RoleSettingId"] = new SelectList(RoleSettings, "SettingId", "Value");
             return View("/Views/Users/Details.cshtml", user);
         }
-        // GET: Users/Details/5
-
 
         [HttpGet]
         [Route("/Admin/Create")]
