@@ -1,17 +1,21 @@
-using G3;
-using G3.Services;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+
 builder.Services.AddControllersWithViews();
+
+
 
 builder.Services.AddDbContext<SWPContext>(options => new SWPContext());
 
 builder.Services.AddSingleton<IMailService, MailService>();
 builder.Services.AddSingleton<IHashService, HashService>();
 
-builder.Services.AddSession(options =>
-{
+builder.Services.AddSession(options => {
     options.Cookie.Name = "SessionCookie";
     options.IdleTimeout = TimeSpan.FromDays(1);
     options.Cookie.HttpOnly = true;
@@ -20,8 +24,7 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-{
+if (!app.Environment.IsDevelopment()) {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
