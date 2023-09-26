@@ -40,9 +40,9 @@ namespace G3.Controllers
             {
                 return NotFound();
             }
-			settingFromDB.IsActive = !settingFromDB.IsActive;
-			_context.SaveChanges();
-			return RedirectToAction("RolesList");
+            settingFromDB.IsActive = !settingFromDB.IsActive;
+            _context.SaveChanges();
+            return RedirectToAction("RolesList");
         }
 
         //POST
