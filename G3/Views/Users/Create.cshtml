@@ -10,6 +10,10 @@
     <hr>
     <form asp-action="Create" method="post" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <input type="hidden" asp-for="CreatedAt" value=@DateTime.Now />
+        <input type="hidden" asp-for="UpdatedAt" value=@DateTime.Now />
+
         <div class="row">
             <!-- left column -->
             <div class="col-md-3">
@@ -21,19 +25,19 @@
                     <input name="AvatarFile" type="file" accept="image/*" />
                     <span asp-validation-for="Avatar" class="text-danger"></span>
                 </div>
-
                 <div class="form-group">
                     <label class="col-lg-3 control-label">Domain:</label>
                     <div class="col-lg-12">
-                        <select asp-for="DomainSettingId" class="form-control" asp-items="ViewBag.DomainSettingId"></select>
+                        <select class="form-control" asp-for="DomainSettingId" asp-items="ViewBag.DomainSettingId"></select>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-lg-3 control-label">Role:</label>
                     <div class="col-lg-12">
-                        <select asp-for="RoleSettingId" class="form-control" asp-items="ViewBag.RoleSettingId"></select>
+                        <select class="form-control" asp-for="RoleSettingId" asp-items="ViewBag.RoleSettingId"></select>
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label class="col-lg-3 control-label">Gender:</label>
                     <div class="col-lg-12">
