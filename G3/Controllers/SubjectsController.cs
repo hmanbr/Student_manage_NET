@@ -35,7 +35,7 @@ namespace G3.Controllers
             var SearchQuery = from x in _context.Subjects select x;
             if (!String.IsNullOrEmpty(search))
             {
-                SearchQuery = SearchQuery.Where(x => x.SubjectCode.Contains(search));
+                SearchQuery = SearchQuery.Where(x => x.SubjectCode.Contains(search)).Include(m => m.Mentor);
             }
             return View(await SearchQuery.ToListAsync());
         }

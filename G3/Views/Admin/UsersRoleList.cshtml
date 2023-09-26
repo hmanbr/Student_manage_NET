@@ -1,0 +1,50 @@
+﻿@model IEnumerable<G3.Models.User>
+
+@{
+	ViewData["Title"] = "UsersRoleList";
+	Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<h1>UsersRoleList</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				Name
+			</th>
+			<th>
+				Email
+			</th>
+			<th>
+				Date of birth
+			</th>
+			<th>
+				Role
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Name)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Email)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.DateOfBirth)
+				</td>
+				<td>
+					<span>@item.RoleSetting.Name</span>
+				</td>
+				<td>
+					<a asp-controller="Admin" asp-action="UsersRoleEdit" asp-route-id="@item.Id">Edit</a> |
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
