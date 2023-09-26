@@ -1,0 +1,17 @@
+﻿body {
+
+
+
+}
+
+.banner {
+
+    width: 115%;
+    height: 90vh;
+    background-image: url(/img/notes-1076583.jpg);
+    background-size: cover;
+    background-position: center;
+    animation: change 10s infinite step-end;
+    margin-top: -25px;
+    margin-left: -15px;
+}
