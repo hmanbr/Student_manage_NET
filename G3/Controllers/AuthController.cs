@@ -3,6 +3,7 @@ using G3.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Policy;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace G3.Controllers {
     [Route("/auth")]
@@ -95,7 +96,9 @@ namespace G3.Controllers {
 
             }
 
-            string userJsonString = JsonSerializer.Serialize(user!);
+            string userJsonString = JsonSerializer.Serialize(user!, new JsonSerializerOptions() {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles
+            });
             HttpContext.Session.SetString("User", userJsonString);
 
             return RedirectToAction("AdminHome", "Admin");
@@ -225,7 +228,9 @@ namespace G3.Controllers {
                 return View();
             }
 
-            string userJsonString = JsonSerializer.Serialize(user!);
+            string userJsonString = JsonSerializer.Serialize(user!,new JsonSerializerOptions() {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles
+            });
             HttpContext.Session.SetString("User", userJsonString);
             return View("Views/Admin/AdminHome.cshtml");
             //return RedirectToAction("AdminHome", "Admin");
