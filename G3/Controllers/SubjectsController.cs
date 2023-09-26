@@ -19,30 +19,33 @@ namespace G3.Controllers
         }
 
         // GET: Subjects
-        [Route("/Subjects/Index")]
-        public async Task<IActionResult> Index()
+        [Route("/Subjects/ListSubject")]
+        public async Task<IActionResult> SubjectList()
         {
             var sWPContext = _context.Subjects.Include(m => m.Mentor);
-            
-           
+
+
             return View(await sWPContext.ToListAsync());
         }
-        [Route("/Subjects/Index")]
+        [Route("/Subjects/ListSubject")]
         [HttpPost]
-        public async Task<IActionResult> Index(string search)
+        public async Task<IActionResult> SubjectList(string search)
         {
             ViewData["search"] = search;
             var SearchQuery = from x in _context.Subjects select x;
+            
             if (!String.IsNullOrEmpty(search))
             {
                 SearchQuery = SearchQuery.Where(x => x.SubjectCode.Contains(search)).Include(m => m.Mentor);
+                 
             }
+            
             return View(await SearchQuery.ToListAsync());
         }
 
         // GET: Subjects/Details/5
         [Route("/Subjects/Details")]
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> SubjectDetails(int? id)
         {
             if (id == null || _context.Subjects == null)
             {
@@ -62,7 +65,7 @@ namespace G3.Controllers
 
         // GET: Subjects/Create
         [Route("/Subjects/Create")]
-        public IActionResult Create()
+        public IActionResult SubjectCreate()
         {
             ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
@@ -74,7 +77,7 @@ namespace G3.Controllers
         [Route("/Subjects/Create")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,SubjectCode,Name,Status,MentorId")] Subject s)
+        public async Task<IActionResult> SubjectCreate([Bind("Id,SubjectCode,Name,Status,MentorId")] Subject s)
         {
             if (_context.Subjects.Any(p => p.SubjectCode == s.SubjectCode))
             {
@@ -85,14 +88,14 @@ namespace G3.Controllers
             }
             _context.Add(s);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(SubjectList));
             
             
         }
 
         // GET: Subjects/Edit/5
         [Route("/Subjects/Edit")]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> SubjectEdit(int? id)
         {
             if (id == null || _context.Subjects == null)
             {
@@ -114,7 +117,7 @@ namespace G3.Controllers
         [Route("/Subjects/Edit")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,SubjectCode,Name,Status,MentorId")] Subject subject)
+        public async Task<IActionResult> SubjectEdit(int id, [Bind("Id,SubjectCode,Name,Status,MentorId")] Subject subject)
         {
             if (id != subject.Id)
             {
@@ -148,12 +151,12 @@ namespace G3.Controllers
                 }
             }
             //ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id", subject.MentorId);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(SubjectList));
         }
 
         // GET: Subjects/Delete/5
         [Route("/Subjects/Delete")]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> SubjectDelete(int? id)
         {
             if (id == null || _context.Subjects == null)
             {
@@ -188,7 +191,7 @@ namespace G3.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(SubjectList));
         }
 
         private bool SubjectExists(int id)

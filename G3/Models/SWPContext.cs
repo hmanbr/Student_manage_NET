@@ -18,13 +18,14 @@ namespace G3.Models
 
         public virtual DbSet<Setting> Settings { get; set; } = null!;
         public virtual DbSet<Subject> Subjects { get; set; } = null!;
-        public virtual DbSet<SubjectSetting> SubjectSettings { get; set; } = null!;
+        public virtual DbSet<Subjectsetting> Subjectsettings { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseMySQL("server=localhost;uid=root;pwd=123456789;database=SWP");
             }
         }
@@ -33,7 +34,7 @@ namespace G3.Models
         {
             modelBuilder.Entity<Setting>(entity =>
             {
-                entity.ToTable("Setting", "SWP");
+                entity.ToTable("setting");
 
                 entity.HasIndex(e => e.SettingId, "Setting_SettingId_idx");
 
@@ -55,7 +56,7 @@ namespace G3.Models
 
             modelBuilder.Entity<Subject>(entity =>
             {
-                entity.ToTable("Subject", "SWP");
+                entity.ToTable("subject");
 
                 entity.HasIndex(e => e.MentorId, "Subject_MentorId_fkey");
 
@@ -74,9 +75,9 @@ namespace G3.Models
                     .HasConstraintName("Subject_MentorId_fkey");
             });
 
-            modelBuilder.Entity<SubjectSetting>(entity =>
+            modelBuilder.Entity<Subjectsetting>(entity =>
             {
-                entity.ToTable("SubjectSetting", "SWP");
+                entity.ToTable("subjectsetting");
 
                 entity.HasIndex(e => e.SubjectId, "SubjectSetting_subjectId_fkey");
 
@@ -93,7 +94,7 @@ namespace G3.Models
                 entity.Property(e => e.Value).HasMaxLength(191);
 
                 entity.HasOne(d => d.Subject)
-                    .WithMany(p => p.SubjectSettings)
+                    .WithMany(p => p.Subjectsettings)
                     .HasForeignKey(d => d.SubjectId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("SubjectSetting_subjectId_fkey");
@@ -101,7 +102,7 @@ namespace G3.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("User", "SWP");
+                entity.ToTable("user");
 
                 entity.HasIndex(e => e.DomainSettingId, "User_DomainSettingId_fkey");
 
