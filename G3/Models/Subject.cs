@@ -7,7 +7,7 @@ namespace G3.Models
     {
         public Subject()
         {
-            SubjectSettings = new HashSet<SubjectSetting>();
+            Subjectsettings = new HashSet<Subjectsetting>();
         }
 
         public int Id { get; set; }
@@ -17,6 +17,6 @@ namespace G3.Models
         public int MentorId { get; set; }
 
         public virtual User Mentor { get; set; } = null!;
-        public virtual ICollection<SubjectSetting> SubjectSettings { get; set; }
+        public virtual ICollection<Subjectsetting> Subjectsettings { get; set; }
     }
 }
