@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Controller;
@@ -61,29 +62,66 @@ namespace G3.Controllers
         {
             if (ModelState.IsValid)
             {
-                var uploadedFile = HttpContext.Request.Form.Files["AvatarFile"];
-                if (uploadedFile != null && uploadedFile.Length > 0)
+                //Check if there is another user that use the same email.
+                var isEmailInUse = _context.Users.Any(u => u.Email == user.Email);
+                if (isEmailInUse)
                 {
-                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "avatars");
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + uploadedFile.FileName;
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await uploadedFile.CopyToAsync(fileStream);
-                    }
-
-                    user.Avatar = "/avatars/" + uniqueFileName;
+                    var DomainSettings = _context.Settings.Where(ds => ds.Type == "DOMAIN").ToList();
+                    ViewData["DomainSettingId"] = new SelectList(DomainSettings, "SettingId", "Value");
+                    var RoleSettings = _context.Settings.Where(rs => rs.Type == "ROLE").ToList();
+                    ViewData["RoleSettingId"] = new SelectList(RoleSettings, "SettingId", "Value");
+                    ViewData["ErrorMessage"] = new String("This email has been used.");
+                    return View(user);
                 }
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            var DomainSettings = _context.Settings.Where(ds => ds.Type == "DOMAIN").ToList();
-            ViewData["DomainSettingId"] = new SelectList(DomainSettings, "SettingId", "Value");
-            var RoleSettings = _context.Settings.Where(rs => rs.Type == "ROLE").ToList();
-            ViewData["RoleSettingId"] = new SelectList(RoleSettings, "SettingId", "Value");
+                else
+                {
+                    IFormFile avatarFile = Request.Form.Files["AvatarFile"];
+                    if (avatarFile != null && avatarFile.Length > 0)
+                    {
+                        string avatarPath = Path.Combine(_webHostEnvironment.WebRootPath, "avatars");
 
+                        if (!Directory.Exists(avatarPath))
+                        {
+                            Directory.CreateDirectory(avatarPath);
+                        }
+
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(avatarFile.FileName);
+
+                        string filePath = Path.Combine(avatarPath, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await avatarFile.CopyToAsync(stream);
+                        }
+                        user.Avatar = "/avatars/" + fileName;
+                    }
+                    try
+                    {
+                        _context.Update(user);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!UserExists(user.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            else
+            {
+                var DomainSettings = _context.Settings.Where(ds => ds.Type == "DOMAIN").ToList();
+                ViewData["DomainSettingId"] = new SelectList(DomainSettings, "SettingId", "Value");
+                var RoleSettings = _context.Settings.Where(rs => rs.Type == "ROLE").ToList();
+                ViewData["RoleSettingId"] = new SelectList(RoleSettings, "SettingId", "Value");
+                return View(user);
+            }
 
             return View("/Views/Users/Create.cshtml", user);
         }
@@ -120,47 +158,66 @@ namespace G3.Controllers
             }
             if (ModelState.IsValid)
             {
-                IFormFile avatarFile = Request.Form.Files["AvatarFile"];
-                if (avatarFile != null && avatarFile.Length > 0)
+                //Check if there is another user that use the same email.
+                var isEmailInUse = _context.Users.Any(u => u.Email == user.Email && u.Id != id);
+                if (isEmailInUse)
                 {
-                    string avatarPath = Path.Combine(_webHostEnvironment.WebRootPath, "avatars");
-
-                    if (!Directory.Exists(avatarPath))
-                    {
-                        Directory.CreateDirectory(avatarPath);
-                    }
-
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(avatarFile.FileName);
-
-                    string filePath = Path.Combine(avatarPath, fileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await avatarFile.CopyToAsync(stream);
-                    }
-                    user.Avatar = "/avatars/" + fileName;
+                    var DomainSettings = _context.Settings.Where(ds => ds.Type == "DOMAIN").ToList();
+                    ViewData["DomainSettingId"] = new SelectList(DomainSettings, "SettingId", "Value");
+                    var RoleSettings = _context.Settings.Where(rs => rs.Type == "ROLE").ToList();
+                    ViewData["RoleSettingId"] = new SelectList(RoleSettings, "SettingId", "Value");
+                    ViewData["ErrorMessage"] = new String("This email has been used.");
+                    return View(user);
                 }
-                try
+                else
                 {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserExists(user.Id))
+                    IFormFile avatarFile = Request.Form.Files["AvatarFile"];
+                    if (avatarFile != null && avatarFile.Length > 0)
                     {
-                        return NotFound();
+                        string avatarPath = Path.Combine(_webHostEnvironment.WebRootPath, "avatars");
+
+                        if (!Directory.Exists(avatarPath))
+                        {
+                            Directory.CreateDirectory(avatarPath);
+                        }
+
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(avatarFile.FileName);
+
+                        string filePath = Path.Combine(avatarPath, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await avatarFile.CopyToAsync(stream);
+                        }
+                        user.Avatar = "/avatars/" + fileName;
                     }
-                    else
+                    try
                     {
-                        throw;
+                        _context.Update(user);
+                        await _context.SaveChangesAsync();
                     }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!UserExists(user.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    return RedirectToAction(nameof(Index)); 
                 }
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["DomainSettingId"] = new SelectList(_context.Settings, "SettingId", "SettingId", user.DomainSettingId);
-            ViewData["RoleSettingId"] = new SelectList(_context.Settings, "SettingId", "SettingId", user.RoleSettingId);
-            return View(user);
+            else
+            {
+                var DomainSettings = _context.Settings.Where(ds => ds.Type == "DOMAIN").ToList();
+                ViewData["DomainSettingId"] = new SelectList(DomainSettings, "SettingId", "Value");
+                var RoleSettings = _context.Settings.Where(rs => rs.Type == "ROLE").ToList();
+                ViewData["RoleSettingId"] = new SelectList(RoleSettings, "SettingId", "Value");
+                return View(user); 
+            }
         }
 
         [HttpPost]

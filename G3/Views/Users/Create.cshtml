@@ -55,10 +55,27 @@
 
             <!-- edit form column -->
             <div class="col-md-9 personal-info">
-                <div class="alert alert-info alert-dismissable">
+                <div class="alert alert-info alert-dismissable" id="alert-message" style="@((ViewData.ModelState.IsValid && (ViewData["ErrorMessage"] == null)) ? "display: none;" : "")">
                     <a class="panel-close close" data-dismiss="alert">×</a>
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <span asp-validation-for="Id" class="text-danger"></span>
+                        <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                        <span asp-validation-for="UpdatedAt" class="text-danger"></span>
+                        <span asp-validation-for="Hash" class="text-danger"></span>
+                        <span asp-validation-for="Confirmed" class="text-danger"></span>
+                        <span asp-validation-for="Blocked" class="text-danger"></span>
+                        <span asp-validation-for="Gender" class="text-danger"></span>
+                        <span asp-validation-for="RoleSettingId" class="text-danger"></span>
+                        <span asp-validation-for="DomainSettingId" class="text-danger"></span>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    }
+                    else if (ViewData["ErrorMessage"] != null)
+                    {
+                        <span class="text-danger">@ViewData["ErrorMessage"]</span>
+                    }
                     <i class="fa fa-coffee"></i>
-                    Default password is 123
                 </div>
                 <h3>Personal info</h3>
                 <div class="form-horizontal" role="form">
