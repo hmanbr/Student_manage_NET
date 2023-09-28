@@ -12,7 +12,8 @@ namespace G3.Controllers
             _context = context;
         }
 
-        [Route("/")]
+        
+        [Route("/Admin/AdminHome")]
         public IActionResult AdminHome()
         {
             return View();
@@ -39,9 +40,9 @@ namespace G3.Controllers
             {
                 return NotFound();
             }
-			settingFromDB.IsActive = !settingFromDB.IsActive;
-			_context.SaveChanges();
-			return RedirectToAction("RolesList");
+            settingFromDB.IsActive = !settingFromDB.IsActive;
+            _context.SaveChanges();
+            return RedirectToAction("RolesList");
         }
 
         //POST
