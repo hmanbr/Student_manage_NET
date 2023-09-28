@@ -1,4 +1,4 @@
-﻿@model G3.Models.User
+﻿@model G3.Models.UserSettingViewModel
 
 @{
     ViewData["Title"] = "UsersRoleEdit";
@@ -11,30 +11,35 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="UsersRoleEdit">
+        <form method="post" asp-action="UsersRoleEdit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="User.Id" />
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" disabled/>
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="User.Name" class="control-label"></label>
+                <input asp-for="User.Name" value="@Model.User.Name" class="form-control" readonly />
+                <span asp-validation-for="User.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" disabled />
-                <span asp-validation-for="Email" class="text-danger"></span>
+                <label asp-for="User.Email" class="control-label"></label>
+                <input asp-for="User.Email" value="@Model.User.Email" class="form-control" readonly />
+                <span asp-validation-for="User.Email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DateOfBirth" class="control-label"></label>
-                <input asp-for="DateOfBirth" class="form-control" disabled />
-                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                <label asp-for="User.DateOfBirth" value="User.DateOfBirth" class="control-label"></label>
+                <input asp-for="User.DateOfBirth" value="@Model.User.DateOfBirth" class="form-control" readonly />
+                <span asp-validation-for="User.DateOfBirth" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="RoleSettingId" class="control-label"></label>
-                <select asp-for="RoleSettingId" class="form-control" asp-items="ViewBag.RoleSettingId"></select>
-                <span asp-validation-for="RoleSettingId" class="text-danger"></span>
+                <label asp-for="User.RoleSettingId" class="control-label"></label>
+                <select asp-for="User.RoleSettingId" class="form-control">
+                    @foreach (var setting in Model.Settings) // Replace ViewBag.AllSettings with your model property if applicable
+                    {
+                        <option value="@setting.SettingId">@setting.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="User.RoleSettingId" class="text-danger"></span>
             </div>
-            
+            <input type="hidden" asp-for="Settings" value="" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -43,7 +48,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="UsersRoleList">Back to List</a>
 </div>
 
 @section Scripts {

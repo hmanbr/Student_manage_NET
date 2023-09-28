@@ -2,7 +2,7 @@
 
 namespace G3.Controllers
 {
-    [AuthActionFilter]
+    /*[AuthActionFilter]*/
     public class AdminController : Controller
     {
         private readonly SWPContext _context;
@@ -12,7 +12,7 @@ namespace G3.Controllers
             _context = context;
         }
 
-        
+
         [Route("/Admin/AdminHome")]
         public IActionResult AdminHome()
         {
@@ -107,29 +107,39 @@ namespace G3.Controllers
             }
 
             var user = await _context.Users.FindAsync(id);
+            var settings = await _context.Settings.Where(s => s.Type == "ROLE") // Filter settings where Type is "ROLE"
+                                                  .ToListAsync();
             if (user == null)
             {
                 return NotFound();
             }
+            UserSettingViewModel userSettingViewModel = new UserSettingViewModel()
+            {
+                User = user,
+                Settings = settings
+            };
 
             // Pass the list to the view.
-            return View("/Views/Admin/UsersRoleEdit.cshtml", user);
+            return View("/Views/Admin/UsersRoleEdit.cshtml", userSettingViewModel);
         }
 
         [Route("/Admin/UsersRoleEdit")]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<IActionResult> UsersRoleEdit(User obj)
+        public async Task<IActionResult> UsersRoleEdit(UserSettingViewModel obj)
         {
-            if (ModelState.IsValid)
+            var user = _context.Users.Find(obj.User.Id);
+            if (user != null)
             {
-                _context.Users.Update(obj);
+                user.RoleSettingId = obj.User.RoleSettingId;
                 _context.SaveChanges();
-                //TempData["success"] = "Category update successfully";
-
-                return RedirectToAction("UsersRoleList");
             }
-            return View("UsersRoleEdit", obj);
+
+            //TempData["success"] = "Category update successfully";
+
+            return RedirectToAction("UsersRoleList");
+
+            //return View("UsersRoleEdit", obj);
         }
     }
 }
