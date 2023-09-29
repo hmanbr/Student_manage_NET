@@ -29,6 +29,51 @@
                     <span asp-validation-for="Avatar" class="text-danger"></span>
                 </div>
                 <div class="form-group">
+                    <label asp-for="Blocked" class="col-lg-3 form-check-inline form-check-label">Blocked:</label>
+                    <div class="form-check form-check-inline float-lg-right">
+                        <input asp-for="Blocked" class="form-check-input" type="radio" id="blocked-no" value=@false />
+                        <label asp-for="Blocked" class="form-check-label" for="blocked-no">
+                            No
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline float-lg-right">
+                        <input asp-for="Blocked" class="form-check-input" type="radio" id="blocked-yes" value=@true />
+                        <label asp-for="Blocked" class="form-check-label" for="blocked-yes">
+                            Yes
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Confirmed" class="col-lg-3 form-check-inline form-check-label">Confirmed:</label>
+                    <div class="form-check form-check-inline float-lg-right">
+                        <input asp-for="Confirmed" class="form-check-input" type="radio" id="confirmed-no" value=@false />
+                        <label asp-for="Confirmed" class="form-check-label" for="confirmed-no">
+                            No
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline float-lg-right">
+                        <input asp-for="Confirmed" class="form-check-input" type="radio" id="confirmed-yes" value=@true />
+                        <label asp-for="Confirmed" class="form-check-label" for="confirmed-yes">
+                            Yes
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Gender" class="col-lg-3 form-check-inline form-check-label">Gender:</label>
+                    <div class="form-check form-check-inline float-lg-right">
+                        <input asp-for="Gender" class="form-check-input" type="radio" id="blocked-no" value=@false />
+                        <label asp-for="Gender" class="form-check-label" for="blocked-no">
+                            Female
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline float-lg-right">
+                        <input asp-for="Gender" class="form-check-input" type="radio" id="blocked-yes" value=@true />
+                        <label asp-for="Gender" class="form-check-label" for="blocked-yes">
+                            Male
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label asp-for="DomainSettingId" class="col-lg-3 control-label">Domain:</label>
                     <div class="col-lg-12">
                         <select asp-for="DomainSettingId" class="form-control" asp-items="ViewBag.DomainSettingId"></select>
@@ -41,43 +86,6 @@
                         <select asp-for="RoleSettingId" class="form-control" asp-items="ViewBag.RoleSettingId"></select>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label asp-for="Gender" class="col-lg-3 control-label">Gender:</label>
-                    <div class="col-lg-12">
-                        <div class="ui-select">
-                            <select asp-for="Gender" id="user_time_zone" class="form-control">
-                                <option asp-for="Gender" value=@true>Male</option>
-                                <option asp-for="Gender" value=@false>Female</option>
-                            </select>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Blocked" class="col-lg-3 control-label">Blocked:</label>
-                    <div class="col-lg-12">
-                        <div class="ui-select">
-                            <select asp-for="Blocked" id="user_time_zone" class="form-control">
-                                <option asp-for="Blocked" value=@true>Yes</option>
-                                <option asp-for="Blocked" value=@false>No</option>
-                            </select>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Confirmed" class="col-lg-3 control-label">Confirmed:</label>
-                    <div class="col-lg-12">
-                        <div class="ui-select">
-                            <select asp-for="Confirmed" id="user_time_zone" class="form-control">
-                                <option asp-for="Confirmed" value=@true>Yes</option>
-                                <option asp-for="Confirmed" value=@false>No</option>
-                            </select>
-
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
             <!-- edit form column -->
