@@ -2,7 +2,7 @@
 
 namespace G3.Controllers
 {
-    /*[AuthActionFilter]*/
+    [AuthActionFilter]
     public class AdminController : Controller
     {
         private readonly SWPContext _context;

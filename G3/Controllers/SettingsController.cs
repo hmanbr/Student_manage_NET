@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace G3.Controllers
 {
+    [AuthActionFilter]
     public class SettingsController : Controller
     {
         private readonly SWPContext _context;

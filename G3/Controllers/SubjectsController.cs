@@ -9,6 +9,8 @@ using G3.Models;
 
 namespace G3.Controllers
 {
+    [AuthActionFilter]
+    
     public class SubjectsController : Controller
     {
         private readonly SWPContext _context;
@@ -67,7 +69,7 @@ namespace G3.Controllers
         [Route("/Subjects/Create")]
         public IActionResult SubjectCreate()
         {
-            ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Name");
             return View();
         }
 
