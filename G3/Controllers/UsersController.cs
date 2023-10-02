@@ -22,6 +22,7 @@ namespace G3.Controllers
         public async Task<IActionResult> Index()
         {
             var sWPContext = _context.Users.Include(u => u.DomainSetting).Include(u => u.RoleSetting);
+            //var n = _context.Users.Count();
             return View("/Views/Users/Index.cshtml", await sWPContext.ToListAsync());
         }
 

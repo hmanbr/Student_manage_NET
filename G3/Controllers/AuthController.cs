@@ -74,22 +74,20 @@ namespace G3.Controllers {
                 return RedirectToAction(nameof(SignIn), "Auth");
             }
 
-            if (user != null && user.Confirmed) {
-                ViewBag.AlertMessage = "Email already used";
-                return RedirectToAction(nameof(SignIn), "Auth");
-            }
-
             Setting? roleSetting = _context.Settings.FirstOrDefault(setting => setting.Type == "ROLE" && setting.Value == "STUDENT");
             if (roleSetting == null) {
                 ViewBag.AlertMessage = "Student Role Not Found";
                 return View();
             }
+
+            string mailAddress = mailService.GetAddress(email);
             if (user == null) {
                 user = new() {
                     Email = email,
                     DomainSettingId = domainSetting.SettingId,
                     RoleSettingId = roleSetting.SettingId,
                     Name = mailService.GetAddress(email)!,
+                    Confirmed = true
                 };
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
@@ -292,7 +290,7 @@ namespace G3.Controllers {
         [Route("reset-password/{token}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword([Bind("Passsword,ConfirmPassword")] ResetPasswordDto dto, [FromServices] IHashService hashService, string token) {
+        public async Task<IActionResult> ResetPassword([Bind("Password,ConfirmPassword")] ResetPasswordDto dto, [FromServices] IHashService hashService, string token) {
             if (!ModelState.IsValid) return View();
 
             if (dto.Password != dto.ConfirmPassword) {

@@ -62,7 +62,7 @@ namespace G3.Services {
 
         public string? GetAddress(string email) {
             try {
-                return new System.Net.Mail.MailAddress(email).Address;
+                return new System.Net.Mail.MailAddress(email).User;
             } catch (FormatException) {
                 return null;
             }
