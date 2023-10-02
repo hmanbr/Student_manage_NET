@@ -2,7 +2,7 @@
 
 namespace G3.Controllers
 {
-    /*[AuthActionFilter]*/
+    [AuthActionFilter]
     public class AdminController : Controller
     {
         private readonly SWPContext _context;
@@ -128,18 +128,20 @@ namespace G3.Controllers
         [HttpPost]
         public async Task<IActionResult> UsersRoleEdit(UserSettingViewModel obj)
         {
-            var user = _context.Users.Find(obj.User.Id);
-            if (user != null)
+            if (ModelState.IsValid)
             {
-                user.RoleSettingId = obj.User.RoleSettingId;
-                _context.SaveChanges();
+                var user = _context.Users.Find(obj.User.Id);
+                if (user != null)
+                {
+                    user.RoleSettingId = obj.User.RoleSettingId;
+                    _context.SaveChanges();
+                }
+
+                //TempData["success"] = "Category update successfully";
+
+                return RedirectToAction("UsersRoleList");
             }
-
-            //TempData["success"] = "Category update successfully";
-
-            return RedirectToAction("UsersRoleList");
-
-            //return View("UsersRoleEdit", obj);
+            return View("UsersRoleEdit", obj);
         }
     }
 }
