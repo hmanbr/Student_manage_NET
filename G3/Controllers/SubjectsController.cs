@@ -38,7 +38,7 @@ namespace G3.Controllers
             
             if (!String.IsNullOrEmpty(search))
             {
-                SearchQuery = SearchQuery.Where(x => x.SubjectCode.Contains(search)).Include(m => m.Mentor);
+                SearchQuery = SearchQuery.Where(x => x.SubjectCode.Contains(search) || x.Name.Contains(search)).Include(m => m.Mentor);
                  
             }
             

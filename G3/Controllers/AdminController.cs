@@ -49,10 +49,8 @@ namespace G3.Controllers
                 return NotFound();
             }
             var settingFromDB = _context.Settings.Find(id);
-            if (settingFromDB == null)
-            {
-                return NotFound();
-            }
+            if (settingFromDB == null) return NotFound();
+			
             settingFromDB.IsActive = !settingFromDB.IsActive;
             _context.SaveChanges();
             return RedirectToAction("RolesList");
