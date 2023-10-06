@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using G3.Models;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Drawing.Printing;
 
 namespace G3.Controllers
 {
@@ -22,14 +25,72 @@ namespace G3.Controllers
 
         // GET: Subjects
         [Route("/Subjects/ListSubject")]
-        public async Task<IActionResult> SubjectList()
-        {
-            var sWPContext = _context.Subjects.Include(m => m.Mentor);
+        public async Task<IActionResult> SubjectList(int page = 1, int pageSize = 5) {
+            var query = _context.Subjects.AsQueryable().Include(m => m.Mentor);
+            var totalItems = query.Count();
+
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            if (page < 1)
+            {
+                page = 1;
+                page = 1;
+            }
+            else if (page > totalPages)
+            {
+                page = totalPages;
+            }
+
+            var s = query
+                
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize).ToList();
+
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+
+            return View(s);
+
+            /*var sWPContext = _context.Subjects.Include(m => m.Mentor);
 
 
-            return View(await sWPContext.ToListAsync());
+            return View(await sWPContext.ToListAsync());*/
         }
+
         [Route("/Subjects/ListSubject")]
+        [HttpPost]
+        public async Task<IActionResult> SubjectList(string search, string SortBy)
+        {
+            ViewData["search"] = search;
+            var SearchQuery = from x in _context.Subjects select x;
+
+            if (SortBy == "ASC")
+            {
+                var SortQuery = _context.Subjects.OrderBy(x => x.SubjectCode).Include(m => m.Mentor);
+                return View(await SortQuery.ToListAsync());
+            }
+            else if (SortBy == "DESC")
+            {
+                var SortQuery = _context.Subjects.OrderByDescending(x => x.SubjectCode).Include(m => m.Mentor);
+                return View(await SortQuery.ToListAsync());
+            }
+
+            if (!String.IsNullOrEmpty(search))
+            {
+                SearchQuery = SearchQuery.Where(x => x.SubjectCode.Contains(search) || x.Name.Contains(search)).Include(m => m.Mentor);
+
+                return View(await SearchQuery.ToListAsync());
+            }
+            else
+            {
+                //var sWPContext = _context.Subjects.Include(m => m.Mentor);
+                return await SubjectList();
+
+            }
+        }
+        /*[Route("/Subjects/ListSubject")]
         [HttpPost]
         public async Task<IActionResult> SubjectList(string search)
         {
@@ -43,7 +104,7 @@ namespace G3.Controllers
             }
             
             return View(await SearchQuery.ToListAsync());
-        }
+        }*/
 
         // GET: Subjects/Details/5
         [Route("/Subjects/Details")]
@@ -109,7 +170,7 @@ namespace G3.Controllers
             {
                 return NotFound();
             }
-            ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id", subject.MentorId);
+            ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Name", subject.MentorId);
             return View(subject);
         }
 
@@ -156,7 +217,7 @@ namespace G3.Controllers
             return RedirectToAction(nameof(SubjectList));
         }
 
-        // GET: Subjects/Delete/5
+        /*// GET: Subjects/Delete/5
         [Route("/Subjects/Delete")]
         public async Task<IActionResult> SubjectDelete(int? id)
         {
@@ -174,25 +235,29 @@ namespace G3.Controllers
             }
 
             return View(subject);
-        }
+        }*/
 
         [Route("/Subjects/Delete")]
-        // POST: Subjects/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            if (_context.Subjects == null)
+            if (id == null)
             {
-                return Problem("Entity set 'SWPContext.Subjects'  is null.");
+                return NotFound();
             }
-            var subject = await _context.Subjects.FindAsync(id);
-            if (subject != null)
+
+            var product = await _context.Subjects
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (product == null)
             {
-                _context.Subjects.Remove(subject);
+                return NotFound();
             }
+
+            // Xóa sản phẩm và lưu thay đổi vào cơ sở dữ liệu
             
+            _context.Subjects.Remove(product);
             await _context.SaveChangesAsync();
+           
             return RedirectToAction(nameof(SubjectList));
         }
 

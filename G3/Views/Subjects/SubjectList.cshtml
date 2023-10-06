@@ -8,14 +8,7 @@
 
 <div class="container mt-5">
     
-    @*<form asp-action="Index" method="post">
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Nhập từ khóa tìm kiếm" name="search" value="@ViewData["search"]">
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-            </div>
-        </div>
-    </form>*@
+   
     <form asp-action="SubjectList" method="post" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
         <div class="input-group">
 
@@ -27,6 +20,22 @@
                 </button>
             </div>
         </div>
+    </form>
+
+
+</div>
+
+<div class="container mt-5 text-lg-right">
+    <form asp-action="SubjectList" method="post" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+        <div class="form-group">
+            <label for="SortBy">Sorted by Subject Code:</label>
+            <select class="form-control" id="SortBy" name="SortBy">
+
+                <option value="ASC">ascending</option>
+                <option value="DESC">decreasing</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Sort</button>
     </form>
 </div>
 <p>
@@ -78,9 +87,18 @@
             <td>
                     <a asp-action="SubjectEdit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="SubjectDetails" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="SubjectDelete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        @for (var i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            var isActive = i == ViewBag.CurrentPage ? "active" : "";
+            <li class="page-item @isActive"><a class="page-link" href="/Subjects/ListSubject?page=@i&pageSize=@ViewBag.PageSize">@i</a></li>
+        }
+    </ul>
+</nav>
