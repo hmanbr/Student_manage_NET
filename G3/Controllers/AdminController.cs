@@ -19,16 +19,29 @@ namespace G3.Controllers
             return View();
         }
 
-        [Route("/Admin/RolesList")]
-        public async Task<IActionResult> RolesList()
-        {
-            var settings = await _context.Settings.Where(setting => setting.Type == "ROLE").ToListAsync();
-            // Pass the list of settings to the view.
-            return View("/Views/Admin/RolesList.cshtml", settings);
-        }
 
-        //GET
-        [Route("/Admin/RolesEdit")]
+		[Route("/Admin/RolesList")]
+		public async Task<IActionResult> RolesList(string search) //this is a combanation of RoleList and SearchRole though GET
+		{
+			if (string.IsNullOrEmpty(search))
+			{
+				var settings = await _context.Settings.Where(setting => setting.Type == "ROLE").ToListAsync();
+				// Pass the list of settings to the view.
+				return View("/Views/Admin/RolesList.cshtml", settings);
+			}
+			else
+			{
+				var settings = await _context.Settings
+					.Where(setting => setting.Type == "ROLE" && setting.Name.Contains(search))
+					.ToListAsync();
+
+				// Pass the list of settings to the view.
+				return View("/Views/Admin/RolesList.cshtml", settings);
+			}
+		}
+
+		//GET
+		[Route("/Admin/RolesEdit")]
         public IActionResult Edit(int? id) //edit of system's roles, dont mistake for user edit
         {
             if (id == null || id == 0)
@@ -126,18 +139,22 @@ namespace G3.Controllers
         [HttpPost]
         public async Task<IActionResult> UsersRoleEdit(UserSettingViewModel obj)
         {
-            var user = _context.Users.Find(obj.User.Id);
-            if (user != null)
+            if (ModelState.IsValid)
             {
-                user.RoleSettingId = obj.User.RoleSettingId;
-                _context.SaveChanges();
+                var user = _context.Users.Find(obj.User.Id);
+                if (user != null)
+                {
+                    user.RoleSettingId = obj.User.RoleSettingId;
+                    _context.SaveChanges();
+                }
+
+                //TempData["success"] = "Category update successfully";
+
+                return RedirectToAction("UsersRoleList");
             }
-
-            //TempData["success"] = "Category update successfully";
-
-            return RedirectToAction("UsersRoleList");
-
-            //return View("UsersRoleEdit", obj);
+            return View("UsersRoleEdit", obj);
         }
+
+		
     }
 }

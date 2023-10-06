@@ -7,10 +7,14 @@
 
 <h1>Role List</h1>
 
-<p>
-	<a asp-action="RoleCreate">Create New</a>
-</p>
+<form method="get" asp-controller="Admin" asp-action="RolesList">
+	<div class="input-group col-lg-3 float-left">
+		<input type="text" class="form-control rounded" placeholder="Search" name="search" />
+		<input type="submit" value="Search" class="btn btn-outline-primary" />
+	</div>
+</form>
 
+<br>
 <table class="table table-bordered">
 	<thead>
 		<tr>
@@ -71,3 +75,7 @@
 		}
 	</tbody>
 </table>
+<p>
+	<a class="btn btn-outline-primary float-right" asp-action="RoleCreate">Create New</a>
+</p>
+
