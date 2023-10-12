@@ -1,10 +1,12 @@
 ﻿using G3.Dtos;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Drawing.Printing;
 
 namespace G3.Controllers
 {
-    [AuthActionFilter]
+    /*[AuthActionFilter]*/
     public class SettingsController : Controller
     {
         private readonly SWPContext _context;
@@ -23,6 +25,64 @@ namespace G3.Controllers
                         View(await _context.Settings.ToListAsync()) :
                         Problem("Entity set 'SWPContext.Settings'  is null.");
         }
+
+        [Route("/admin/listEmailDM")]
+        [HttpPost]
+        public async Task<IActionResult> Search_ListEmailDM(string search)
+        {
+            ViewData["searchString"] = search;
+            var email_name = from n in _context.Settings select n;
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                email_name = email_name.Where(n => n.Value.Contains(search));
+               
+            }
+            return View("Views/Settings/listEmailDM.cshtml", await email_name.ToArrayAsync());
+
+        }
+
+        [Route("/admin/Sort_listEmailDM")]
+        public async Task<IActionResult> Sort_ListEmailDM(string sortOrder)
+        {
+            ViewData["SortByValue"] = sortOrder;
+            var email_name = from n in _context.Settings select n;
+            var num_email = _context.Settings.ToList();
+
+            /* ViewData["SortByValue"] = String.IsNullOrEmpty(sortOrder) ? "sortValue" : "";
+             ViewData["SortByStatus"] = sortOrder == "Isactive" ? "status" : "status";
+
+             switch (sortOrder)
+             {
+
+                 case "sortValue":
+                     email_name = email_name.OrderBy(n => n.Value);
+                     break;
+                 case "status":
+                     email_name = email_name.OrderByDescending(n => n.IsActive);
+                     break;
+             }*/
+
+            ViewBag.TotalPage = Math.Ceiling(num_email.Count() / 3.0);
+
+            email_name = email_name.OrderBy(n => n.Value);
+
+            return View("Views/Settings/listEmailDM.cshtml", await email_name.ToArrayAsync());
+
+        }
+
+        [Route("/admin/SortST_listEmailDM")]
+        public async Task<IActionResult> SortST_ListEmailDM(string sortOrder)
+        {
+            ViewData["SortByStatus"] = sortOrder;
+            var email_name = from n in _context.Settings select n;
+
+            email_name = email_name.OrderBy(n => n.IsActive);
+
+            return View("Views/Settings/listEmailDM.cshtml", await email_name.ToArrayAsync());
+
+        }
+
 
         // GET: Settings/Details/5
         [Route("/admin/DetailsEmailDM")]
@@ -62,7 +122,13 @@ namespace G3.Controllers
             if (ModelState.IsValid)
             {
                 setting.Type = "DOMAIN";
-                setting.Value = setting.Name;
+
+                if (_context.Settings.Any(p=> p.Value == setting.Value))
+                {
+                    ViewData["exist"] = "The value already exists";
+                    return View();
+
+                }
 
                 _context.Add(setting);
                 await _context.SaveChangesAsync();
@@ -101,7 +167,8 @@ namespace G3.Controllers
             {
                 try
                 {
-                    setting.Value = setting.Name;
+
+
                     _context.Update(setting);
                     await _context.SaveChangesAsync();
                 }
@@ -164,5 +231,25 @@ namespace G3.Controllers
         {
             return (_context.Settings?.Any(e => e.SettingId == id)).GetValueOrDefault();
         }
+
+
+        [Route("/admin/editEmailDM_toggle")]
+        public IActionResult Edit_toggle(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            var settingFromDB = _context.Settings.Find(id);
+            if (settingFromDB == null)
+            {
+                return NotFound();
+            }
+            settingFromDB.IsActive = !settingFromDB.IsActive;
+            _context.SaveChanges();
+            return RedirectToAction("listEmailDM");
+        }
+
+
     }
 }
