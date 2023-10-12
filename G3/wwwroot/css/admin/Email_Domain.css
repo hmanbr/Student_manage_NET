@@ -1,2 +1,37 @@
 ﻿body {
 }
+
+a{
+    text-decoration:none;
+}
+
+a:hover{
+    text-decoration:none;
+}
+
+.cre_btn p a{
+    color:white;
+    margin-left:5px;
+}
+
+.cre_btn p{
+    background-color:red;
+    width:90px;
+    border-radius:10px;
+}
+
+.cre_btn p:hover{
+    background-color:darkred;
+}
+
+.search_email{
+    margin-left:120px;
+}
+
+.sort_btn{
+    margin-bottom:10px;
+}
+
+.form-check{
+    margin-left:-22px;
+}
