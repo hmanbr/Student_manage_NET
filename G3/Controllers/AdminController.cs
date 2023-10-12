@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Xml.Linq;
 
 namespace G3.Controllers
 {
@@ -88,9 +89,18 @@ namespace G3.Controllers
         {
             if (ModelState.IsValid)
             {
-                string[] words = obj.Name.Split(' ');
+				var existedSettings = _context.Settings
+					.Where(setting => setting.Type == "ROLE" && setting.Name.Contains(obj.Name))
+					.ToList();
+				if (existedSettings != null)
+				{
+					ModelState.AddModelError("Name", "The Name already existed in database");
+                    return View("/Views/Admin/RoleCreate.cshtml");
+				}
+
+				string[] words = obj.Name.Split(' ');
                 string value = string.Join("_", words).ToUpper();
-                obj.Value = value;
+				obj.Value = value;
                 obj.Type = "ROLE";
                 obj.IsActive = true;
                 _context.Settings.Add(obj);
