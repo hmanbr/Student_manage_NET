@@ -37,7 +37,7 @@ namespace G3.Controllers
 
             if (page < 1)
             {
-               
+               //test
                 page = 1;
             }
             else if (page > totalPages)
