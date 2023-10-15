@@ -124,7 +124,7 @@ CREATE TABLE `Project` (
 
 -- CreateTable
 CREATE TABLE `Milestone` (
-    `Id` INTEGER NOT NULL AUTO_INCREMENT,
+    `Id` INTEGER NOT NULL,
     `Iid` INTEGER NOT NULL,
     `ProjectId` INTEGER NOT NULL,
     `Title` VARCHAR(191) NOT NULL,
@@ -138,7 +138,7 @@ CREATE TABLE `Milestone` (
     `WebUrl` VARCHAR(191) NOT NULL,
     `ClassId` INTEGER NULL,
 
-    PRIMARY KEY (`Id`)
+    UNIQUE INDEX `Milestone_Id_key`(`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -152,9 +152,9 @@ CREATE TABLE `GitLabUser` (
     `WebUrl` VARCHAR(191) NOT NULL,
     `UserId` INTEGER NULL,
 
+    UNIQUE INDEX `GitLabUser_Id_key`(`Id`),
     UNIQUE INDEX `GitLabUser_Username_key`(`Username`),
-    UNIQUE INDEX `GitLabUser_UserId_key`(`UserId`),
-    PRIMARY KEY (`Id`)
+    UNIQUE INDEX `GitLabUser_UserId_key`(`UserId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -181,7 +181,7 @@ CREATE TABLE `Issue` (
     `CreatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `UpdatedAt` DATETIME(3) NOT NULL,
 
-    PRIMARY KEY (`Id`)
+    UNIQUE INDEX `Issue_Id_key`(`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
