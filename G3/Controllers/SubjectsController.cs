@@ -9,6 +9,8 @@ using G3.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System.Drawing.Printing;
+using MailKit.Search;
+using System.Xml.Linq;
 
 namespace G3.Controllers
 {
@@ -26,6 +28,8 @@ namespace G3.Controllers
         // GET: Subjects
         [Route("/Subjects/ListSubject")]
         public async Task<IActionResult> SubjectList(int page = 1, int pageSize = 5) {
+           
+
             var query = _context.Subjects.AsQueryable().Include(m => m.Mentor);
             var totalItems = query.Count();
 
@@ -33,7 +37,7 @@ namespace G3.Controllers
 
             if (page < 1)
             {
-                page = 1;
+               
                 page = 1;
             }
             else if (page > totalPages)
@@ -61,12 +65,33 @@ namespace G3.Controllers
 
         [Route("/Subjects/ListSubject")]
         [HttpPost]
-        public async Task<IActionResult> SubjectList(string search, string SortBy)
+        public async Task<IActionResult> SubjectList(string search, string SortBy, string Filter)
         {
             ViewData["search"] = search;
-            var SearchQuery = from x in _context.Subjects select x;
+            var Query = from s in _context.Subjects select s; 
 
+            if (!String.IsNullOrEmpty(search))
+            {
+                Query = Query.Where(x => x.SubjectCode.Contains(search) || x.Name.Contains(search)).Include(m => m.Mentor);
+
+            }
+
+            ViewData["Sort"] = SortBy;
             if (SortBy == "ASC")
+            {
+                 Query = Query.OrderBy(x => x.SubjectCode).Include(m => m.Mentor);
+                
+            }
+            else
+            {
+                Query = Query.OrderByDescending(x => x.SubjectCode).Include(m => m.Mentor);
+                
+            }
+           
+
+            return View(await Query.AsNoTracking().ToArrayAsync());
+
+            /*if (SortBy == "ASC")
             {
                 var SortQuery = _context.Subjects.OrderBy(x => x.SubjectCode).Include(m => m.Mentor);
                 return View(await SortQuery.ToListAsync());
@@ -88,7 +113,7 @@ namespace G3.Controllers
                 //var sWPContext = _context.Subjects.Include(m => m.Mentor);
                 return await SubjectList();
 
-            }
+            }*/
         }
         /*[Route("/Subjects/ListSubject")]
         [HttpPost]
@@ -130,7 +155,8 @@ namespace G3.Controllers
         [Route("/Subjects/Create")]
         public IActionResult SubjectCreate()
         {
-            ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Name");
+            /*var Role = _context.Users.Where(s => s.RoleSettingId == 2);*/
+            ViewData["MentorId"] = new SelectList(_context.Users.Where(s => s.RoleSettingId == 2), "Id", "Name");
             return View();
         }
 
@@ -146,14 +172,16 @@ namespace G3.Controllers
             {
                 ViewData["exist"] = "The subject code already exists";
                 ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Id");
+                
                 return View();
                
             }
             _context.Add(s);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(SubjectList));
+            TempData["SuccessMessage"] = "Create Successful";
+            return RedirectToAction(nameof(SubjectList));
             
-            
+
         }
 
         // GET: Subjects/Edit/5
@@ -170,7 +198,7 @@ namespace G3.Controllers
             {
                 return NotFound();
             }
-            ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Name", subject.MentorId);
+            ViewData["MentorId"] = new SelectList(_context.Users.Where(s => s.RoleSettingId == 2), "Id", "Name", subject.MentorId);
             return View(subject);
         }
 
@@ -198,6 +226,7 @@ namespace G3.Controllers
                 try
                 {
                     _context.Update(subject);
+                    TempData["SuccessMessageEdit"] = "Update Successful.";
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
