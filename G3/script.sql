@@ -138,7 +138,7 @@ CREATE TABLE `Milestone` (
     `WebUrl` VARCHAR(191) NOT NULL,
     `ClassId` INTEGER NULL,
 
-    UNIQUE INDEX `Milestone_Id_key`(`Id`)
+    PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -152,9 +152,9 @@ CREATE TABLE `GitLabUser` (
     `WebUrl` VARCHAR(191) NOT NULL,
     `UserId` INTEGER NULL,
 
-    UNIQUE INDEX `GitLabUser_Id_key`(`Id`),
     UNIQUE INDEX `GitLabUser_Username_key`(`Username`),
-    UNIQUE INDEX `GitLabUser_UserId_key`(`UserId`)
+    UNIQUE INDEX `GitLabUser_UserId_key`(`UserId`),
+    PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -181,7 +181,7 @@ CREATE TABLE `Issue` (
     `CreatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `UpdatedAt` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `Issue_Id_key`(`Id`)
+    PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
@@ -234,6 +234,7 @@ ALTER TABLE `Issue` ADD CONSTRAINT `Issue_AuthorId_fkey` FOREIGN KEY (`AuthorId`
 
 -- AddForeignKey
 ALTER TABLE `Issue` ADD CONSTRAINT `Issue_AssigneeId_fkey` FOREIGN KEY (`AssigneeId`) REFERENCES `GitLabUser`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
 
 INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Administrator', 'ADMIN');
 INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Subject Manager', 'SUBJECT_MANAGER');

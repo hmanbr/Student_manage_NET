@@ -16,6 +16,7 @@ namespace G3.Models
         public string Name { get; set; } = null!;
         public string Value { get; set; } = null!;
         public bool? IsActive { get; set; }
+        public string? Description { get; set; }
 
         public virtual ICollection<User> UserDomainSettings { get; set; }
         public virtual ICollection<User> UserRoleSettings { get; set; }
