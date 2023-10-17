@@ -11,7 +11,7 @@ CREATE TABLE `User` (
     `DomainSettingId` INTEGER NOT NULL,
     `RoleSettingId` INTEGER NOT NULL,
     `Hash` VARCHAR(191) NULL,
-    `Status` ENUM('NOT_VERIFID', 'VERIFID', 'BLOCK') NOT NULL DEFAULT 'NOT_VERIFID',
+    `Status` BOOLEAN NULL,
     `ConfirmToken` VARCHAR(191) NULL,
     `ConfirmTokenVerifyAt` DATETIME(3) NULL,
     `ResetPassToken` VARCHAR(191) NULL,
@@ -245,5 +245,5 @@ INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Student',
 INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'fpt.edu.vn', 'fpt.edu.vn');
 INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'gmail.com', 'gmail.com');
 
-INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Status`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K', 'VERIFID', 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
+INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Status`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K',true, 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
 

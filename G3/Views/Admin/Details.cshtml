@@ -22,14 +22,14 @@
                              class="rounded-circle img-fluid" style="width: 150px;">
                         <h5 class="my-3">
                             @Html.DisplayFor(model => model.Name)
-                            @if (Model.Confirmed)
+                            @*@if (Model.Confirmed)
                             {
                                 <text>&#9989;</text>
                             }
                             else
                             {
                                 <text>&#10060;</text>
-                            }
+                            }*@
                         </h5>
                         <p class="text-muted mb-1">@Html.DisplayFor(model => model.RoleSetting.Value)</p>
                         <p class="text-muted mb-4">@Html.DisplayFor(model => model.Address)</p>

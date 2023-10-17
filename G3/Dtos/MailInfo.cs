@@ -11,9 +11,6 @@ namespace G3.Dtos {
         public string picture { get; set; }
         public string locale { get; set; }
         public string hd { get; set; }
-
-
-
     }
 }
 

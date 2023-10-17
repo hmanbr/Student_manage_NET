@@ -15,7 +15,7 @@ namespace G3.Models
         public int DomainSettingId { get; set; }
         public int RoleSettingId { get; set; }
         public string? Hash { get; set; }
-        public string Status { get; set; } = null!;
+        public bool? Status { get; set; }
         public string? ConfirmToken { get; set; }
         public DateTime? ConfirmTokenVerifyAt { get; set; }
         public string? ResetPassToken { get; set; }
