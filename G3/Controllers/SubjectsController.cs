@@ -91,45 +91,8 @@ namespace G3.Controllers
 
             return View(await Query.AsNoTracking().ToArrayAsync());
 
-            /*if (SortBy == "ASC")
-            {
-                var SortQuery = _context.Subjects.OrderBy(x => x.SubjectCode).Include(m => m.Mentor);
-                return View(await SortQuery.ToListAsync());
-            }
-            else if (SortBy == "DESC")
-            {
-                var SortQuery = _context.Subjects.OrderByDescending(x => x.SubjectCode).Include(m => m.Mentor);
-                return View(await SortQuery.ToListAsync());
-            }
-
-            if (!String.IsNullOrEmpty(search))
-            {
-                SearchQuery = SearchQuery.Where(x => x.SubjectCode.Contains(search) || x.Name.Contains(search)).Include(m => m.Mentor);
-
-                return View(await SearchQuery.ToListAsync());
-            }
-            else
-            {
-                //var sWPContext = _context.Subjects.Include(m => m.Mentor);
-                return await SubjectList();
-
-            }*/
         }
-        /*[Route("/Subjects/ListSubject")]
-        [HttpPost]
-        public async Task<IActionResult> SubjectList(string search)
-        {
-            ViewData["search"] = search;
-            var SearchQuery = from x in _context.Subjects select x;
-            
-            if (!String.IsNullOrEmpty(search))
-            {
-                SearchQuery = SearchQuery.Where(x => x.SubjectCode.Contains(search) || x.Name.Contains(search)).Include(m => m.Mentor);
-                 
-            }
-            
-            return View(await SearchQuery.ToListAsync());
-        }*/
+      
 
         // GET: Subjects/Details/5
         [Route("/Subjects/Details")]

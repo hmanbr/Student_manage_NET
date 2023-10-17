@@ -31,7 +31,7 @@ namespace G3.Models
 
         public virtual Setting DomainSetting { get; set; } = null!;
         public virtual Setting RoleSetting { get; set; } = null!;
-        public virtual GitLabUser? GitLabUser { get; set; }
+        public virtual Gitlabuser? Gitlabuser { get; set; }
         public virtual ICollection<Subject> Subjects { get; set; }
     }
 }

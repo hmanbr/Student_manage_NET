@@ -19,9 +19,9 @@ namespace G3.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public virtual GitLabUser Assignee { get; set; } = null!;
-        public virtual GitLabUser Author { get; set; } = null!;
-        public virtual GitLabUser? ClosedBy { get; set; }
+        public virtual Gitlabuser Assignee { get; set; } = null!;
+        public virtual Gitlabuser Author { get; set; } = null!;
+        public virtual Gitlabuser? ClosedBy { get; set; }
         public virtual Milestone? Milestone { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace G3.Models
         public int IssueId { get; set; }
         public int GitLabUserId { get; set; }
 
-        public virtual GitLabUser GitLabUser { get; set; } = null!;
+        public virtual Gitlabuser GitLabUser { get; set; } = null!;
         public virtual Issue Issue { get; set; } = null!;
     }
 }
