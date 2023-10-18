@@ -8,6 +8,7 @@ namespace G3.Models
         public User()
         {
             Subjects = new HashSet<Subject>();
+            Classes = new HashSet<Class>();
         }
 
         public int Id { get; set; }
@@ -33,5 +34,7 @@ namespace G3.Models
         public virtual Setting RoleSetting { get; set; } = null!;
         public virtual Gitlabuser? Gitlabuser { get; set; }
         public virtual ICollection<Subject> Subjects { get; set; }
+
+        public virtual ICollection<Class> Classes { get; set; }
     }
 }

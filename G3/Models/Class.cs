@@ -10,6 +10,7 @@ namespace G3.Models
             Classsettings = new HashSet<Classsetting>();
             Milestones = new HashSet<Milestone>();
             Projects = new HashSet<Project>();
+            Users = new HashSet<User>();
         }
 
         public int Id { get; set; }
@@ -21,5 +22,7 @@ namespace G3.Models
         public virtual ICollection<Classsetting> Classsettings { get; set; }
         public virtual ICollection<Milestone> Milestones { get; set; }
         public virtual ICollection<Project> Projects { get; set; }
+
+        public virtual ICollection<User> Users { get; set; }
     }
 }

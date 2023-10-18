@@ -1,0 +1,82 @@
+﻿@model IEnumerable<G3.Models.User>
+
+@{
+	ViewData["Title"] = "ClassDetail";
+	Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<h1>ClassDetail</h1>
+
+<div class="container-fluid">
+	<div class="card shadow mb-4">
+		<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+			<h6 class="m-0 font-weight-bold text-primary">Student  List</h6>
+			<div class="dropdown no-arrow">
+				<a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+				   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+				</a>
+				<div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+					 aria-labelledby="dropdownMenuLink">
+					<div class="dropdown-header">Dropdown Header:</div>
+					<a class="dropdown-item" href="#">Action</a>
+					<a class="dropdown-item" href="#">Another action</a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="#">Something else here</a>
+				</div>
+			</div>
+		</div>
+		<div class="card-body">
+			<div class="table-responsive">
+				<table class="table table-bordered" cellspacing="0">
+					<thead>
+						<tr>
+							<th>
+								ID
+							</th>
+							<th>
+								Name
+							</th>
+							<th>
+								Gender
+							</th>
+							<th>
+								Email
+							</th>
+						</tr>
+					</thead>
+
+					@foreach (var item in Model)
+					{
+						<tr>
+							<td>
+								@Html.DisplayFor(modelItem => item.Id)
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.Name)
+							</td>
+
+							@if (item.Gender == true)
+							{
+								<td>Male</td>
+							}
+							else
+							{
+								<td>Female</td>
+							}
+
+
+							<td>
+								@Html.DisplayFor(modelItem => item.Email)
+							</td>
+						</tr>
+					}
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div>
+	<a asp-action="Index">Back to List</a>
+</div>

@@ -20,6 +20,7 @@ namespace G3.Models
         public virtual DbSet<Assignment> Assignments { get; set; } = null!;
         public virtual DbSet<Class> Classes { get; set; } = null!;
         public virtual DbSet<Classsetting> Classsettings { get; set; } = null!;
+        public virtual DbSet<Efmigrationshistory> Efmigrationshistories { get; set; } = null!;
         public virtual DbSet<Gitlabuser> Gitlabusers { get; set; } = null!;
         public virtual DbSet<Issue> Issues { get; set; } = null!;
         public virtual DbSet<Milestone> Milestones { get; set; } = null!;
@@ -128,6 +129,18 @@ namespace G3.Models
                     .HasForeignKey(d => d.ClassId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("ClassSetting_classId_fkey");
+            });
+
+            modelBuilder.Entity<Efmigrationshistory>(entity =>
+            {
+                entity.HasKey(e => e.MigrationId)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("__efmigrationshistory");
+
+                entity.Property(e => e.MigrationId).HasMaxLength(150);
+
+                entity.Property(e => e.ProductVersion).HasMaxLength(32);
             });
 
             modelBuilder.Entity<Gitlabuser>(entity =>
@@ -407,6 +420,25 @@ namespace G3.Models
                     .HasForeignKey(d => d.RoleSettingId)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("User_RoleSettingId_fkey");
+
+                entity.HasMany(d => d.Classes)
+                    .WithMany(p => p.Users)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "Userclass",
+                        l => l.HasOne<Class>().WithMany().HasForeignKey("ClassId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("userclass_ibfk_2"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("userclass_ibfk_1"),
+                        j =>
+                        {
+                            j.HasKey("UserId", "ClassId").HasName("PRIMARY");
+
+                            j.ToTable("userclass");
+
+                            j.HasIndex(new[] { "ClassId" }, "ClassID");
+
+                            j.IndexerProperty<int>("UserId").HasColumnName("UserID");
+
+                            j.IndexerProperty<int>("ClassId").HasColumnName("ClassID");
+                        });
             });
 
             OnModelCreatingPartial(modelBuilder);
