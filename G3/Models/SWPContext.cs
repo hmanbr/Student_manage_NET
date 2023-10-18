@@ -322,17 +322,7 @@ namespace G3.Models
 
                 entity.HasIndex(e => e.SubjectId, "SubjectSetting_SubjectId_fkey");
 
-                entity.HasIndex(e => new { e.Type, e.Value }, "SubjectSetting_Type_Value_idx");
-
                 entity.Property(e => e.Description).HasMaxLength(191);
-
-                entity.Property(e => e.IsActive)
-                    .IsRequired()
-                    .HasDefaultValueSql("'1'");
-
-                entity.Property(e => e.Name).HasMaxLength(191);
-
-                entity.Property(e => e.Type).HasMaxLength(191);
 
                 entity.Property(e => e.Value).HasMaxLength(191);
 
