@@ -25,7 +25,7 @@ namespace G3.Controllers
             _context = context;
         }
 
-        // GET: Subjects
+    /*    // GET: Subjects
         [Route("/Subjects/ListSubject")]
         public async Task<IActionResult> SubjectList(int page = 1, int pageSize = 5) {
            
@@ -57,15 +57,68 @@ namespace G3.Controllers
 
             return View(s);
 
-            /*var sWPContext = _context.Subjects.Include(m => m.Mentor);
+            *//*var sWPContext = _context.Subjects.Include(m => m.Mentor);
 
 
-            return View(await sWPContext.ToListAsync());*/
-        }
+            return View(await sWPContext.ToListAsync());*//*
+        }*/
 
         [Route("/Subjects/ListSubject")]
+        
+        public async Task<IActionResult> SubjectList(string search, string SortBy, string Filter, int page = 1, int pageSize = 5)
+        {
+            ViewData["search"] = search;
+            var query = _context.Subjects.AsQueryable().Include(m => m.Mentor);
+
+            if (!String.IsNullOrEmpty(search))
+            {
+                query = query.Where(x => x.SubjectCode.Contains(search) || x.Name.Contains(search)).Include(m => m.Mentor);
+
+            }
+
+            ViewData["Sort"] = SortBy;
+            if (SortBy == "ASC")
+            {
+                query = query.OrderBy(x => x.SubjectCode).Include(m => m.Mentor);
+
+            }
+            else
+            {
+                query = query.OrderByDescending(x => x.SubjectCode).Include(m => m.Mentor);
+
+            }
+            
+            var totalItems = query.Count();
+
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            if (page < 1)
+            {
+                //test
+                page = 1;
+            }
+            else if (page > totalPages)
+            {
+                page = totalPages;
+            }
+
+            var s = query
+
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize).ToList();
+
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+
+            return View(await query.AsNoTracking().ToArrayAsync());
+
+        }
+
+        /*[Route("/Subjects/ListSubject")]
         [HttpPost]
-        public async Task<IActionResult> SubjectList(string search, string SortBy, string Filter)
+        public async Task<IActionResult> SubjectList(string search, string SortBy, string Filter, int page = 1, int pageSize = 5)
         {
             ViewData["search"] = search;
             var Query = from s in _context.Subjects select s; 
@@ -91,8 +144,8 @@ namespace G3.Controllers
 
             return View(await Query.AsNoTracking().ToArrayAsync());
 
-        }
-      
+        }*/
+
 
         // GET: Subjects/Details/5
         [Route("/Subjects/Details")]
