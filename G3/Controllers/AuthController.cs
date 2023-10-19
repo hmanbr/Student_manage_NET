@@ -89,7 +89,6 @@ namespace G3.Controllers
                 return View();
             }
 
-            string mailAddress = mailService.GetAddress(email);
             if (user == null)
             {
                 user = new()
@@ -168,7 +167,7 @@ namespace G3.Controllers
         [Route("sign-up")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SignUp([Bind("Email,Password,ConfirmPassword,Name,DateOfBirth,Phone,Address,Gender")] SignUpDto signUpDto, [FromServices] IMailService mailService, [FromServices] IHashService hashService)
+        public async Task<IActionResult> SignUp([Bind("Email,Password,ConfirmPassword")] SignUpDto signUpDto, [FromServices] IMailService mailService, [FromServices] IHashService hashService)
         {
             if (!ModelState.IsValid) return View();
             if (signUpDto.Password != signUpDto.ConfirmPassword)
@@ -223,11 +222,7 @@ namespace G3.Controllers
                 RoleSettingId = roleSetting.SettingId,
                 Hash = hashService.HashPassword(signUpDto.Password),
                 ConfirmToken = hash,
-                Name = signUpDto.Name,
-                DateOfBirth = signUpDto.DateOfBirth,
-                Phone = signUpDto.Phone,
-                Address = signUpDto.Address,
-                Gender = signUpDto.Gender,
+                Name = mailService.GetAddress(signUpDto.Email),
             };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
