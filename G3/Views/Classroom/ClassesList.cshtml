@@ -1,37 +1,32 @@
-﻿@model G3.Models.ClassSubjectViewModel
+﻿@model IEnumerable<G3.Models.Class>
 
 @{
 	ViewData["Title"] = "View";
 	Layout = "~/Views/Shared/AdminLayout.cshtml";
 }
 
-<h1>Classes list</h1>
+<h1>View</h1>
 
-
-<form method="get" asp-controller="Classroom" asp-action="ClassList">
-	<div class="input-group col-lg-3 float-left">
-		<input type="text" class="form-control rounded" placeholder="Search" name="search" />
-		<input type="submit" value="Search" class="btn btn-outline-primary" />
-	</div>
-</form>
-
+<p>
+	<a asp-action="Create">Create New</a>
+</p>
 <table class="table">
 	<thead>
 		<tr>
 			<th>
-				ID
+				Id
 			</th>
 			<th>
 				Name
 			</th>
 			<th>
-				Subject Name
+				Subject Code
 			</th>
 			<th></th>
 		</tr>
 	</thead>
 	<tbody>
-		@foreach (var item in Model.Classes)
+		@foreach (var item in Model)
 		{
 			<tr>
 				<td>
@@ -40,17 +35,14 @@
 				<td>
 					@Html.DisplayFor(modelItem => item.Name)
 				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.Description)
-				</td>
-				<td>
-					@foreach(var subject in Model.Subject) {
-						if(item.SubjectId.Equals(subject.Id))
-						{
-							<span>@subject.SubjectCode</span>
-						}
+				@foreach (var subject in Model)
+				{
+					if (subject.Id.Equals(item.Id))
+					{
+						<td>@subject.Subject.SubjectCode</td>
 					}
-				</td>
+				}
+				
 				<td>
 					<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
 					<a asp-action="Details" asp-route-id="@item.Id">Details</a> |
@@ -60,7 +52,3 @@
 		}
 	</tbody>
 </table>
-<p>
-	<a class="btn btn-outline-primary float-right" asp-action="RoleCreate">Create New</a>
-</p>
-
