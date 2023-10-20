@@ -110,7 +110,21 @@ namespace G3.Controllers
             });
             HttpContext.Session.SetString("User", userJsonString);
 
-            return RedirectToAction("AdminHome", "Admin");
+            switch (user.RoleSetting.Value)
+            {
+                case "ADMIN":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "SUBJECT_MANAGER":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "CLASS_MANAGER":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "MENTOR":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "STUDENT":
+                    return View("Views/Admin/AdminHome.cshtml");
+            }
+
+            return View();
         }
 
         [Route("sign-up")]
@@ -259,9 +273,24 @@ namespace G3.Controllers
             {
                 ReferenceHandler = ReferenceHandler.IgnoreCycles
             });
+
             HttpContext.Session.SetString("User", userJsonString);
-            return View("Views/Admin/AdminHome.cshtml");
-            //return RedirectToAction("AdminHome", "Admin");
+
+            switch (user.RoleSetting.Value)
+            {
+                case "ADMIN":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "SUBJECT_MANAGER":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "CLASS_MANAGER":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "MENTOR":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "STUDENT":
+                    return View("Views/Admin/AdminHome.cshtml");
+            }
+
+            return View();
         }
 
         [Route("change-password")]
