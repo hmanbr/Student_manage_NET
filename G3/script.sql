@@ -100,6 +100,15 @@ CREATE TABLE `Class` (
     PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+CREATE TABLE `ClassStudentProject` (
+    `Id` INTEGER NOT NULL AUTO_INCREMENT,
+    `UserId` INTEGER NOT NULL,
+    `ProjectId` INTEGER NOT NULL,
+    `ClassId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`Id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- CreateTable
 CREATE TABLE `ClassSetting` (
     `SettingId` INTEGER NOT NULL AUTO_INCREMENT,
@@ -208,6 +217,14 @@ ALTER TABLE `Assignment` ADD CONSTRAINT `Assignment_SubjectId_fkey` FOREIGN KEY 
 -- AddForeignKey
 ALTER TABLE `Class` ADD CONSTRAINT `Class_SubjectId_fkey` FOREIGN KEY (`SubjectId`) REFERENCES `Subject`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
+ALTER TABLE `ClassStudentProject` ADD CONSTRAINT `ClassStudentProject_UserId_fkey` FOREIGN KEY (`UserId`) REFERENCES `User`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ClassStudentProject` ADD CONSTRAINT `ClassStudentProject_ProjectId_fkey` FOREIGN KEY (`ProjectId`) REFERENCES `Project`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ClassStudentProject` ADD CONSTRAINT `ClassStudentProject_ClassId_fkey` FOREIGN KEY (`ClassId`) REFERENCES `Class`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
 -- AddForeignKey
 ALTER TABLE `ClassSetting` ADD CONSTRAINT `ClassSetting_classId_fkey` FOREIGN KEY (`classId`) REFERENCES `Class`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -258,4 +275,5 @@ INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'gmail.c
 
 INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Status`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K',true, 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
 INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Status`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('subject_manager@fpt.edu.vn', 6, 2, '$2a$11$DxRisl20ebF0JUabLWNyHeCxSjin6TZBLrVQyhCTHtroqCtzRLZxC',true, 'Subject Manager', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
+INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Status`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('class_manager@fpt.edu.vn', 6, 3, '$2a$11$dWdwVbzKlOWKR7VHwywwH.rt0Tqxar9.8.Y2I46OSYRwymKKVTEnW',true, 'Class Manager', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
 

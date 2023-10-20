@@ -20,6 +20,7 @@ namespace G3.Models
         public virtual DbSet<Assignment> Assignments { get; set; } = null!;
         public virtual DbSet<Class> Classes { get; set; } = null!;
         public virtual DbSet<ClassSetting> ClassSettings { get; set; } = null!;
+        public virtual DbSet<ClassStudentProject> ClassStudentProjects { get; set; } = null!;
         public virtual DbSet<GitLabUser> GitLabUsers { get; set; } = null!;
         public virtual DbSet<Issue> Issues { get; set; } = null!;
         public virtual DbSet<Milestone> Milestones { get; set; } = null!;
@@ -136,6 +137,35 @@ namespace G3.Models
                     .HasForeignKey(d => d.ClassId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("ClassSetting_classId_fkey");
+            });
+
+            modelBuilder.Entity<ClassStudentProject>(entity =>
+            {
+                entity.ToTable("ClassStudentProject", "SWP");
+
+                entity.HasIndex(e => e.ClassId, "ClassStudentProject_ClassId_fkey");
+
+                entity.HasIndex(e => e.ProjectId, "ClassStudentProject_ProjectId_fkey");
+
+                entity.HasIndex(e => e.UserId, "ClassStudentProject_UserId_fkey");
+
+                entity.HasOne(d => d.Class)
+                    .WithMany(p => p.ClassStudentProjects)
+                    .HasForeignKey(d => d.ClassId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("ClassStudentProject_ClassId_fkey");
+
+                entity.HasOne(d => d.Project)
+                    .WithMany(p => p.ClassStudentProjects)
+                    .HasForeignKey(d => d.ProjectId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("ClassStudentProject_ProjectId_fkey");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.ClassStudentProjects)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("ClassStudentProject_UserId_fkey");
             });
 
             modelBuilder.Entity<GitLabUser>(entity =>

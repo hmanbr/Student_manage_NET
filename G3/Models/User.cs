@@ -7,6 +7,7 @@ namespace G3.Models
     {
         public User()
         {
+            ClassStudentProjects = new HashSet<ClassStudentProject>();
             Projects = new HashSet<Project>();
             Subjects = new HashSet<Subject>();
         }
@@ -33,6 +34,7 @@ namespace G3.Models
         public virtual Setting DomainSetting { get; set; } = null!;
         public virtual Setting RoleSetting { get; set; } = null!;
         public virtual GitLabUser? GitLabUser { get; set; }
+        public virtual ICollection<ClassStudentProject> ClassStudentProjects { get; set; }
         public virtual ICollection<Project> Projects { get; set; }
         public virtual ICollection<Subject> Subjects { get; set; }
     }
