@@ -3,6 +3,8 @@
 @{
 	ViewData["Title"] = "ClassDetail";
 	Layout = "~/Views/Shared/AdminLayout.cshtml";
+    int classId = (int)ViewBag.ClassId;
+
 }
 
 <h1>ClassDetail</h1>
@@ -11,9 +13,10 @@
 	<div class="card shadow mb-4">
 		<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
 			<h6 class="m-0 font-weight-bold text-primary">Student List</h6>
-			<p>
-				<a class="btn btn-outline-primary float-right" asp-controller="Classroom" asp-action="ClassStudents">Manage students</a>
-			</p>
+			<form asp-action="ClassStudents" asp-controller="Classroom">
+				<input type="hidden" name="id" value="@classId" />
+				<button type="submit" class="btn btn-outline-primary float-right">Manage students</button>
+			</form>
 		</div>
 		<div class="card-body">
 			<div class="table-responsive">
@@ -53,8 +56,6 @@
 							{
 								<td>Female</td>
 							}
-
-
 							<td>
 								@Html.DisplayFor(modelItem => item.Email)
 							</td>

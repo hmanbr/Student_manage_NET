@@ -3,6 +3,7 @@
 @{
 	ViewData["Title"] = "ClassStudents";
 	Layout = "~/Views/Shared/AdminLayout.cshtml";
+	int classId = (int)ViewBag.ClassId;
 }
 
 <h1>Class Students</h1>
@@ -89,9 +90,7 @@
 								}
 							</td>
 							<td>
-								<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-								<a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-								<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+								<a asp-action="Edit" asp-route-id="@item.Id">Assign Project/group</a>
 							</td>
 						</tr>
 					}
@@ -100,14 +99,18 @@
 		</div>
 		<div>
 			<span class="mr-4">
-				<a class="btn btn-outline-primary float-right" asp-controller="Classroom" asp-action="ClassStudents">Add new student</a>
+				<a class="btn btn-outline-primary float-right" asp-controller="Classroom" asp-action="ClassAddStudents">Add new student</a>
 			</span>
 			<span class="mr-1">
-				<a class="btn btn-outline-primary float-right" asp-controller="Classroom" asp-action="ClassStudents">Import from excel</a>
+				<form method="get" asp-controller="Classroom" asp-action="UploadExcel">
+					@if (ViewBag.ClassId != null)
+					{
+						<input type="hidden" name="id" value="@ViewBag.ClassId" />
+					}
+					<button class="btn btn-outline-primary float-right" type="submit">Import from excel</button>
+				</form>
 			</span>
-			<span class="mr-1">
-				<a class="btn btn-outline-primary float-right" asp-controller="Classroom" asp-action="ClassStudents">Export to excel</a>
-			</span>
+			
 		</div>
 		
 	</div>

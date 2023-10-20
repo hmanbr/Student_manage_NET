@@ -7,9 +7,12 @@
 
 <h1>View</h1>
 
-<p>
-	<a asp-action="Create">Create New</a>
-</p>
+<form method="get" asp-controller="Classroom" asp-action="ClassList">
+	<div class="input-group col-lg-3 float-left">
+		<input type="text" class="form-control rounded" placeholder="Search" name="search" />
+		<input type="submit" value="Search" class="btn btn-outline-primary" />
+	</div>
+</form>
 <table class="table">
 	<thead>
 		<tr>
@@ -44,9 +47,7 @@
 				}
 				
 				<td>
-					<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-					<a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-					<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+					<a asp-action="ClassDetail" asp-route-id="@item.Id">Details</a>
 				</td>
 			</tr>
 		}
