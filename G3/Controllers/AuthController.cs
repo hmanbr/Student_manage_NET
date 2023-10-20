@@ -74,7 +74,7 @@ namespace G3.Controllers
                 return View();
             }
 
-            User? user = _context.Users.FirstOrDefault(user => user.Email == email);
+            User? user = _context.Users.Include(s => s.RoleSetting).FirstOrDefault(user => user.Email == email);
 
             if (user != null && user.Status == false)
             {
@@ -251,7 +251,7 @@ namespace G3.Controllers
         {
             if (!ModelState.IsValid) return View();
 
-            User? user = _context.Users.FirstOrDefault(user => user.Email == signInDto.Email);
+            User? user = _context.Users.Include(s => s.RoleSetting).FirstOrDefault(user => user.Email == signInDto.Email);
 
             if (user == null || !hashService.Verify(signInDto.Password, user.Hash!))
             {
