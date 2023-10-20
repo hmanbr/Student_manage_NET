@@ -16,7 +16,7 @@ namespace G3.Models
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public int? SubjectId { get; set; }
-        public string Status { get; set; } = null!;
+        public bool? Status { get; set; }
 
         public virtual Subject? Subject { get; set; }
         public virtual ICollection<ClassSetting> ClassSettings { get; set; }

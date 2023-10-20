@@ -23,7 +23,6 @@ namespace G3.Models
         public virtual DbSet<GitLabUser> GitLabUsers { get; set; } = null!;
         public virtual DbSet<Issue> Issues { get; set; } = null!;
         public virtual DbSet<Milestone> Milestones { get; set; } = null!;
-        public virtual DbSet<PrismaMigration> PrismaMigrations { get; set; } = null!;
         public virtual DbSet<Project> Projects { get; set; } = null!;
         public virtual DbSet<Setting> Settings { get; set; } = null!;
         public virtual DbSet<Subject> Subjects { get; set; } = null!;
@@ -98,7 +97,9 @@ namespace G3.Models
 
                 entity.Property(e => e.Name).HasMaxLength(191);
 
-                entity.Property(e => e.Status).HasMaxLength(191);
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasDefaultValueSql("'1'");
 
                 entity.HasOne(d => d.Subject)
                     .WithMany(p => p.Classes)
@@ -262,42 +263,6 @@ namespace G3.Models
                     .HasConstraintName("Milestone_ProjectId_fkey");
             });
 
-            modelBuilder.Entity<PrismaMigration>(entity =>
-            {
-                entity.ToTable("_prisma_migrations", "SWP");
-
-                entity.Property(e => e.Id)
-                    .HasMaxLength(36)
-                    .HasColumnName("id");
-
-                entity.Property(e => e.AppliedStepsCount).HasColumnName("applied_steps_count");
-
-                entity.Property(e => e.Checksum)
-                    .HasMaxLength(64)
-                    .HasColumnName("checksum");
-
-                entity.Property(e => e.FinishedAt)
-                    .HasColumnType("datetime(3)")
-                    .HasColumnName("finished_at");
-
-                entity.Property(e => e.Logs)
-                    .HasColumnType("text")
-                    .HasColumnName("logs");
-
-                entity.Property(e => e.MigrationName)
-                    .HasMaxLength(255)
-                    .HasColumnName("migration_name");
-
-                entity.Property(e => e.RolledBackAt)
-                    .HasColumnType("datetime(3)")
-                    .HasColumnName("rolled_back_at");
-
-                entity.Property(e => e.StartedAt)
-                    .HasColumnType("datetime(3)")
-                    .HasColumnName("started_at")
-                    .HasDefaultValueSql("'CURRENT_TIMESTAMP(3)'");
-            });
-
             modelBuilder.Entity<Project>(entity =>
             {
                 entity.ToTable("Project", "SWP");
@@ -393,17 +358,7 @@ namespace G3.Models
 
                 entity.HasIndex(e => e.SubjectId, "SubjectSetting_SubjectId_fkey");
 
-               /* entity.HasIndex(e => new { e.Type, e.Value }, "SubjectSetting_Type_Value_idx");*/
-
                 entity.Property(e => e.Description).HasMaxLength(191);
-
-               /* entity.Property(e => e.IsActive)
-                    .IsRequired()
-                    .HasDefaultValueSql("'1'");
-
-                entity.Property(e => e.Name).HasMaxLength(191);
-
-                entity.Property(e => e.Type).HasMaxLength(191);*/
 
                 entity.Property(e => e.Value).HasMaxLength(191);
 
