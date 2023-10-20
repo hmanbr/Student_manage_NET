@@ -67,15 +67,14 @@ CREATE TABLE `Subject` (
 -- CreateTable
 CREATE TABLE `SubjectSetting` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
-    `Type` VARCHAR(191) NOT NULL,
-    `Name` VARCHAR(191) NOT NULL,
+
     `Value` VARCHAR(191) NOT NULL,
     `Description` VARCHAR(191) NULL,
-    `IsActive` BOOLEAN NOT NULL DEFAULT true,
+ 
     `SubjectId` INTEGER NULL,
 
     INDEX `SubjectSetting_Id_idx`(`Id`),
-    INDEX `SubjectSetting_Type_Value_idx`(`Type`, `Value`),
+   
     PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

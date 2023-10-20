@@ -19,6 +19,7 @@ namespace G3.Controllers
         }
 
         // GET: Projects
+        [Route("/Project/Index")]
         public async Task<IActionResult> Index()
         {
             var sWPContext = _context.Projects.Include(p => p.Class);
