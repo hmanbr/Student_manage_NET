@@ -74,7 +74,7 @@ namespace G3.Controllers
                 return View();
             }
 
-            User? user = _context.Users.FirstOrDefault(user => user.Email == email);
+            User? user = _context.Users.Include(s => s.RoleSetting).FirstOrDefault(user => user.Email == email);
 
             if (user != null && user.Status == false)
             {
@@ -89,7 +89,6 @@ namespace G3.Controllers
                 return View();
             }
 
-            string mailAddress = mailService.GetAddress(email);
             if (user == null)
             {
                 user = new()
@@ -111,7 +110,21 @@ namespace G3.Controllers
             });
             HttpContext.Session.SetString("User", userJsonString);
 
-            return RedirectToAction("AdminHome", "Admin");
+            switch (user.RoleSetting.Value)
+            {
+                case "ADMIN":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "SUBJECT_MANAGER":
+                    return View("Views/Admin/AdminHome.cshtml");
+                /*case "CLASS_MANAGER":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "MENTOR":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "STUDENT":
+                    return View("Views/Admin/AdminHome.cshtml");*/
+            }
+
+            return View();
         }
 
         [Route("sign-up")]
@@ -168,7 +181,7 @@ namespace G3.Controllers
         [Route("sign-up")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SignUp([Bind("Email,Password,ConfirmPassword,Name,DateOfBirth,Phone,Address,Gender")] SignUpDto signUpDto, [FromServices] IMailService mailService, [FromServices] IHashService hashService)
+        public async Task<IActionResult> SignUp([Bind("Email,Password,ConfirmPassword")] SignUpDto signUpDto, [FromServices] IMailService mailService, [FromServices] IHashService hashService)
         {
             if (!ModelState.IsValid) return View();
             if (signUpDto.Password != signUpDto.ConfirmPassword)
@@ -223,11 +236,7 @@ namespace G3.Controllers
                 RoleSettingId = roleSetting.SettingId,
                 Hash = hashService.HashPassword(signUpDto.Password),
                 ConfirmToken = hash,
-                Name = signUpDto.Name,
-                DateOfBirth = signUpDto.DateOfBirth,
-                Phone = signUpDto.Phone,
-                Address = signUpDto.Address,
-                Gender = signUpDto.Gender,
+                Name = mailService.GetAddress(signUpDto.Email),
             };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -242,7 +251,7 @@ namespace G3.Controllers
         {
             if (!ModelState.IsValid) return View();
 
-            User? user = _context.Users.FirstOrDefault(user => user.Email == signInDto.Email);
+            User? user = _context.Users.Include(s => s.RoleSetting).FirstOrDefault(user => user.Email == signInDto.Email);
 
             if (user == null || !hashService.Verify(signInDto.Password, user.Hash!))
             {
@@ -264,9 +273,24 @@ namespace G3.Controllers
             {
                 ReferenceHandler = ReferenceHandler.IgnoreCycles
             });
+
             HttpContext.Session.SetString("User", userJsonString);
-            return View("Views/Admin/AdminHome.cshtml");
-            //return RedirectToAction("AdminHome", "Admin");
+
+            switch (user.RoleSetting.Value)
+            {
+                case "ADMIN":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "SUBJECT_MANAGER":
+                    return View("Views/Admin/AdminHome.cshtml");
+               /* case "CLASS_MANAGER":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "MENTOR":
+                    return View("Views/Admin/AdminHome.cshtml");
+                case "STUDENT":
+                    return View("Views/Admin/AdminHome.cshtml");*/
+            }
+
+            return View();
         }
 
         [Route("change-password")]

@@ -14,17 +14,6 @@ namespace G3.Dtos {
         [MinLength(8)]
         [MaxLength(64)]
         public string ConfirmPassword { get; set; } = null!;
-
-        [Required]
-        public string Name { get; set; } = null!;
-
-        public DateTime? DateOfBirth { get; set; }
-
-        public string? Phone { get; set; }
-
-        public string? Address { get; set; }
-
-        public bool? Gender { get; set; }
     }
 }
 

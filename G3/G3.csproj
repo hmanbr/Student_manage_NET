@@ -19,12 +19,13 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
     <PackageReference Include="MailKit" Version="4.2.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="NGitLab" Version="6.39.2" />
+    <PackageReference Include="Nanoid" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Views\Users\" />
     <Folder Include="wwwroot\lib\Image\" />
-    <Folder Include="Dtos\" />
     <Folder Include="Services\" />
     <Folder Include="ActionFilters\" />
   </ItemGroup>
