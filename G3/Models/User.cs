@@ -10,6 +10,7 @@ namespace G3.Models
             ClassStudentProjects = new HashSet<ClassStudentProject>();
             Projects = new HashSet<Project>();
             Subjects = new HashSet<Subject>();
+            Classes = new HashSet<Class>();
         }
 
         public int Id { get; set; }
@@ -37,5 +38,7 @@ namespace G3.Models
         public virtual ICollection<ClassStudentProject> ClassStudentProjects { get; set; }
         public virtual ICollection<Project> Projects { get; set; }
         public virtual ICollection<Subject> Subjects { get; set; }
+
+        public virtual ICollection<Class> Classes { get; set; }
     }
 }

@@ -1,0 +1,55 @@
+﻿@model IEnumerable<G3.Models.Class>
+
+@{
+	ViewData["Title"] = "View";
+	Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<h1>View</h1>
+
+<form method="get" asp-controller="Classroom" asp-action="ClassList">
+	<div class="input-group col-lg-3 float-left">
+		<input type="text" class="form-control rounded" placeholder="Search" name="search" />
+		<input type="submit" value="Search" class="btn btn-outline-primary" />
+	</div>
+</form>
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				Id
+			</th>
+			<th>
+				Name
+			</th>
+			<th>
+				Subject Code
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Id)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Name)
+				</td>
+				@foreach (var subject in Model)
+				{
+					if (subject.Id.Equals(item.Id))
+					{
+						<td>@subject.Subject.SubjectCode</td>
+					}
+				}
+				
+				<td>
+					<a asp-action="ClassDetail" asp-route-id="@item.Id">Details</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

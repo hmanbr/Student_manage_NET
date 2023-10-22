@@ -200,6 +200,15 @@ CREATE TABLE `Issue` (
     PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+--CreateTable
+CREATE TABLE UserClass (
+    UserID INT,
+    ClassID INT,
+    PRIMARY KEY (UserID, ClassID),
+    FOREIGN KEY (UserID) REFERENCES user(Id),
+    FOREIGN KEY (ClassID) REFERENCES class(Id)
+);
+
 -- AddForeignKey
 ALTER TABLE `User` ADD CONSTRAINT `User_DomainSettingId_fkey` FOREIGN KEY (`DomainSettingId`) REFERENCES `Setting`(`SettingId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 

@@ -463,6 +463,25 @@ namespace G3.Models
                     .HasForeignKey(d => d.RoleSettingId)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("User_RoleSettingId_fkey");
+
+                entity.HasMany(d => d.Classes)
+                    .WithMany(p => p.Users)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "Userclass",
+                        l => l.HasOne<Class>().WithMany().HasForeignKey("ClassId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("userclass_ibfk_2"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("userclass_ibfk_1"),
+                        j =>
+                        {
+                            j.HasKey("UserId", "ClassId").HasName("PRIMARY");
+
+                            j.ToTable("userclass");
+
+                            j.HasIndex(new[] { "ClassId" }, "ClassID");
+
+                            j.IndexerProperty<int>("UserId").HasColumnName("UserID");
+
+                            j.IndexerProperty<int>("ClassId").HasColumnName("ClassID");
+                        });
             });
 
             OnModelCreatingPartial(modelBuilder);
