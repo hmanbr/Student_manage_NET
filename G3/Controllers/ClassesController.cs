@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,25 +9,23 @@ using G3.Models;
 
 namespace G3.Controllers
 {
-    public class ClassController : Controller
+    public class ClassesController : Controller
     {
         private readonly SWPContext _context;
 
-        public ClassController(SWPContext context)
+        public ClassesController(SWPContext context)
         {
             _context = context;
         }
 
-        // GET: Class
-        [Route("/classList")]
+        // GET: Classes
         public async Task<IActionResult> Index()
         {
             var sWPContext = _context.Classes.Include(c => c.Subject);
             return View(await sWPContext.ToListAsync());
         }
 
-        // GET: Class/Details/5
-        [Route("/classList/{id}")]
+        // GET: Classes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Classes == null)
@@ -46,14 +44,14 @@ namespace G3.Controllers
             return View(@class);
         }
 
-        // GET: Class/Create
+        // GET: Classes/Create
         public IActionResult Create()
         {
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id");
             return View();
         }
 
-        // POST: Class/Create
+        // POST: Classes/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -70,7 +68,7 @@ namespace G3.Controllers
             return View(@class);
         }
 
-        // GET: Class/Edit/5
+        // GET: Classes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Classes == null)
@@ -87,7 +85,7 @@ namespace G3.Controllers
             return View(@class);
         }
 
-        // POST: Class/Edit/5
+        // POST: Classes/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -123,7 +121,7 @@ namespace G3.Controllers
             return View(@class);
         }
 
-        // GET: Class/Delete/5
+        // GET: Classes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Classes == null)
@@ -142,7 +140,7 @@ namespace G3.Controllers
             return View(@class);
         }
 
-        // POST: Class/Delete/5
+        // POST: Classes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

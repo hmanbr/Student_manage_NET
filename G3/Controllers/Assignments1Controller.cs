@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,92 +9,90 @@ using G3.Models;
 
 namespace G3.Controllers
 {
-    public class ClassController : Controller
+    public class Assignments1Controller : Controller
     {
         private readonly SWPContext _context;
 
-        public ClassController(SWPContext context)
+        public Assignments1Controller(SWPContext context)
         {
             _context = context;
         }
 
-        // GET: Class
-        [Route("/classList")]
+        // GET: Assignments1
         public async Task<IActionResult> Index()
         {
-            var sWPContext = _context.Classes.Include(c => c.Subject);
+            var sWPContext = _context.Assignments.Include(a => a.Subject);
             return View(await sWPContext.ToListAsync());
         }
 
-        // GET: Class/Details/5
-        [Route("/classList/{id}")]
+        // GET: Assignments1/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Classes == null)
+            if (id == null || _context.Assignments == null)
             {
                 return NotFound();
             }
 
-            var @class = await _context.Classes
-                .Include(c => c.Subject)
+            var assignment = await _context.Assignments
+                .Include(a => a.Subject)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (@class == null)
+            if (assignment == null)
             {
                 return NotFound();
             }
 
-            return View(@class);
+            return View(assignment);
         }
 
-        // GET: Class/Create
+        // GET: Assignments1/Create
         public IActionResult Create()
         {
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id");
             return View();
         }
 
-        // POST: Class/Create
+        // POST: Assignments1/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,SubjectId,Status")] Class @class)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,StartDate,EndDate,SubjectId")] Assignment assignment)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(@class);
+                _context.Add(assignment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", @class.SubjectId);
-            return View(@class);
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", assignment.SubjectId);
+            return View(assignment);
         }
 
-        // GET: Class/Edit/5
+        // GET: Assignments1/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Classes == null)
+            if (id == null || _context.Assignments == null)
             {
                 return NotFound();
             }
 
-            var @class = await _context.Classes.FindAsync(id);
-            if (@class == null)
+            var assignment = await _context.Assignments.FindAsync(id);
+            if (assignment == null)
             {
                 return NotFound();
             }
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", @class.SubjectId);
-            return View(@class);
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", assignment.SubjectId);
+            return View(assignment);
         }
 
-        // POST: Class/Edit/5
+        // POST: Assignments1/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,SubjectId,Status")] Class @class)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,StartDate,EndDate,SubjectId")] Assignment assignment)
         {
-            if (id != @class.Id)
+            if (id != assignment.Id)
             {
                 return NotFound();
             }
@@ -103,12 +101,12 @@ namespace G3.Controllers
             {
                 try
                 {
-                    _context.Update(@class);
+                    _context.Update(assignment);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClassExists(@class.Id))
+                    if (!AssignmentExists(assignment.Id))
                     {
                         return NotFound();
                     }
@@ -119,51 +117,51 @@ namespace G3.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", @class.SubjectId);
-            return View(@class);
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", assignment.SubjectId);
+            return View(assignment);
         }
 
-        // GET: Class/Delete/5
+        // GET: Assignments1/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Classes == null)
+            if (id == null || _context.Assignments == null)
             {
                 return NotFound();
             }
 
-            var @class = await _context.Classes
-                .Include(c => c.Subject)
+            var assignment = await _context.Assignments
+                .Include(a => a.Subject)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (@class == null)
+            if (assignment == null)
             {
                 return NotFound();
             }
 
-            return View(@class);
+            return View(assignment);
         }
 
-        // POST: Class/Delete/5
+        // POST: Assignments1/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Classes == null)
+            if (_context.Assignments == null)
             {
-                return Problem("Entity set 'SWPContext.Classes'  is null.");
+                return Problem("Entity set 'SWPContext.Assignments'  is null.");
             }
-            var @class = await _context.Classes.FindAsync(id);
-            if (@class != null)
+            var assignment = await _context.Assignments.FindAsync(id);
+            if (assignment != null)
             {
-                _context.Classes.Remove(@class);
+                _context.Assignments.Remove(assignment);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ClassExists(int id)
+        private bool AssignmentExists(int id)
         {
-          return (_context.Classes?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Assignments?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
