@@ -91,7 +91,7 @@ namespace G3.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("/assignmentCreate")]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,SubjectId")] Assignment assignment)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,StartDate,EndDate,SubjectId")] Assignment assignment)
         {
             if (ModelState.IsValid)
             {
@@ -102,6 +102,7 @@ namespace G3.Controllers
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", assignment.SubjectId);
             return View(assignment);
         }
+
 
         // GET: Assignments/Edit/5
         [Route("/assignmentEdit")]
@@ -127,7 +128,7 @@ namespace G3.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("/assignmentEdit")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,SubjectId")] Assignment assignment)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,StartDate,EndDate,SubjectId")] Assignment assignment)
         {
             if (id != assignment.Id)
             {
@@ -157,6 +158,7 @@ namespace G3.Controllers
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", assignment.SubjectId);
             return View(assignment);
         }
+
 
         // GET: Assignments/Delete/5
         [Route("/assignmentDelete")]
