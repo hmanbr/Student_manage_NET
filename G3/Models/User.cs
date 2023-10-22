@@ -31,8 +31,8 @@ namespace G3.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public virtual Setting DomainSetting { get; set; } = null!;
-        public virtual Setting RoleSetting { get; set; } = null!;
+        public virtual Setting? DomainSetting { get; set; } = null!;
+        public virtual Setting? RoleSetting { get; set; } = null!;
         public virtual GitLabUser? GitLabUser { get; set; }
         public virtual ICollection<ClassStudentProject> ClassStudentProjects { get; set; }
         public virtual ICollection<Project> Projects { get; set; }

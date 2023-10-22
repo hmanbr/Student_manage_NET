@@ -1,4 +1,4 @@
-﻿@model G3.Models.User
+﻿@model G3.Dtos.UpdateUserDto;
 
 @{
     ViewData["Title"] = "Edit";
@@ -6,270 +6,136 @@
 }
 
 
+<div class="container py-5">
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
+        <input asp-for="UpdatedAt" type="hidden" value="@DateTime.Now" />
 
-<div class="container bootstrap snippets bootdey">
-    <h1 class="text-primary">Edit user profile</h1>
-    <hr>
-    <form asp-action="Edit" method="post" enctype="multipart/form-data">
-        <input type="hidden" asp-for="Id" />
-        <input type="hidden" asp-for="CreatedAt" />
-        <input type="hidden" asp-for="UpdatedAt" value=@DateTime.Now />
-        <input type="hidden" asp-for="Hash" />
+
+        <div class="mb-4">
+            <a asp-action="Index" type="button" class="btn btn-outline-primary">Back to list</a>
+            <input type="submit" value="Save" class="btn btn-primary rounded" />
+            <div class="alert alert-info alert-dismissable" id="alert-message" style="@((ViewData.ModelState.IsValid && (ViewData["ErrorMessage"] == null)) ? "display: none;" : "")">
+                <a class="panel-close close" data-dismiss="alert">×</a>
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <span asp-validation-for="Gender" class="text-danger"></span>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                }
+                else if (ViewData["ErrorMessage"] != null)
+                {
+                    <span class="text-danger">@ViewData["ErrorMessage"]</span>
+                }
+                <i class="fa fa-coffee"></i>
+            </div>
+        </div>
+
         <div class="row">
-            <!-- left column -->
-            <div class="col-md-3">
-                <div class="form-group text-center">
-                    <img src="@Html.DisplayFor(model => model.Avatar)" alt="avatar"
-                         class="rounded-circle img-fluid" style="width: 150px;">
-                    <h6>Upload a different photo...</h6>
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img src="@Html.DisplayFor(model => model.Avatar)" alt="avatar"
+                             class="rounded-circle img-fluid" style="width: 150px;">
+                        <br />
+                        <br />
+                        <div>
+                            <label class="btn btn-outline-primary">
+                                Browse
+                                <input name="AvatarFile" type="file" accept="image/*" style="display: none;" />
+                            </label>
+                        </div>
+                        <h6>Upload a different photo...</h6>
+                        <div class="text-center">
+                            <select asp-for="RoleSettingId" class="form-control" asp-items="ViewBag.RoleSettingId" style="width: auto; display: inline-block;"></select>
+                        </div>
 
-                    <input name="AvatarFile" type="file" accept="image/*" />
-                    <br />
-                    <input asp-for="Avatar" type="hidden" />
-                    <span asp-validation-for="Avatar" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    @*<label asp-for="Blocked" class="col-lg-3 form-check-inline form-check-label">Blocked:</label>
-                    <div class="form-check form-check-inline float-lg-right">
-                        <input asp-for="Blocked" class="form-check-input" type="radio" id="blocked-no" value=@false />
-                        <label asp-for="Blocked" class="form-check-label" for="blocked-no">
-                            No
-                        </label>
-                    </div>
-                    <div class="form-check form-check-inline float-lg-right">
-                        <input asp-for="Blocked" class="form-check-input" type="radio" id="blocked-yes" value=@true />
-                        <label asp-for="Blocked" class="form-check-label" for="blocked-yes">
-                            Yes
-                        </label>
-                    </div>*@
-                </div>
-                <div class="form-group">
-                    @*<label asp-for="Confirmed" class="col-lg-3 form-check-inline form-check-label">Confirmed:</label>
-                    <div class="form-check form-check-inline float-lg-right">
-                        <input asp-for="Confirmed" class="form-check-input" type="radio" id="confirmed-no" value=@false />
-                        <label asp-for="Confirmed" class="form-check-label" for="confirmed-no">
-                            No
-                        </label>
-                    </div>
-                    <div class="form-check form-check-inline float-lg-right">
-                        <input asp-for="Confirmed" class="form-check-input" type="radio" id="confirmed-yes" value=@true />
-                        <label asp-for="Confirmed" class="form-check-label" for="confirmed-yes">
-                            Yes
-                        </label>
-                    </div>*@
-                </div>
-                <div class="form-group">
-                    <label asp-for="Gender" class="col-lg-3 form-check-inline form-check-label">Gender:</label>
-                    <div class="form-check form-check-inline float-lg-right">
-                        <input asp-for="Gender" class="form-check-input" type="radio" id="blocked-no" value=@false />
-                        <label asp-for="Gender" class="form-check-label" for="blocked-no">
-                            Female
-                        </label>
-                    </div>
-                    <div class="form-check form-check-inline float-lg-right">
-                        <input asp-for="Gender" class="form-check-input" type="radio" id="blocked-yes" value=@true />
-                        <label asp-for="Gender" class="form-check-label" for="blocked-yes">
-                            Male
-                        </label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label asp-for="DomainSettingId" class="col-lg-3 control-label">Domain:</label>
-                    <div class="col-lg-12">
-                        <select asp-for="DomainSettingId" class="form-control" asp-items="ViewBag.DomainSettingId"></select>
+                        <p class="text-muted mb-4">@Html.DisplayFor(model => model.Address)</p>
 
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label asp-for="RoleSettingId" class="col-lg-3 control-label">Role:</label>
-                    <div class="col-lg-12">
-                        <select asp-for="RoleSettingId" class="form-control" asp-items="ViewBag.RoleSettingId"></select>
                     </div>
                 </div>
             </div>
-
-            <!-- edit form column -->
-            <div class="col-md-9 personal-info">
-                <div class="alert alert-info alert-dismissable" id="alert-message" style="@((ViewData.ModelState.IsValid && (ViewData["ErrorMessage"] == null)) ? "display: none;" : "")">
-                    <a class="panel-close close" data-dismiss="alert">×</a>
-                    @if (!ViewData.ModelState.IsValid)
-                    {
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <span asp-validation-for="Id" class="text-danger"></span>
-                        <span asp-validation-for="CreatedAt" class="text-danger"></span>
-                        <span asp-validation-for="UpdatedAt" class="text-danger"></span>
-                        <span asp-validation-for="Hash" class="text-danger"></span>
-                        @*<span asp-validation-for="Confirmed" class="text-danger"></span>
-                        <span asp-validation-for="Blocked" class="text-danger"></span>*@
-                        <span asp-validation-for="Gender" class="text-danger"></span>
-                        <span asp-validation-for="RoleSettingId" class="text-danger"></span>
-                        <span asp-validation-for="DomainSettingId" class="text-danger"></span>
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    }
-                    else if (ViewData["ErrorMessage"] != null)
-                    {
-                        <span class="text-danger">@ViewData["ErrorMessage"]</span>
-                    }
-                    <i class="fa fa-coffee"></i>
-                </div>
-
-
-                <h3>Personal info</h3>
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label">Full name:</label>
-                        <div class="col-lg-12">
-                            <input asp-for="Name" class="form-control" />
-
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Full Name</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="text" asp-for="Name" class="mb-0" style="border: none; outline: none; width: 100%;" placeholder="Enter your full name">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label">Date of birth:</label>
-                        <div class="col-lg-12">
-                            <input asp-for="DateOfBirth" class="form-control" type="date" />
-                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label asp-for="Status" class="col-sm-3 form-check-inline form-check-label">Status:</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Status" class="form-check-input" type="radio" id="status-false" value=@false />
+                                    <label asp-for="Status" class="form-check-label" for="status-false" data-toggle="tooltip" title="Blocked">
+                                        &#x1F6AB;
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Status" class="form-check-input" type="radio" id="status-true" value=@true />
+                                    <label asp-for="Status" class="form-check-label" for="status-true" data-toggle="tooltip" title="Verified">
+                                        &#x2705;
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Status" class="form-check-input" type="radio" id="status-null" value=@null />
+                                    <label asp-for="Status" class="form-check-label" for="status-null" data-toggle="tooltip" title="Unverified">
+                                        &#x2753;
+                                    </label>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label">Phone:</label>
-                        <div class="col-lg-12">
-                            <input asp-for="Phone" class="form-control" />
-                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        <hr />
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Date of Birth</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="date" asp-for="DateOfBirth" class="mb-0" style="border: none; outline: none; width: 100%;" placeholder="Enter date of birth">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label">Address:</label>
-                        <div class="col-lg-12">
-                            <input asp-for="Address" class="form-control" />
-                            <span asp-validation-for="Address" class="text-danger"></span>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Gender</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Gender" class="form-check-input" type="radio" id="gender-true" value=@true />
+                                    <label asp-for="Gender" class="form-check-label" for="gender-true">
+                                        Male
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Gender" class="form-check-input" type="radio" id="gender-false" value=@false />
+                                    <label asp-for="Gender" class="form-check-label" for="gender-false">
+                                        Female
+                                    </label>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label">Email:</label>
-                        <div class="col-lg-12">
-                            <input asp-for="Email" class="form-control" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Phone</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="text" asp-for="Phone" class="mb-0" style="border: none; outline: none; width: 100%;" placeholder="Enter your phone number">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group" align="center">
-                        <div class="btn-group">
-                            <input type="submit" value="Save" class="btn btn-primary rounded" />
-                            <a asp-action="Index" class="btn btn-outline-primary rounded mr-2 ml-2">Back to List</a>
-                            <div>
-                                <meta charset="utf-8">
-                                <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-                                <title>Bootstrap Delete Confirmation Modal</title>
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
-                                <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-                                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-                                <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-                                <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-                                <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-                                <style>
-                                    body {
-                                        font-family: 'Varela Round', sans-serif;
-                                    }
-
-                                    .modal-confirm {
-                                        color: #636363;
-                                        width: 400px;
-                                    }
-
-                                        .modal-confirm .modal-content {
-                                            padding: 20px;
-                                            border-radius: 5px;
-                                            border: none;
-                                            text-align: center;
-                                            font-size: 14px;
-                                        }
-
-                                        .modal-confirm .modal-header {
-                                            border-bottom: none;
-                                            position: relative;
-                                        }
-
-                                        .modal-confirm h4 {
-                                            text-align: center;
-                                            font-size: 26px;
-                                            margin: 30px 0 -10px;
-                                        }
-
-                                        .modal-confirm .close {
-                                            position: absolute;
-                                            top: -5px;
-                                            right: -2px;
-                                        }
-
-                                        .modal-confirm .modal-body {
-                                            color: #999;
-                                        }
-
-                                        .modal-confirm .modal-footer {
-                                            border: none;
-                                            text-align: center;
-                                            border-radius: 5px;
-                                            font-size: 13px;
-                                            padding: 10px 15px 25px;
-                                        }
-
-                                            .modal-confirm .modal-footer a {
-                                                color: #999;
-                                            }
-
-                                        .modal-confirm .icon-box {
-                                            width: 80px;
-                                            height: 80px;
-                                            margin: 0 auto;
-                                            border-radius: 50%;
-                                            z-index: 9;
-                                            text-align: center;
-                                            border: 3px solid #f15e5e;
-                                        }
-
-                                            .modal-confirm .icon-box i {
-                                                color: #f15e5e;
-                                                font-size: 46px;
-                                                display: inline-block;
-                                                margin-top: 13px;
-                                            }
-
-                                        .modal-confirm .btn, .modal-confirm .btn:active {
-                                            color: #fff;
-                                            border-radius: 4px;
-                                            background: #60c7c1;
-                                            text-decoration: none;
-                                            transition: all 0.4s;
-                                            line-height: normal;
-                                            min-width: 120px;
-                                            border: none;
-                                            min-height: 40px;
-                                            border-radius: 3px;
-                                            margin: 0 5px;
-                                        }
-
-                                        .modal-confirm .btn-secondary {
-                                            background: #c1c1c1;
-                                        }
-
-                                            .modal-confirm .btn-secondary:hover, .modal-confirm .btn-secondary:focus {
-                                                background: #a8a8a8;
-                                            }
-
-                                        .modal-confirm .btn-danger {
-                                            background: #f15e5e;
-                                        }
-
-                                            .modal-confirm .btn-danger:hover, .modal-confirm .btn-danger:focus {
-                                                background: #ee3535;
-                                            }
-
-                                    .trigger-btn {
-                                        display: inline-block;
-                                        margin: 100px auto;
-                                    }
-                                </style>
-                                <a href="#myModal" class="btn btn-danger rounded" data-toggle="modal">Delete</a>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Address</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="text" asp-for="Address" class="mb-0" style="border: none; outline: none; width: 100%;" placeholder="Enter your address">
                             </div>
                         </div>
                     </div>
@@ -277,27 +143,5 @@
             </div>
         </div>
     </form>
-    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
-        <div id="myModal" class="modal fade">
-            <div class="modal-dialog modal-confirm">
-                <div class="modal-content">
-                    <div class="modal-header flex-column">
-                        <div class="icon-box">
-                            <i class="material-icons">&#xE5CD;</i>
-                        </div>
-                        <h4 class="modal-title w-100">Are you sure?</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Do you really want to delete these records? This process cannot be undone.</p>
-                    </div>
-                    <div class="modal-footer justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button class="btn btn-danger" type="submit">Delete</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-</div>
 
+</div>
