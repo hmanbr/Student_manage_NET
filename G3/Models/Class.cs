@@ -16,6 +16,7 @@ namespace G3.Models
         public int Id { get; set; }
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
+        public int? GitLabGroupId { get; set; }
         public int? SubjectId { get; set; }
         public bool? Status { get; set; }
 

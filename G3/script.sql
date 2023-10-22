@@ -94,6 +94,7 @@ CREATE TABLE `Class` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `Name` VARCHAR(191) NOT NULL,
     `Description` VARCHAR(191) NULL,
+    `GitLabGroupId` INTEGER NULL,
     `SubjectId` INTEGER NULL,
     `Status` BOOLEAN NOT NULL DEFAULT true,
 
