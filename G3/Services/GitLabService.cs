@@ -4,7 +4,7 @@ using NGitLab.Models;
 
 namespace G3.Services
 {
-    public class GitLabService : IGitLabService
+    public class GitLabService
     {
         private readonly IConfiguration Configuration;
         public GitLabClient client;
@@ -17,29 +17,9 @@ namespace G3.Services
             this.context = context;
         }
 
-        public Group CreateGroup(string className, string description)
-        {
-            var group = client.Groups.Create(new GroupCreate {
-                Name = className,
-                Path = className + Nanoid.Generate(size: 10),
-                Visibility = NGitLab.Models.VisibilityLevel.Private,
-                Description= description,
-            });
-            return group;
-        }
-
         public void CreateProject(int ProjectId, string projectCode, string englishName, string vietnameseName, string description, int mentorId, int leaderId, string groupName, bool isActive = true)
         {
-            //context.Projects.Add(new Models.Project
-            //{
-            //    Id = ProjectId,
-            //    ProjectCode = projectCode,
-            //    EnglishName = englishName,
-            //    VietNameseName = vietnameseName,
-            //    Description = description,
-            //    MentorId = mentorId,
-                
-            //});
+            //
         }
 
         public void GetMilestones(List<int> ProjectIds)
