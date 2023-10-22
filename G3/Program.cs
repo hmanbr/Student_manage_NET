@@ -1,16 +1,16 @@
 using System.Text.Json.Serialization;
+using NGitLab;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllersWithViews();
 
-
-
 builder.Services.AddDbContext<SWPContext>(options => new SWPContext());
 
 builder.Services.AddSingleton<IMailService, MailService>();
 builder.Services.AddSingleton<IHashService, HashService>();
+//builder.Services.AddSingleton<IGitLabService, GitLabService>();
 
 builder.Services.AddSession(options => {
     options.Cookie.Name = "SessionCookie";

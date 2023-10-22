@@ -1,0 +1,70 @@
+﻿@model G3.Models.SubjectSetting
+
+@{
+    ViewData["Title"] = "SubjectSettingEdit";
+    Layout = "~/Views/Shared/SubjectManagerLayout.cshtml";
+}
+
+@*<h1>Update</h1>
+
+<h4>Subject setting</h4>
+<hr />*@
+@*<div class="row">
+    <div class="col-md-4">*@
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <h2 class="card-title text-center mb-4">Update </h2>
+        <form asp-action="SubjectSettingEdit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="SubjectId" class="control-label"></label>
+                <input asp-for="SubjectId" class="form-control " readonly />
+                <span asp-validation-for="SubjectId" class="text-danger"></span>
+            </div>
+
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Value" class="control-label">Work complexity levels</label>
+                <input asp-for="Value" class="form-control" />
+                <span asp-validation-for="Value" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Work quality levels</label>
+                @*<input asp-for="Description" class="form-control" />*@
+                <select asp-for="Description" class="form-control">
+                    <option value="normal">Normal</option>
+                    <option value="Hard">Hard</option>
+                    <option value="high">High</option>
+                </select>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>        
+            <div class="form-group">
+                <label asp-for="SubjectId" class="control-label">Subject</label>
+                <select asp-for="SubjectId" class="form-control" asp-items="ViewBag.SubjectId"></select>
+                <span asp-validation-for="SubjectId" class="text-danger"></span>
+                <h5 style="color:red; font-size:17px;">@ViewData["exist"]</h5>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+                        <div>
+                            <a asp-action="SubjectSettingList">Back to List</a>
+                        </div>
+        </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ @*   </div>
+</div>*@
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
