@@ -7,7 +7,6 @@ namespace G3.Models
     {
         public int Id { get; set; }
         public int Iid { get; set; }
-        public int ProjectId { get; set; }
         public string Title { get; set; } = null!;
         public string? Description { get; set; }
         public string Status { get; set; } = null!;
@@ -18,10 +17,12 @@ namespace G3.Models
         public int AssigneeId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public int? ProjectId { get; set; }
 
-        public virtual Gitlabuser Assignee { get; set; } = null!;
-        public virtual Gitlabuser Author { get; set; } = null!;
-        public virtual Gitlabuser? ClosedBy { get; set; }
+        public virtual GitLabUser Assignee { get; set; } = null!;
+        public virtual GitLabUser Author { get; set; } = null!;
+        public virtual GitLabUser? ClosedBy { get; set; }
         public virtual Milestone? Milestone { get; set; }
+        public virtual Project? Project { get; set; }
     }
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace G3.Models
 {
-    public partial class Gitlabuser
+    public partial class GitLabUser
     {
-        public Gitlabuser()
+        public GitLabUser()
         {
             IssueAssignees = new HashSet<Issue>();
             IssueAuthors = new HashSet<Issue>();

@@ -19,14 +19,15 @@ namespace G3.Models
         public virtual DbSet<Assignee> Assignees { get; set; } = null!;
         public virtual DbSet<Assignment> Assignments { get; set; } = null!;
         public virtual DbSet<Class> Classes { get; set; } = null!;
-        public virtual DbSet<Classsetting> Classsettings { get; set; } = null!;
-        public virtual DbSet<Gitlabuser> Gitlabusers { get; set; } = null!;
+        public virtual DbSet<ClassSetting> ClassSettings { get; set; } = null!;
+        public virtual DbSet<ClassStudentProject> ClassStudentProjects { get; set; } = null!;
+        public virtual DbSet<GitLabUser> GitLabUsers { get; set; } = null!;
         public virtual DbSet<Issue> Issues { get; set; } = null!;
         public virtual DbSet<Milestone> Milestones { get; set; } = null!;
         public virtual DbSet<Project> Projects { get; set; } = null!;
         public virtual DbSet<Setting> Settings { get; set; } = null!;
         public virtual DbSet<Subject> Subjects { get; set; } = null!;
-        public virtual DbSet<Subjectsetting> Subjectsettings { get; set; } = null!;
+        public virtual DbSet<SubjectSetting> SubjectSettings { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -44,7 +45,7 @@ namespace G3.Models
             {
                 entity.HasNoKey();
 
-                entity.ToTable("assignee");
+                entity.ToTable("Assignee", "SWP");
 
                 entity.HasIndex(e => e.GitLabUserId, "Assignee_GitLabUserId_fkey");
 
@@ -66,13 +67,17 @@ namespace G3.Models
 
             modelBuilder.Entity<Assignment>(entity =>
             {
-                entity.ToTable("assignment");
+                entity.ToTable("Assignment", "SWP");
 
                 entity.HasIndex(e => e.Id, "Assignment_Id_idx");
 
                 entity.HasIndex(e => e.SubjectId, "Assignment_SubjectId_fkey");
 
                 entity.Property(e => e.Description).HasMaxLength(191);
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime(3)");
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime(3)");
 
                 entity.Property(e => e.Title).HasMaxLength(191);
 
@@ -85,13 +90,17 @@ namespace G3.Models
 
             modelBuilder.Entity<Class>(entity =>
             {
-                entity.ToTable("class");
+                entity.ToTable("Class", "SWP");
 
                 entity.HasIndex(e => e.SubjectId, "Class_SubjectId_fkey");
 
                 entity.Property(e => e.Description).HasMaxLength(191);
 
                 entity.Property(e => e.Name).HasMaxLength(191);
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasDefaultValueSql("'1'");
 
                 entity.HasOne(d => d.Subject)
                     .WithMany(p => p.Classes)
@@ -100,12 +109,12 @@ namespace G3.Models
                     .HasConstraintName("Class_SubjectId_fkey");
             });
 
-            modelBuilder.Entity<Classsetting>(entity =>
+            modelBuilder.Entity<ClassSetting>(entity =>
             {
                 entity.HasKey(e => e.SettingId)
                     .HasName("PRIMARY");
 
-                entity.ToTable("classsetting");
+                entity.ToTable("ClassSetting", "SWP");
 
                 entity.HasIndex(e => e.ClassId, "ClassSetting_classId_fkey");
 
@@ -124,15 +133,44 @@ namespace G3.Models
                 entity.Property(e => e.Value).HasMaxLength(191);
 
                 entity.HasOne(d => d.Class)
-                    .WithMany(p => p.Classsettings)
+                    .WithMany(p => p.ClassSettings)
                     .HasForeignKey(d => d.ClassId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("ClassSetting_classId_fkey");
             });
 
-            modelBuilder.Entity<Gitlabuser>(entity =>
+            modelBuilder.Entity<ClassStudentProject>(entity =>
             {
-                entity.ToTable("gitlabuser");
+                entity.ToTable("ClassStudentProject", "SWP");
+
+                entity.HasIndex(e => e.ClassId, "ClassStudentProject_ClassId_fkey");
+
+                entity.HasIndex(e => e.ProjectId, "ClassStudentProject_ProjectId_fkey");
+
+                entity.HasIndex(e => e.UserId, "ClassStudentProject_UserId_fkey");
+
+                entity.HasOne(d => d.Class)
+                    .WithMany(p => p.ClassStudentProjects)
+                    .HasForeignKey(d => d.ClassId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("ClassStudentProject_ClassId_fkey");
+
+                entity.HasOne(d => d.Project)
+                    .WithMany(p => p.ClassStudentProjects)
+                    .HasForeignKey(d => d.ProjectId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("ClassStudentProject_ProjectId_fkey");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.ClassStudentProjects)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("ClassStudentProject_UserId_fkey");
+            });
+
+            modelBuilder.Entity<GitLabUser>(entity =>
+            {
+                entity.ToTable("GitLabUser", "SWP");
 
                 entity.HasIndex(e => e.UserId, "GitLabUser_UserId_key")
                     .IsUnique();
@@ -151,15 +189,15 @@ namespace G3.Models
                 entity.Property(e => e.WebUrl).HasMaxLength(191);
 
                 entity.HasOne(d => d.User)
-                    .WithOne(p => p.Gitlabuser)
-                    .HasForeignKey<Gitlabuser>(d => d.UserId)
+                    .WithOne(p => p.GitLabUser)
+                    .HasForeignKey<GitLabUser>(d => d.UserId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("GitLabUser_UserId_fkey");
             });
 
             modelBuilder.Entity<Issue>(entity =>
             {
-                entity.ToTable("issue");
+                entity.ToTable("Issue", "SWP");
 
                 entity.HasIndex(e => e.AssigneeId, "Issue_AssigneeId_fkey");
 
@@ -168,6 +206,8 @@ namespace G3.Models
                 entity.HasIndex(e => e.ClosedById, "Issue_ClosedById_fkey");
 
                 entity.HasIndex(e => e.MilestoneId, "Issue_MilestoneId_fkey");
+
+                entity.HasIndex(e => e.ProjectId, "Issue_ProjectId_fkey");
 
                 entity.Property(e => e.ClosedAt).HasColumnType("datetime(3)");
 
@@ -206,11 +246,17 @@ namespace G3.Models
                     .HasForeignKey(d => d.MilestoneId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("Issue_MilestoneId_fkey");
+
+                entity.HasOne(d => d.Project)
+                    .WithMany(p => p.Issues)
+                    .HasForeignKey(d => d.ProjectId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("Issue_ProjectId_fkey");
             });
 
             modelBuilder.Entity<Milestone>(entity =>
             {
-                entity.ToTable("milestone");
+                entity.ToTable("Milestone", "SWP");
 
                 entity.HasIndex(e => e.ClassId, "Milestone_ClassId_fkey");
 
@@ -249,20 +295,40 @@ namespace G3.Models
 
             modelBuilder.Entity<Project>(entity =>
             {
-                entity.ToTable("project");
+                entity.ToTable("Project", "SWP");
 
                 entity.HasIndex(e => e.ClassId, "Project_ClassId_fkey");
+
+                entity.HasIndex(e => e.MentorId, "Project_MentorId_fkey");
+
+                entity.Property(e => e.Description).HasColumnType("text");
+
+                entity.Property(e => e.EnglishName).HasMaxLength(191);
+
+                entity.Property(e => e.GroupName).HasMaxLength(191);
+
+                entity.Property(e => e.ProjectCode).HasMaxLength(191);
+
+                entity.Property(e => e.ProjectStatus).HasMaxLength(191);
+
+                entity.Property(e => e.VietNameseName).HasMaxLength(191);
 
                 entity.HasOne(d => d.Class)
                     .WithMany(p => p.Projects)
                     .HasForeignKey(d => d.ClassId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("Project_ClassId_fkey");
+
+                entity.HasOne(d => d.Mentor)
+                    .WithMany(p => p.Projects)
+                    .HasForeignKey(d => d.MentorId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("Project_MentorId_fkey");
             });
 
             modelBuilder.Entity<Setting>(entity =>
             {
-                entity.ToTable("setting");
+                entity.ToTable("Setting", "SWP");
 
                 entity.HasIndex(e => e.SettingId, "Setting_SettingId_idx");
 
@@ -286,7 +352,7 @@ namespace G3.Models
 
             modelBuilder.Entity<Subject>(entity =>
             {
-                entity.ToTable("subject");
+                entity.ToTable("Subject", "SWP");
 
                 entity.HasIndex(e => e.Id, "Subject_Id_idx");
 
@@ -314,9 +380,9 @@ namespace G3.Models
                     .HasConstraintName("Subject_MentorId_fkey");
             });
 
-            modelBuilder.Entity<Subjectsetting>(entity =>
+            modelBuilder.Entity<SubjectSetting>(entity =>
             {
-                entity.ToTable("subjectsetting");
+                entity.ToTable("SubjectSetting", "SWP");
 
                 entity.HasIndex(e => e.Id, "SubjectSetting_Id_idx");
 
@@ -327,7 +393,7 @@ namespace G3.Models
                 entity.Property(e => e.Value).HasMaxLength(191);
 
                 entity.HasOne(d => d.Subject)
-                    .WithMany(p => p.Subjectsettings)
+                    .WithMany(p => p.SubjectSettings)
                     .HasForeignKey(d => d.SubjectId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("SubjectSetting_SubjectId_fkey");
@@ -335,7 +401,7 @@ namespace G3.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("user");
+                entity.ToTable("User", "SWP");
 
                 entity.HasIndex(e => e.ConfirmToken, "User_ConfirmToken_idx");
 

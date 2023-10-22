@@ -27,7 +27,7 @@
 <div class="container mt-5">
     
    
-    <form asp-action="SubjectList" method="post" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+    <form asp-action="SubjectList" method="get" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
         <div class="input-group">
 
             <input  type="text"  class="form-control small" placeholder="Search for Subject Code...."
@@ -44,7 +44,7 @@
 </div>
 
 <div class="container mt-5 text-lg-right">
-    <form asp-action="SubjectList" method="post" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+    <form asp-action="SubjectList" method="get" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
         <div class="form-group">
             <label for="SortBy">Sorted by Subject Code:</label>
             
@@ -85,12 +85,13 @@
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
+            
             <th>
                 @*@Html.DisplayNameFor(model => model.Mentor)*@
                 Manager
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
             </th>
             <th>Action</th>
         </tr>
@@ -107,6 +108,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mentor.Name)
+                </td>
             <td>
                 @*@Html.DisplayFor(modelItem => item.Status)*@
                     @{
@@ -120,9 +124,7 @@
                         }
                     }
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Mentor.Name)
-            </td>
+            
             <td>
                     <a asp-action="SubjectEdit" asp-route-id="@item.Id"><img src="~/img/update.png" style="width:32px;height:32px;"></a>
                     @*<a asp-action="SubjectDetails" asp-route-id="@item.Id">Details</a> *@
