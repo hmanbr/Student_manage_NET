@@ -10,10 +10,41 @@
 <h1>ClassDetail</h1>
 
 <div class="container-fluid">
-	<div class="card shadow mb-4">
+	<div class="row">
+		<div class="col-lg-6">
+			<div class="card shadow mb-4">
+				<!-- Card Header - Dropdown -->
+				<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+					<h6 class="m-0 font-weight-bold text-primary">Issues List</h6>
+				</div>
+				<!-- Card Body -->
+				<div class="card-body">
+					<!-- Your content for the "Issues List" card here -->
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-6">
+			<div class="card shadow mb-4">
+				<!-- Card Header - Dropdown -->
+				<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+					<h6 class="m-0 font-weight-bold text-primary">Assignment List</h6>
+				</div>
+				<!-- Card Body -->
+				<div class="card-body">
+					<!-- Your content for the "Assignment List" card here -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Repeat this row/column structure for each pair of cards -->
+</div>
+
+
+<div class="container-fluid">
+	<div class="card shadow col-lg-12">
 		<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
 			<h6 class="m-0 font-weight-bold text-primary">Student List</h6>
-			<form asp-action="ClassStudents" asp-controller="Classroom">
+			<form method="get" asp-action="ClassStudents" asp-controller="Classroom">
 				<input type="hidden" name="id" value="@classId" />
 				<button type="submit" class="btn btn-outline-primary float-right">Manage students</button>
 			</form>

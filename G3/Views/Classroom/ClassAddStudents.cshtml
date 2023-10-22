@@ -2,6 +2,7 @@
 @{
 	ViewData["Title"] = "ClassStudents";
 	Layout = "~/Views/Shared/AdminLayout.cshtml";
+	int classId = (int)ViewBag.ClassId;
 }
 
 <h1>Class Students</h1>
@@ -27,7 +28,8 @@
 		</div>
 		<div class="card-body">
 			<div class="table-responsive">
-				<form asp-action="ClassAddStudent" asp-controller="Classroom">
+				<form  asp-action="AddStudentsToClass" asp-controller="Classroom">
+					<input type="hidden" name="classId" value="@ViewBag.ClassID" />
 					<table class="table table-bordered" cellspacing="0">
 						<thead>
 							<tr>
@@ -88,18 +90,19 @@
 									}
 								</td>
 								<td>
-									<a asp-action="AddStudentsToClass" asp-route-id="@item.Id">Add to class</a> |
+									<button class="btn btn-link" type="submit" name="stuID" value="@item.Id">Add to class</button>
 								</td>
 							</tr>
 						}
 					</table>
-
 				</form>
 			</div>
 		</div>
 		<div>
 			<span class="mr-1">
-				<a class="btn btn-outline-primary float-right" asp-controller="Classroom" asp-action="ClassStudents">Cancel</a>
+				<form asp-controller="Classroom" asp-action="ClassStudents" method="get">
+					<button class="btn btn-outline-primary float-left" name="id" value="@ViewBag.ClassID" type="submit">Cancel</button>
+				</form>				
 			</span>
 		</div>
 

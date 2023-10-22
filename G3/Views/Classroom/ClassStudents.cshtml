@@ -6,7 +6,7 @@
 	int classId = (int)ViewBag.ClassId;
 }
 
-<h1>Class Students</h1>
+<h1>Students in class</h1>
 
 <div class="container-fluid">
 	<div class="card shadow mb-4">
@@ -98,16 +98,30 @@
 			</div>
 		</div>
 		<div>
-			<span class="mr-4">
-				<a class="btn btn-outline-primary float-right" asp-controller="Classroom" asp-action="ClassAddStudents">Add new student</a>
-			</span>
 			<span class="mr-1">
+				<form method="get" asp-controller="Classroom" asp-action="ExportStudentsToExcel">
+					@if (ViewBag.ClassId != null)
+					{
+						<input type="hidden" name="id" value="@ViewBag.ClassId" />
+					}
+					<button class="btn btn-outline-primary float-right" type="submit">Export to excel</button>
+				</form>
 				<form method="get" asp-controller="Classroom" asp-action="UploadExcel">
 					@if (ViewBag.ClassId != null)
 					{
 						<input type="hidden" name="id" value="@ViewBag.ClassId" />
 					}
 					<button class="btn btn-outline-primary float-right" type="submit">Import from excel</button>
+				</form>
+				<form method="get" asp-controller="Classroom" asp-action="ClassAddStudents">
+					@if (ViewBag.ClassId != null)
+					{
+						<input type="hidden" name="id" value="@ViewBag.ClassId" />
+					}
+					<button class="btn btn-outline-primary float-right" type="submit">Add student to class</button>
+				</form>
+				<form asp-controller="Classroom" asp-action="ClassDetail" method="get">
+					<button class="btn btn-outline-primary float-left" name="id" value="@ViewBag.ClassID" type="submit">Back to class detail</button>
 				</form>
 			</span>
 			
