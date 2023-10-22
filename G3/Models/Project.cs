@@ -20,9 +20,9 @@ namespace G3.Models
         public string Description { get; set; } = null!;
         public string GroupName { get; set; } = null!;
         public int MentorId { get; set; }
-        public int? ClassId { get; set; }
+        public int? GroupId { get; set; }
 
-        public virtual Class? Class { get; set; }
+        public virtual Class? Group { get; set; }
         public virtual User Mentor { get; set; } = null!;
         public virtual ICollection<ClassStudentProject> ClassStudentProjects { get; set; }
         public virtual ICollection<Issue> Issues { get; set; }

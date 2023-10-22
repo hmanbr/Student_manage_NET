@@ -11,7 +11,6 @@ namespace G3.Models
             ClassStudentProjects = new HashSet<ClassStudentProject>();
             Milestones = new HashSet<Milestone>();
             Projects = new HashSet<Project>();
-            Users = new HashSet<User>();
         }
 
         public int Id { get; set; }
@@ -26,7 +25,5 @@ namespace G3.Models
         public virtual ICollection<ClassStudentProject> ClassStudentProjects { get; set; }
         public virtual ICollection<Milestone> Milestones { get; set; }
         public virtual ICollection<Project> Projects { get; set; }
-
-        public virtual ICollection<User> Users { get; set; }
     }
 }
