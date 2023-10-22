@@ -20,7 +20,7 @@ CREATE TABLE `User` (
     `Phone` VARCHAR(191) NULL,
     `Address` VARCHAR(191) NULL,
     `Gender` BOOLEAN NULL,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
     `CreatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `UpdatedAt` DATETIME(3) NOT NULL,
 
@@ -41,7 +41,7 @@ CREATE TABLE `Setting` (
     `Name` VARCHAR(191) NOT NULL,
     `Value` VARCHAR(191) NOT NULL,
     `IsActive` BOOLEAN NOT NULL DEFAULT true,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
 
     INDEX `Setting_Type_Value_idx`(`Type`, `Value`),
     INDEX `Setting_SettingId_idx`(`SettingId`),
@@ -54,7 +54,7 @@ CREATE TABLE `Subject` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `SubjectCode` VARCHAR(191) NOT NULL,
     `Name` VARCHAR(191) NOT NULL,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
     `Status` BOOLEAN NOT NULL DEFAULT true,
     `MentorId` INTEGER NULL,
 
@@ -68,7 +68,7 @@ CREATE TABLE `Subject` (
 CREATE TABLE `SubjectSetting` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `Value` VARCHAR(191) NOT NULL,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
     `SubjectId` INTEGER NULL,
 
     INDEX `SubjectSetting_Id_idx`(`Id`),
@@ -80,7 +80,7 @@ CREATE TABLE `SubjectSetting` (
 CREATE TABLE `Assignment` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `Title` VARCHAR(191) NOT NULL,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
     `StartDate` DATETIME(3) NOT NULL,
     `EndDate` DATETIME(3) NOT NULL,
     `SubjectId` INTEGER NULL,
@@ -93,7 +93,7 @@ CREATE TABLE `Assignment` (
 CREATE TABLE `Class` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `Name` VARCHAR(191) NOT NULL,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
     `GitLabGroupId` INTEGER NULL,
     `SubjectId` INTEGER NULL,
     `Status` BOOLEAN NOT NULL DEFAULT true,
@@ -116,7 +116,7 @@ CREATE TABLE `ClassSetting` (
     `Type` VARCHAR(191) NOT NULL,
     `Name` VARCHAR(191) NOT NULL,
     `Value` VARCHAR(191) NOT NULL,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
     `IsActive` BOOLEAN NOT NULL DEFAULT true,
     `classId` INTEGER NULL,
 
@@ -144,7 +144,7 @@ CREATE TABLE `Milestone` (
     `Iid` INTEGER NOT NULL,
     `ProjectId` INTEGER NOT NULL,
     `Title` VARCHAR(191) NOT NULL,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
     `State` VARCHAR(191) NOT NULL,
     `CreatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `UpdatedAt` DATETIME(3) NOT NULL,

@@ -67,7 +67,20 @@ namespace G3.Services {
                 return null;
             }
         }
+        public void SendPassword(string email, string password)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Admin", emailSender));
+            message.To.Add(new MailboxAddress(email, email));
+            message.Subject = "Email Confirmation";
+            message.Body = new TextPart("plain") { Text = "Your password is: " + password };
 
+            using var client = new SmtpClient();
+            client.Connect(host, port, useSsl);
+            client.Authenticate(emailSender, this.password);
+            client.Send(message);
+            client.Disconnect(true);
+        }
     }
 }
 
