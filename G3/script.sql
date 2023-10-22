@@ -200,7 +200,7 @@ CREATE TABLE `Issue` (
     PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
---CreateTable
+-- CreateTable
 CREATE TABLE UserClass (
     UserID INT,
     ClassID INT,
