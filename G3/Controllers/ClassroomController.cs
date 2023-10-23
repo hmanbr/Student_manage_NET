@@ -148,7 +148,7 @@ namespace G3.Controllers
 
 		[Route("/ManageClassroom/UploadExcel")]
 		[HttpPost]
-		public async Task<IActionResult> UploadExcel(IFormFile file, int id)
+		public async Task<IActionResult> UploadExcel(IFormFile file, int id) // need to fix this excel function
 		{
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
