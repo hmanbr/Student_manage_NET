@@ -4,6 +4,7 @@ CREATE DATABASE SWP;
 
 USE SWP;
 
+-- CreateTable
 CREATE TABLE `User` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `Email` VARCHAR(191) NOT NULL,
@@ -20,17 +21,17 @@ CREATE TABLE `User` (
     `Phone` VARCHAR(191) NULL,
     `Address` VARCHAR(191) NULL,
     `Gender` BOOLEAN NULL,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
     `CreatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `UpdatedAt` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `User_Email_key`(`Email`),
-    UNIQUE INDEX `User_ConfirmToken_key`(`ConfirmToken`),
-    UNIQUE INDEX `User_ResetPassToken_key`(`ResetPassToken`),
     INDEX `User_Id_idx`(`Id`),
     INDEX `User_Email_idx`(`Email`),
     INDEX `User_ConfirmToken_idx`(`ConfirmToken`),
     INDEX `User_ResetPassToken_idx`(`ResetPassToken`),
+    UNIQUE INDEX `User_Email_key`(`Email`),
+    UNIQUE INDEX `User_ConfirmToken_key`(`ConfirmToken`),
+    UNIQUE INDEX `User_ResetPassToken_key`(`ResetPassToken`),
     PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -41,7 +42,7 @@ CREATE TABLE `Setting` (
     `Name` VARCHAR(191) NOT NULL,
     `Value` VARCHAR(191) NOT NULL,
     `IsActive` BOOLEAN NOT NULL DEFAULT true,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
 
     INDEX `Setting_Type_Value_idx`(`Type`, `Value`),
     INDEX `Setting_SettingId_idx`(`SettingId`),
@@ -54,27 +55,34 @@ CREATE TABLE `Subject` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `SubjectCode` VARCHAR(191) NOT NULL,
     `Name` VARCHAR(191) NOT NULL,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
     `Status` BOOLEAN NOT NULL DEFAULT true,
     `MentorId` INTEGER NULL,
 
-    UNIQUE INDEX `Subject_SubjectCode_key`(`SubjectCode`),
     INDEX `Subject_SubjectCode_idx`(`SubjectCode`),
     INDEX `Subject_Id_idx`(`Id`),
+    UNIQUE INDEX `Subject_SubjectCode_key`(`SubjectCode`),
+    PRIMARY KEY (`Id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `ClassStudentProject` (
+    `Id` INTEGER NOT NULL AUTO_INCREMENT,
+    `UserId` INTEGER NOT NULL,
+    `ProjectId` INTEGER NOT NULL,
+    `ClassId` INTEGER NOT NULL,
+
     PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `SubjectSetting` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
-
     `Value` VARCHAR(191) NOT NULL,
-    `Description` VARCHAR(191) NULL,
- 
+    `Description` TEXT NULL,
     `SubjectId` INTEGER NULL,
 
     INDEX `SubjectSetting_Id_idx`(`Id`),
-   
     PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -82,7 +90,7 @@ CREATE TABLE `SubjectSetting` (
 CREATE TABLE `Assignment` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `Title` VARCHAR(191) NOT NULL,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
     `StartDate` DATETIME(3) NOT NULL,
     `EndDate` DATETIME(3) NOT NULL,
     `SubjectId` INTEGER NULL,
@@ -95,10 +103,15 @@ CREATE TABLE `Assignment` (
 CREATE TABLE `Class` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `Name` VARCHAR(191) NOT NULL,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
+    `GitLabGroupId` INTEGER NULL,
     `SubjectId` INTEGER NULL,
-    `Status` VARCHAR(191) NOT NULL,
+    `Status` BOOLEAN NOT NULL DEFAULT true,
 
+    INDEX `Class_Name_idx`(`Name`),
+    INDEX `Class_GitLabGroupId_idx`(`GitLabGroupId`),
+    UNIQUE INDEX `Class_Name_key`(`Name`),
+    UNIQUE INDEX `Class_GitLabGroupId_key`(`GitLabGroupId`),
     PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -108,7 +121,7 @@ CREATE TABLE `ClassSetting` (
     `Type` VARCHAR(191) NOT NULL,
     `Name` VARCHAR(191) NOT NULL,
     `Value` VARCHAR(191) NOT NULL,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
     `IsActive` BOOLEAN NOT NULL DEFAULT true,
     `classId` INTEGER NULL,
 
@@ -134,9 +147,8 @@ CREATE TABLE `Project` (
 CREATE TABLE `Milestone` (
     `Id` INTEGER NOT NULL,
     `Iid` INTEGER NOT NULL,
-    `ProjectId` INTEGER NOT NULL,
     `Title` VARCHAR(191) NOT NULL,
-    `Description` VARCHAR(191) NULL,
+    `Description` TEXT NULL,
     `State` VARCHAR(191) NOT NULL,
     `CreatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `UpdatedAt` DATETIME(3) NOT NULL,
@@ -144,8 +156,10 @@ CREATE TABLE `Milestone` (
     `StartDate` DATETIME(3) NOT NULL,
     `Expired` BOOLEAN NOT NULL DEFAULT false,
     `WebUrl` VARCHAR(191) NOT NULL,
-    `ClassId` INTEGER NULL,
+    `GroupId` INTEGER NULL,
+    `ProjectId` INTEGER NULL,
 
+    UNIQUE INDEX `Milestone_Id_key`(`Id`),
     PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -202,6 +216,15 @@ ALTER TABLE `User` ADD CONSTRAINT `User_RoleSettingId_fkey` FOREIGN KEY (`RoleSe
 ALTER TABLE `Subject` ADD CONSTRAINT `Subject_MentorId_fkey` FOREIGN KEY (`MentorId`) REFERENCES `User`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `ClassStudentProject` ADD CONSTRAINT `ClassStudentProject_UserId_fkey` FOREIGN KEY (`UserId`) REFERENCES `User`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ClassStudentProject` ADD CONSTRAINT `ClassStudentProject_ProjectId_fkey` FOREIGN KEY (`ProjectId`) REFERENCES `Project`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ClassStudentProject` ADD CONSTRAINT `ClassStudentProject_ClassId_fkey` FOREIGN KEY (`ClassId`) REFERENCES `Class`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `SubjectSetting` ADD CONSTRAINT `SubjectSetting_SubjectId_fkey` FOREIGN KEY (`SubjectId`) REFERENCES `Subject`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -217,13 +240,13 @@ ALTER TABLE `ClassSetting` ADD CONSTRAINT `ClassSetting_classId_fkey` FOREIGN KE
 ALTER TABLE `Project` ADD CONSTRAINT `Project_MentorId_fkey` FOREIGN KEY (`MentorId`) REFERENCES `User`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Project` ADD CONSTRAINT `Project_ClassId_fkey` FOREIGN KEY (`ClassId`) REFERENCES `Class`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Project` ADD CONSTRAINT `Project_ClassId_fkey` FOREIGN KEY (`ClassId`) REFERENCES `Class`(`GitLabGroupId`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Milestone` ADD CONSTRAINT `Milestone_ProjectId_fkey` FOREIGN KEY (`ProjectId`) REFERENCES `Project`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Milestone` ADD CONSTRAINT `Milestone_GroupId_fkey` FOREIGN KEY (`GroupId`) REFERENCES `Class`(`GitLabGroupId`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Milestone` ADD CONSTRAINT `Milestone_ClassId_fkey` FOREIGN KEY (`ClassId`) REFERENCES `Class`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Milestone` ADD CONSTRAINT `Milestone_ProjectId_fkey` FOREIGN KEY (`ProjectId`) REFERENCES `Project`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `GitLabUser` ADD CONSTRAINT `GitLabUser_UserId_fkey` FOREIGN KEY (`UserId`) REFERENCES `User`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -260,4 +283,11 @@ INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'gmail.c
 
 INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Status`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K',true, 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
 INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Status`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('subject_manager@fpt.edu.vn', 6, 2, '$2a$11$DxRisl20ebF0JUabLWNyHeCxSjin6TZBLrVQyhCTHtroqCtzRLZxC',true, 'Subject Manager', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
+INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Status`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('class_manager@fpt.edu.vn', 6, 3, '$2a$11$dWdwVbzKlOWKR7VHwywwH.rt0Tqxar9.8.Y2I46OSYRwymKKVTEnW',true, 'Class Manager', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
 
+INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('PRF192', 'Programming Fundamentals', 'This is Programming Fundamentals Subject');
+INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('DBI202', 'Introduction to Databases', 'This is Introduction to Databases Subject');
+INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('NWC202', 'Computer Networking', 'This is Computer Networking Subject');
+INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('PRN292', '.NET and C#', 'This is .NET and C# Subject');
+
+INSERT INTO `SWP`.`Class` (`Name`, `Description`, `GitLabGroupId`, `SubjectId`, `Status`) VALUES ('SE1735', 'This is SE1735 class', '76753267', '1', '1');

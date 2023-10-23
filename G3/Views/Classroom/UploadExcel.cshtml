@@ -1,0 +1,21 @@
+﻿
+@{
+	ViewData["Title"] = "Import excel";
+	Layout = "~/Views/Shared/AdminLayout.cshtml";
+	int classId = (int)ViewBag.ClassId;
+}
+
+<form method="post" enctype="multipart/form-data">
+	<div class="row">
+		<label>Select Excel File To Import</label>
+		<br/>
+		<input type="file" name="file" />
+	</div>
+	<br/>
+	<div class="row">
+		<div class="col-3">
+			<input type="hidden" name="id" value="@ViewBag.ClassId" />
+			<input type="submit" asp-action="UploadExcel" asp-controller="Classroom" class="btn btn-dark" value="Upload excel file"/>		
+		</div>
+	</div>
+</form>

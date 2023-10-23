@@ -9,56 +9,23 @@ using G3.Models;
 
 namespace G3.Controllers
 {
-    public class AssignmentsController : Controller
+    public class Assignments1Controller : Controller
     {
         private readonly SWPContext _context;
 
-        public AssignmentsController(SWPContext context)
+        public Assignments1Controller(SWPContext context)
         {
             _context = context;
         }
 
-        // GET: Assignments
-        [Route("/subjectAssignment")]
-        public async Task<IActionResult> SubAsmList(string sortOrder, string searchString, string selectFilter)
+        // GET: Assignments1
+        public async Task<IActionResult> Index()
         {
-            ViewData["NameSort"] = String.IsNullOrEmpty(sortOrder) ? "nameDesc" : "";
-            ViewData["TitleSort"] = sortOrder == "title" ? "titleDesc" : "title";
-            ViewData["SearchAss"] = searchString;
-   
-            var assign = from s in _context.Assignments.Include(a => a.Subject) select s;
-
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                assign = assign.Where(s => 
-                s.Title.Contains(searchString) || 
-                s.Subject.Name.Contains(searchString) || 
-                s.Subject.SubjectCode.Contains(searchString));
-
-            }
-
-            switch (sortOrder)
-            {
-                case "nameDesc":
-                    assign = assign.OrderByDescending(s => s.Subject.Name);
-                    break;
-                case "title":
-                    assign = assign.OrderBy(s => s.Title);
-                    break;
-                case "titleDesc":
-                    assign = assign.OrderByDescending(s => s.Title);
-                    break;
-                default:
-                    assign = assign.OrderBy(s => s.Subject.Name);
-                    break;
-            }
-
-            /*var sWPContext = _context.Assignments.Include(a => a.Subject);*/
-            return View(await assign.ToListAsync());
+            var sWPContext = _context.Assignments.Include(a => a.Subject);
+            return View(await sWPContext.ToListAsync());
         }
 
-        // GET: Assignments/Details/5
-        [Route("/assignmentDetails")]
+        // GET: Assignments1/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Assignments == null)
@@ -77,35 +44,31 @@ namespace G3.Controllers
             return View(assignment);
         }
 
-        // GET: Assignments/Create
-        [Route("/assignmentCreate")]
+        // GET: Assignments1/Create
         public IActionResult Create()
         {
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id");
             return View();
         }
 
-        // POST: Assignments/Create
+        // POST: Assignments1/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("/assignmentCreate")]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,StartDate,EndDate,SubjectId")] Assignment assignment)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(assignment);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(SubAsmList));
+                return RedirectToAction(nameof(Index));
             }
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", assignment.SubjectId);
             return View(assignment);
         }
 
-
-        // GET: Assignments/Edit/5
-        [Route("/assignmentEdit")]
+        // GET: Assignments1/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Assignments == null)
@@ -122,12 +85,11 @@ namespace G3.Controllers
             return View(assignment);
         }
 
-        // POST: Assignments/Edit/5
+        // POST: Assignments1/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("/assignmentEdit")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,StartDate,EndDate,SubjectId")] Assignment assignment)
         {
             if (id != assignment.Id)
@@ -153,15 +115,13 @@ namespace G3.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(SubAsmList));
+                return RedirectToAction(nameof(Index));
             }
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", assignment.SubjectId);
             return View(assignment);
         }
 
-
-        // GET: Assignments/Delete/5
-        [Route("/assignmentDelete")]
+        // GET: Assignments1/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Assignments == null)
@@ -180,10 +140,9 @@ namespace G3.Controllers
             return View(assignment);
         }
 
-        // POST: Assignments/Delete/5
+        // POST: Assignments1/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Route("/assignmentDelete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Assignments == null)
@@ -197,7 +156,7 @@ namespace G3.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(SubAsmList));
+            return RedirectToAction(nameof(Index));
         }
 
         private bool AssignmentExists(int id)

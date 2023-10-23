@@ -19,8 +19,9 @@ namespace G3.Models
         public virtual DbSet<Assignee> Assignees { get; set; } = null!;
         public virtual DbSet<Assignment> Assignments { get; set; } = null!;
         public virtual DbSet<Class> Classes { get; set; } = null!;
-        public virtual DbSet<Classsetting> Classsettings { get; set; } = null!;
-        public virtual DbSet<Gitlabuser> Gitlabusers { get; set; } = null!;
+        public virtual DbSet<ClassSetting> ClassSettings { get; set; } = null!;
+        public virtual DbSet<ClassStudentProject> ClassStudentProjects { get; set; } = null!;
+        public virtual DbSet<GitLabUser> GitLabUsers { get; set; } = null!;
         public virtual DbSet<Issue> Issues { get; set; } = null!;
         public virtual DbSet<Milestone> Milestones { get; set; } = null!;
         public virtual DbSet<Project> Projects { get; set; } = null!;
@@ -72,7 +73,7 @@ namespace G3.Models
 
                 entity.HasIndex(e => e.SubjectId, "Assignment_SubjectId_fkey");
 
-                entity.Property(e => e.Description).HasMaxLength(191);
+                entity.Property(e => e.Description).HasColumnType("text");
 
                 entity.Property(e => e.EndDate).HasColumnType("datetime(3)");
 
@@ -91,13 +92,27 @@ namespace G3.Models
             {
                 entity.ToTable("class");
 
+                entity.HasIndex(e => e.GitLabGroupId, "Class_GitLabGroupId_idx");
+
+                entity.HasIndex(e => e.GitLabGroupId, "Class_GitLabGroupId_key")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.Name, "Class_Name_idx");
+
+                entity.HasIndex(e => e.Name, "Class_Name_key")
+                    .IsUnique();
+
                 entity.HasIndex(e => e.SubjectId, "Class_SubjectId_fkey");
 
-                entity.Property(e => e.Description).HasMaxLength(191);
+                entity.Property(e => e.Description).HasColumnType("text");
+
+                entity.Property(e => e.GitLabGroupId).IsRequired();
 
                 entity.Property(e => e.Name).HasMaxLength(191);
 
-                entity.Property(e => e.Status).HasMaxLength(191);
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasDefaultValueSql("'1'");
 
                 entity.HasOne(d => d.Subject)
                     .WithMany(p => p.Classes)
@@ -117,7 +132,7 @@ namespace G3.Models
 
                 entity.Property(e => e.ClassId).HasColumnName("classId");
 
-                entity.Property(e => e.Description).HasMaxLength(191);
+                entity.Property(e => e.Description).HasColumnType("text");
 
                 entity.Property(e => e.IsActive)
                     .IsRequired()
@@ -136,7 +151,36 @@ namespace G3.Models
                     .HasConstraintName("ClassSetting_classId_fkey");
             });
 
-            modelBuilder.Entity<Gitlabuser>(entity =>
+            modelBuilder.Entity<ClassStudentProject>(entity =>
+            {
+                entity.ToTable("ClassStudentProject", "SWP");
+
+                entity.HasIndex(e => e.ClassId, "ClassStudentProject_ClassId_fkey");
+
+                entity.HasIndex(e => e.ProjectId, "ClassStudentProject_ProjectId_fkey");
+
+                entity.HasIndex(e => e.UserId, "ClassStudentProject_UserId_fkey");
+
+                entity.HasOne(d => d.Class)
+                    .WithMany(p => p.ClassStudentProjects)
+                    .HasForeignKey(d => d.ClassId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("ClassStudentProject_ClassId_fkey");
+
+                entity.HasOne(d => d.Project)
+                    .WithMany(p => p.ClassStudentProjects)
+                    .HasForeignKey(d => d.ProjectId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("ClassStudentProject_ProjectId_fkey");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.ClassStudentProjects)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("ClassStudentProject_UserId_fkey");
+            });
+
+            modelBuilder.Entity<GitLabUser>(entity =>
             {
                 entity.ToTable("gitlabuser");
 
@@ -226,7 +270,10 @@ namespace G3.Models
             {
                 entity.ToTable("milestone");
 
-                entity.HasIndex(e => e.ClassId, "Milestone_ClassId_fkey");
+                entity.HasIndex(e => e.GroupId, "Milestone_GroupId_fkey");
+
+                entity.HasIndex(e => e.Id, "Milestone_Id_key")
+                    .IsUnique();
 
                 entity.HasIndex(e => e.ProjectId, "Milestone_ProjectId_fkey");
 
@@ -234,7 +281,7 @@ namespace G3.Models
                     .HasColumnType("datetime(3)")
                     .HasDefaultValueSql("'CURRENT_TIMESTAMP(3)'");
 
-                entity.Property(e => e.Description).HasMaxLength(191);
+                entity.Property(e => e.Description).HasColumnType("text");
 
                 entity.Property(e => e.DueDate).HasColumnType("datetime(3)");
 
@@ -248,16 +295,17 @@ namespace G3.Models
 
                 entity.Property(e => e.WebUrl).HasMaxLength(191);
 
-                entity.HasOne(d => d.Class)
+                entity.HasOne(d => d.Group)
                     .WithMany(p => p.Milestones)
-                    .HasForeignKey(d => d.ClassId)
+                    .HasPrincipalKey(p => p.GitLabGroupId)
+                    .HasForeignKey(d => d.GroupId)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Milestone_ClassId_fkey");
+                    .HasConstraintName("Milestone_GroupId_fkey");
 
                 entity.HasOne(d => d.Project)
                     .WithMany(p => p.Milestones)
                     .HasForeignKey(d => d.ProjectId)
-                    .OnDelete(DeleteBehavior.Restrict)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("Milestone_ProjectId_fkey");
             });
 
@@ -285,6 +333,7 @@ namespace G3.Models
 
                 entity.HasOne(d => d.Class)
                     .WithMany(p => p.Projects)
+                    .HasPrincipalKey(p => p.GitLabGroupId)
                     .HasForeignKey(d => d.ClassId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("Project_ClassId_fkey");
@@ -307,7 +356,7 @@ namespace G3.Models
                 entity.HasIndex(e => new { e.Type, e.Value }, "Setting_Type_Value_key")
                     .IsUnique();
 
-                entity.Property(e => e.Description).HasMaxLength(191);
+                entity.Property(e => e.Description).HasColumnType("text");
 
                 entity.Property(e => e.IsActive)
                     .IsRequired()
@@ -333,7 +382,7 @@ namespace G3.Models
                 entity.HasIndex(e => e.SubjectCode, "Subject_SubjectCode_key")
                     .IsUnique();
 
-                entity.Property(e => e.Description).HasMaxLength(191);
+                entity.Property(e => e.Description).HasColumnType("text");
 
                 entity.Property(e => e.Name).HasMaxLength(191);
 
@@ -358,7 +407,7 @@ namespace G3.Models
 
                 entity.HasIndex(e => e.SubjectId, "SubjectSetting_SubjectId_fkey");
 
-                entity.Property(e => e.Description).HasMaxLength(191);
+                entity.Property(e => e.Description).HasColumnType("text");
 
                 entity.Property(e => e.Value).HasMaxLength(191);
 
@@ -408,7 +457,7 @@ namespace G3.Models
 
                 entity.Property(e => e.DateOfBirth).HasColumnType("datetime(3)");
 
-                entity.Property(e => e.Description).HasMaxLength(191);
+                entity.Property(e => e.Description).HasColumnType("text");
 
                 entity.Property(e => e.Email).HasMaxLength(191);
 
