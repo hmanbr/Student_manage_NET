@@ -19,9 +19,9 @@ namespace G3.Models
         public virtual DbSet<Assignee> Assignees { get; set; } = null!;
         public virtual DbSet<Assignment> Assignments { get; set; } = null!;
         public virtual DbSet<Class> Classes { get; set; } = null!;
-        public virtual DbSet<Classsetting> ClassSettings { get; set; } = null!;
+        public virtual DbSet<ClassSetting> ClassSettings { get; set; } = null!;
         public virtual DbSet<ClassStudentProject> ClassStudentProjects { get; set; } = null!;
-        public virtual DbSet<Gitlabuser> GitLabUsers { get; set; } = null!;
+        public virtual DbSet<GitLabUser> GitLabUsers { get; set; } = null!;
         public virtual DbSet<Issue> Issues { get; set; } = null!;
         public virtual DbSet<Milestone> Milestones { get; set; } = null!;
         public virtual DbSet<Project> Projects { get; set; } = null!;
@@ -180,7 +180,7 @@ namespace G3.Models
                     .HasConstraintName("ClassStudentProject_UserId_fkey");
             });
 
-            modelBuilder.Entity<Gitlabuser>(entity =>
+            modelBuilder.Entity<GitLabUser>(entity =>
             {
                 entity.ToTable("GitLabUser", "SWP");
 
