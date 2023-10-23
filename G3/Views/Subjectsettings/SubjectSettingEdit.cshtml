@@ -1,4 +1,4 @@
-﻿@model G3.Models.SubjectSetting
+﻿@model G3.Models.Subjectsetting
 
 @{
     ViewData["Title"] = "SubjectSettingEdit";
@@ -20,11 +20,19 @@
         <form asp-action="SubjectSettingEdit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
+            @*@*<div class="form-group">
                 <label asp-for="SubjectId" class="control-label"></label>
-                <input asp-for="SubjectId" class="form-control " readonly />
+               <input asp-for="SubjectId" class="form-control " readonly />
                 <span asp-validation-for="SubjectId" class="text-danger"></span>
-            </div>
+            </div>*@
+
+
+                       @* <div class="form-group">
+                            <label asp-for="SubjectId" class="control-label">Subject</label>
+                          
+                            <select readonly asp-for="SubjectId" class="form-control" asp-items="ViewBag.SubjectName"></select>
+                            <span asp-validation-for="SubjectId" class="text-danger"></span>
+                        </div>*@
 
             <input type="hidden" asp-for="Id" />
             <div class="form-group">

@@ -32,10 +32,9 @@
                 <div class="form-check">
                     <input asp-for="Status" type="radio" value="true">
                     <label class="form-check-label">Active</label>
-                    @*</div>
-                    <div class="form-check">*@
+                   
                     <input asp-for="Status" style="margin-left:50px;" type="radio" value="false">
-                    <label class="form-check-label">Deactive</label>
+                    <label class="form-check-label">Inactive</label>
                 </div>
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>

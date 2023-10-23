@@ -172,7 +172,7 @@ namespace G3.Controllers
         public IActionResult SubjectCreate()
         {
             /*var Role = _context.Users.Where(s => s.RoleSettingId == 2);*/
-            ViewData["MentorId"] = new SelectList(_context.Users.Where(s => s.RoleSettingId == 2), "Id", "Name");
+            ViewData["MentorId"] = new SelectList(_context.Users.Where(s => s.RoleSettingId == 4), "Id", "Name");
             return View();
         }
 
@@ -282,7 +282,7 @@ namespace G3.Controllers
             return View(subject);
         }*/
 
-        [Route("/Subjects/Delete")]
+      /*  [Route("/Subjects/Delete")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -299,12 +299,16 @@ namespace G3.Controllers
             }
 
             // Xóa sản phẩm và lưu thay đổi vào cơ sở dữ liệu
+            if(_context.Projects.Any(p => p.Status == false))
+            {
+                _context.Subjects.Remove(product);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(SubjectList));
+            }
             
-            _context.Subjects.Remove(product);
-            await _context.SaveChangesAsync();
            
-            return RedirectToAction(nameof(SubjectList));
-        }
+        }*/
 
         private bool SubjectExists(int id)
         {
