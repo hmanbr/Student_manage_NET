@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using G3.Models;
-
 namespace G3.Controllers
 {
     public class ClassController : Controller
@@ -22,29 +16,93 @@ namespace G3.Controllers
         [Route("/classList")]
         public async Task<IActionResult> Index()
         {
+
             var sWPContext = _context.Classes.Include(c => c.Subject);
             return View(await sWPContext.ToListAsync());
         }
 
         // GET: Class/Details/5
         [Route("/classList/{id}")]
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, string? tab, [FromServices] IGitLabService gitLabService)
         {
-            if (id == null || _context.Classes == null)
-            {
-                return NotFound();
-            }
+            if (id == null || _context.Classes == null) return NotFound();
 
-            var @class = await _context.Classes
-                .Include(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@class == null)
-            {
-                return NotFound();
-            }
+            var @class = await _context.Classes.Include(c => c.Subject).FirstOrDefaultAsync(m => m.Id == id);
+            if (@class == null) return NotFound();
 
-            return View(@class);
+            RunMilestone(@class, gitLabService);
+
+            return tab switch
+            {
+                "general" => View(),
+                "milestone" => RunMilestone(@class, gitLabService),
+                _ => View(),
+            };
+
         }
+
+        public IActionResult RunMilestone(Class @class, IGitLabService gitLabService)
+        {
+            int? groupId = @class.GitLabGroupId;
+            if (groupId == null) return View();
+
+
+            List<NGitLab.Models.Milestone> Milestone = gitLabService.GetMilestoneByGroupId((int)groupId);
+            List<Models.Milestone> milestones = Milestone.Select(m => new Models.Milestone
+            {
+                Id = m.Id,
+                Iid = m.Iid,
+                Title = m.Title,
+                Description = m.Description,
+                DueDate = DateTime.Now,
+                GroupId = m.GroupId,
+                StartDate = DateTime.Now,
+                State = m.State,
+                CreatedAt = m.CreatedAt,
+                UpdatedAt = m.UpdatedAt,
+                Expired = false,
+                WebUrl = "",
+            }).ToList();
+
+            string sql = @"
+                INSERT INTO `SWP`.`Milestone` (`Id`, `Iid`, `Title`, `Description`, `State`, `CreatedAt`, `UpdatedAt`, `DueDate`, `StartDate`, `Expired`, `WebUrl`, `GroupId`)
+                VALUES ";
+
+
+            for (int i = 0; i < milestones.Count; i++)
+            {
+                sql += string.Format("({0}, {1}, '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}')",
+                    milestones[i].Id, milestones[i].Iid, milestones[i].Title, milestones[i].Description, milestones[i].State,
+                    milestones[i].CreatedAt.ToString("yyyy-MM-dd"), milestones[i].UpdatedAt.ToString("yyyy-MM-dd"), milestones[i].DueDate.ToString("yyyy-MM-dd"), milestones[i].StartDate.ToString("yyyy-MM-dd"),
+                    milestones[i].Expired ? 1 : 0, "", @class.GitLabGroupId);
+
+                if (i < milestones.Count - 1)
+                {
+                    sql += ",";
+                }
+            }
+
+            sql += @"
+                ON DUPLICATE KEY UPDATE
+                Iid = VALUES(Iid),
+                Title = VALUES(Title),
+                Description = VALUES(Description),
+                State = VALUES(State),
+                CreatedAt = VALUES(CreatedAt),
+                UpdatedAt = VALUES(UpdatedAt),
+                DueDate = VALUES(DueDate),
+                StartDate = VALUES(StartDate),
+                Expired = VALUES(Expired),
+                WebUrl = VALUES(WebUrl),
+                GroupId = VALUES(GroupId);
+            ";
+
+
+            _context.Database.ExecuteSqlRaw(sql);
+            return View();
+        }
+
+
 
         // GET: Class/Create
         public IActionResult Create()
@@ -156,14 +214,14 @@ namespace G3.Controllers
             {
                 _context.Classes.Remove(@class);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ClassExists(int id)
         {
-          return (_context.Classes?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Classes?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

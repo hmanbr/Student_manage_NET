@@ -12,7 +12,8 @@ builder.Services.AddSingleton<IMailService, MailService>();
 builder.Services.AddSingleton<IHashService, HashService>();
 builder.Services.AddSingleton<IGitLabService, GitLabService>();
 
-builder.Services.AddSession(options => {
+builder.Services.AddSession(options =>
+{
     options.Cookie.Name = "SessionCookie";
     options.IdleTimeout = TimeSpan.FromDays(1);
     options.Cookie.HttpOnly = true;
@@ -21,7 +22,8 @@ builder.Services.AddSession(options => {
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment()) {
+if (!app.Environment.IsDevelopment())
+{
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }

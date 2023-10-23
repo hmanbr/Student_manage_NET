@@ -23,7 +23,6 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="NGitLab" Version="6.39.2" />
     <PackageReference Include="Nanoid" Version="3.0.0" />
-    <PackageReference Include="EFCore.BulkExtensions" Version="6.7.16" />
   </ItemGroup>
 
   <ItemGroup>

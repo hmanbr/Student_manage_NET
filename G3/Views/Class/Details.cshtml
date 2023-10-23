@@ -5,39 +5,35 @@
     Layout = "~/Views/Shared/SubjectManagerLayout.cshtml";
 }
 
-<h1>Details</h1>
+@{
+    //
+}
 
-<div>
-    <h4>Class</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Subject)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Subject.Id)
-        </dd>
-    </dl>
+<!-- Tabs navs -->
+<ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
+    <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="ex1-tab-1" data-mdb-toggle="tab" href="#ex1-tabs-1" role="tab"
+            aria-controls="ex1-tabs-1" aria-selected="true">Tab 1</a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" id="ex1-tab-2" data-mdb-toggle="tab" href="#ex1-tabs-2" role="tab"
+            aria-controls="ex1-tabs-2" aria-selected="false">Tab 2</a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" id="ex1-tab-3" data-mdb-toggle="tab" href="#ex1-tabs-3" role="tab"
+            aria-controls="ex1-tabs-3" aria-selected="false">Tab 3</a>
+    </li>
+</ul>
+
+<div class="tab-content" id="ex1-content">
+    <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+        Tab 1 content
+    </div>
+    <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+        Tab 2 content
+    </div>
+    <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
+        Tab 3 content
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<!-- Tabs content -->
