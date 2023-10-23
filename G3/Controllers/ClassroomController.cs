@@ -19,25 +19,52 @@ namespace G3.Controllers
 		}
 
 		[Route("/ManageClassroom/ClassesList")]
-		public async Task<IActionResult> ClassList(string search)
+		public async Task<IActionResult> ClassList(int pg = 1)
 		{
-			if (string.IsNullOrEmpty(search))
-			{
-				var classlist = await _context.Classes.Include(subject => subject.Subject).ToListAsync();
-				// Pass the list of settings to the view.
-				return View("/Views/Classroom/ClassesList.cshtml", classlist);
-			}
-			else
-			{
-				var classlist = await _context.Classes.Include(subject => subject.Subject)
-								.Where(classlist => classlist.Id.Equals(search) || classlist.Name.Contains(search) || classlist.Subject.SubjectCode.Contains(search))
-								.ToListAsync();
 
-				// Pass the list of settings to the view.
-				return View("/Views/Classroom/ClassesList.cshtml", classlist);
+			var classlist = await _context.Classes.Include(subject => subject.Subject).ToListAsync();
+
+			const int pageSize = 5;
+			if(pg < 1)
+			{
+				pg = 1;
 			}
 
+			int recsCount = classlist.Count();
+
+			var pager = new Pager(recsCount, pg, pageSize);
+
+			int recSkip = (pg - 1) * pageSize;
+
+			var data = classlist.Skip(recSkip).Take(pager.PageSize).ToList();
+
+			this.ViewBag.Pager = pager; 
+
+			// Pass the list of settings to the view.
+			return View("/Views/Classroom/ClassesList.cshtml", data);
 		}
+
+		/*
+				[Route("/ManageClassroom/ClassesList")]
+				public async Task<IActionResult> ClassList(string search)
+				{
+					if (string.IsNullOrEmpty(search))
+					{
+						var classlist = await _context.Classes.Include(subject => subject.Subject).ToListAsync();
+						// Pass the list of settings to the view.
+						return View("/Views/Classroom/ClassesList.cshtml", classlist);
+					}
+					else
+					{
+						var classlist = await _context.Classes.Include(subject => subject.Subject)
+										.Where(classlist => classlist.Id.Equals(search) || classlist.Name.Contains(search) || classlist.Subject.SubjectCode.Contains(search))
+										.ToListAsync();
+
+						// Pass the list of settings to the view.
+						return View("/Views/Classroom/ClassesList.cshtml", classlist);
+					}
+
+				}*/
 
 		[Route("/ManageClassroom/ClassDetail")]
 		public async Task<IActionResult> ClassDetail(int id)
