@@ -22,9 +22,7 @@
     <div class="banner">
         <h1>List Class</h1>
         <div class="cre_btn">
-            <p>
-                <a asp-action="Create"><span>Create New</span></a>
-            </p>
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#DialogCreate">Create</button>
         </div>
 
         <div class="container mt-5 search_email">
@@ -101,12 +99,15 @@
                             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                             <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                             <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            <div class="cre_btn">
+                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#DialogDelete">Create</button>
+                            </div>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-
+        @await Html.PartialAsync("DialogNewClass", new Class())
         @*<nav aria-label="Page navigation">
             <ul class="pagination">
                 @for (var i = 1; i <= ViewBag.TotalPages; i++)

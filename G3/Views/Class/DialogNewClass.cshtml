@@ -1,0 +1,47 @@
+﻿@model G3.Models.Class
+
+<div class="modal fade" id="DialogCreate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                        <h5 style="color:red; font-size:17px;">@ViewData["error"]</h5>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label"></label>
+                        <textarea asp-for="Description" class="form-control"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SubjectId" class="control-label"></label>
+                        <select asp-for="SubjectId" class="form-control" asp-items="ViewBag.SubjectId"></select>
+                    </div>
+                    <div class="form-check">
+                        <input asp-for="Status" type="radio" value="true">
+                        <label class="form-check-label">Active</label>
+                        @*</div>
+                        <div class="form-check">*@
+                        <input asp-for="Status" style="margin-left:50px;" type="radio" value="false" checked>
+                        <label class="form-check-label">Deactive</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Send message</button>
+                    </div>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</div>

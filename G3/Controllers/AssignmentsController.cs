@@ -43,10 +43,10 @@ namespace G3.Controllers
                     assign = assign.OrderByDescending(s => s.Subject.Name);
                     break;
                 case "title":
-                    assign = assign.OrderBy(s => s.Title);
+                    assign = assign.OrderByDescending(s => s.StartDate);
                     break;
                 case "titleDesc":
-                    assign = assign.OrderByDescending(s => s.Title);
+                    assign = assign.OrderBy(s => s.StartDate);
                     break;
                 default:
                     assign = assign.OrderBy(s => s.Subject.Name);
