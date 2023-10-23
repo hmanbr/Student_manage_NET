@@ -27,7 +27,7 @@ namespace G3.Models
         public virtual DbSet<Project> Projects { get; set; } = null!;
         public virtual DbSet<Setting> Settings { get; set; } = null!;
         public virtual DbSet<Subject> Subjects { get; set; } = null!;
-        public virtual DbSet<Subjectsetting> Subjectsettings { get; set; } = null!;
+        public virtual DbSet<SubjectSetting> SubjectSettings { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -45,7 +45,7 @@ namespace G3.Models
             {
                 entity.HasNoKey();
 
-                entity.ToTable("assignee");
+                entity.ToTable("Assignee", "SWP");
 
                 entity.HasIndex(e => e.GitLabUserId, "Assignee_GitLabUserId_fkey");
 
@@ -67,7 +67,7 @@ namespace G3.Models
 
             modelBuilder.Entity<Assignment>(entity =>
             {
-                entity.ToTable("assignment");
+                entity.ToTable("Assignment", "SWP");
 
                 entity.HasIndex(e => e.Id, "Assignment_Id_idx");
 
@@ -90,7 +90,7 @@ namespace G3.Models
 
             modelBuilder.Entity<Class>(entity =>
             {
-                entity.ToTable("class");
+                entity.ToTable("Class", "SWP");
 
                 entity.HasIndex(e => e.GitLabGroupId, "Class_GitLabGroupId_idx");
 
@@ -121,12 +121,12 @@ namespace G3.Models
                     .HasConstraintName("Class_SubjectId_fkey");
             });
 
-            modelBuilder.Entity<Classsetting>(entity =>
+            modelBuilder.Entity<ClassSetting>(entity =>
             {
                 entity.HasKey(e => e.SettingId)
                     .HasName("PRIMARY");
 
-                entity.ToTable("classsetting");
+                entity.ToTable("ClassSetting", "SWP");
 
                 entity.HasIndex(e => e.ClassId, "ClassSetting_classId_fkey");
 
@@ -145,7 +145,7 @@ namespace G3.Models
                 entity.Property(e => e.Value).HasMaxLength(191);
 
                 entity.HasOne(d => d.Class)
-                    .WithMany(p => p.Classsettings)
+                    .WithMany(p => p.ClassSettings)
                     .HasForeignKey(d => d.ClassId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("ClassSetting_classId_fkey");
@@ -182,7 +182,7 @@ namespace G3.Models
 
             modelBuilder.Entity<GitLabUser>(entity =>
             {
-                entity.ToTable("gitlabuser");
+                entity.ToTable("GitLabUser", "SWP");
 
                 entity.HasIndex(e => e.UserId, "GitLabUser_UserId_key")
                     .IsUnique();
@@ -201,15 +201,15 @@ namespace G3.Models
                 entity.Property(e => e.WebUrl).HasMaxLength(191);
 
                 entity.HasOne(d => d.User)
-                    .WithOne(p => p.Gitlabuser)
-                    .HasForeignKey<Gitlabuser>(d => d.UserId)
+                    .WithOne(p => p.GitLabUser)
+                    .HasForeignKey<GitLabUser>(d => d.UserId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("GitLabUser_UserId_fkey");
             });
 
             modelBuilder.Entity<Issue>(entity =>
             {
-                entity.ToTable("issue");
+                entity.ToTable("Issue", "SWP");
 
                 entity.HasIndex(e => e.AssigneeId, "Issue_AssigneeId_fkey");
 
@@ -268,7 +268,7 @@ namespace G3.Models
 
             modelBuilder.Entity<Milestone>(entity =>
             {
-                entity.ToTable("milestone");
+                entity.ToTable("Milestone", "SWP");
 
                 entity.HasIndex(e => e.GroupId, "Milestone_GroupId_fkey");
 
@@ -311,7 +311,7 @@ namespace G3.Models
 
             modelBuilder.Entity<Project>(entity =>
             {
-                entity.ToTable("project");
+                entity.ToTable("Project", "SWP");
 
                 entity.HasIndex(e => e.ClassId, "Project_ClassId_fkey");
 
@@ -324,10 +324,6 @@ namespace G3.Models
                 entity.Property(e => e.GroupName).HasMaxLength(191);
 
                 entity.Property(e => e.ProjectCode).HasMaxLength(191);
-
-                entity.Property(e => e.Status)
-                    .IsRequired()
-                    .HasDefaultValueSql("'0'");
 
                 entity.Property(e => e.VietNameseName).HasMaxLength(191);
 
@@ -347,7 +343,7 @@ namespace G3.Models
 
             modelBuilder.Entity<Setting>(entity =>
             {
-                entity.ToTable("setting");
+                entity.ToTable("Setting", "SWP");
 
                 entity.HasIndex(e => e.SettingId, "Setting_SettingId_idx");
 
@@ -371,7 +367,7 @@ namespace G3.Models
 
             modelBuilder.Entity<Subject>(entity =>
             {
-                entity.ToTable("subject");
+                entity.ToTable("Subject", "SWP");
 
                 entity.HasIndex(e => e.Id, "Subject_Id_idx");
 
@@ -399,9 +395,9 @@ namespace G3.Models
                     .HasConstraintName("Subject_MentorId_fkey");
             });
 
-            modelBuilder.Entity<Subjectsetting>(entity =>
+            modelBuilder.Entity<SubjectSetting>(entity =>
             {
-                entity.ToTable("subjectsetting");
+                entity.ToTable("SubjectSetting", "SWP");
 
                 entity.HasIndex(e => e.Id, "SubjectSetting_Id_idx");
 
@@ -412,7 +408,7 @@ namespace G3.Models
                 entity.Property(e => e.Value).HasMaxLength(191);
 
                 entity.HasOne(d => d.Subject)
-                    .WithMany(p => p.Subjectsettings)
+                    .WithMany(p => p.SubjectSettings)
                     .HasForeignKey(d => d.SubjectId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("SubjectSetting_SubjectId_fkey");
@@ -420,7 +416,7 @@ namespace G3.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("user");
+                entity.ToTable("User", "SWP");
 
                 entity.HasIndex(e => e.ConfirmToken, "User_ConfirmToken_idx");
 
