@@ -42,12 +42,20 @@ namespace G3.Controllers
 		[Route("/ManageClassroom/ClassDetail")]
 		public async Task<IActionResult> ClassDetail(int id)
 		{
-			var usersInClass = await _context.Classes
+			/*var usersInClass = await _context.Classes
 							.Where(cls => cls.Id == id)
 							.Include(cls => cls.Users) // Eager loading to load associated users
 							.SelectMany(cls => cls.Users)
 							.Take(5) // Limit to the first 5 users
-							.ToListAsync();
+							.ToListAsync();*/
+
+			var usersInClass = await _context.ClassStudentProjects
+	.Where(csp => csp.ClassId == id) // Filter by the class Id
+	.Include(csp => csp.User) // Eager loading to load associated users
+	.Select(csp => csp.User)
+	.Take(5) // Limit to the first 5 users
+	.ToListAsync();
+
 
 			ViewBag.ClassId = id;
 			return View("/Views/Classroom/ClassDetail.cshtml", usersInClass);
@@ -56,11 +64,19 @@ namespace G3.Controllers
 		[Route("/ManageClassroom/ClassStudents")]
 		public async Task<IActionResult> ClassStudents(int id)
 		{
-			var usersInClass = await _context.Classes
+			/*var usersInClass = await _context.Classes
 							.Where(cls => cls.Id == id)
 							.Include(cls => cls.Users) // Eager loading to load associated users
 							.Select(cls => cls.Users.Where(user => user.RoleSettingId == 5))
-							.FirstOrDefaultAsync();
+							.FirstOrDefaultAsync();*/
+
+			var usersInClass = await _context.ClassStudentProjects
+	.Where(csp => csp.ClassId == id) // Filter by the class Id
+	.Include(csp => csp.User) // Eager loading to load associated users
+	.Select(csp => csp.User)
+	.Where(user => user.RoleSettingId == 5)
+	.ToListAsync();
+
 			ViewBag.ClassId = id;
 			return View("/Views/Classroom/ClassStudents.cshtml", usersInClass);
 		}
@@ -79,18 +95,46 @@ namespace G3.Controllers
 		{
 			User existingUser = _context.Users.FirstOrDefault(u => u.Id == stuId);
 
-			var classToAddUserTo = await _context.Classes
+			/*var classToAddUserTo = await _context.Classes
 				.Where(c => c.Id == classId)
 				.Include(c => c.Users)
 				.FirstOrDefaultAsync();
-
 
 			if (classToAddUserTo != null && !classToAddUserTo.Users.Any(u => u.Email == existingUser.Email))
 			{
 				// Add the user to the class
 				classToAddUserTo.Users.Add(existingUser);
 				await _context.SaveChangesAsync(); // Save the class-user relationship
+			}*/
+
+			var classToAddUserTo = await _context.ClassStudentProjects
+	.Where(csp => csp.ClassId == classId)
+	.FirstOrDefaultAsync();
+
+			if (classToAddUserTo != null)
+			{
+				// Check if the user is already associated with the class
+				var isUserAlreadyInClass = await _context.ClassStudentProjects
+					.AnyAsync(csp => csp.ClassId == classId && csp.UserId == existingUser.Id);
+
+				if (!isUserAlreadyInClass)
+				{
+					// Create a new ClassStudentProject entry for the user
+					var newClassStudentProject = new ClassStudentProject
+					{
+						UserId = existingUser.Id,
+						ClassId = classToAddUserTo.ClassId,
+						ProjectId = 1,
+
+						// Set the ProjectId property if applicable
+					};
+
+					_context.ClassStudentProjects.Add(newClassStudentProject);
+					await _context.SaveChangesAsync(); // Save the new class-user relationship
+				}
 			}
+
+
 			ViewBag.ClassId = classId;
 			return RedirectToAction("ClassStudents", "Classroom", new { id = classId });
 		}
@@ -104,7 +148,7 @@ namespace G3.Controllers
 
 		[Route("/ManageClassroom/UploadExcel")]
 		[HttpPost]
-		public async Task<IActionResult> UploadExcel(IFormFile file, int id)
+		public async Task<IActionResult> UploadExcel(IFormFile file, int id) // need to fix this excel function
 		{
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -177,7 +221,7 @@ namespace G3.Controllers
 								}
 
 
-								int classId = id;
+								/*int classId = id;
 								var classToAddUserTo = await _context.Classes
 									.Where(c => c.Id == classId)
 									.Include(c => c.Users)
@@ -188,7 +232,37 @@ namespace G3.Controllers
 									// Add the user to the class
 									classToAddUserTo.Users.Add(existingUser);
 									await _context.SaveChangesAsync(); // Save the class-user relationship
+								}*/
+
+								int classId = id;
+
+								var classToAddUserTo = await _context.ClassStudentProjects
+									.Where(csp => csp.ClassId == classId)
+									.Include(csp => csp.User)
+									.FirstOrDefaultAsync();
+
+								if (classToAddUserTo != null)
+								{
+									// Check if the user is already associated with the class
+									var isUserAlreadyInClass = classToAddUserTo.User != null && classToAddUserTo.User.Email == emailToCheck;
+
+									if (!isUserAlreadyInClass)
+									{
+										// Create a new ClassStudentProject entry for the user
+										var newClassStudentProject = new ClassStudentProject
+										{
+											UserId = existingUser.Id,
+											ClassId = classToAddUserTo.ClassId,
+											ProjectId = 1
+
+											// Set the ProjectId property if applicable
+										};
+
+										_context.ClassStudentProjects.Add(newClassStudentProject);
+										await _context.SaveChangesAsync(); // Save the new class-user relationship
+									}
 								}
+
 							}
 						} while (reader.NextResult());
 					}
@@ -202,13 +276,21 @@ namespace G3.Controllers
 		[Route("/ManageClassroom/ExportExcel")]
 		public async Task<FileResult> ExportStudentsToExcel(int id)
 		{
-			var studentInClass = await _context.Classes
+			/*var studentInClass = await _context.Classes
 							.Where(cls => cls.Id == id)
 							.Include(cls => cls.Users) // Eager loading to load associated users
 							.Select(cls => cls.Users.Where(user => user.RoleSettingId == 5))
-							.FirstOrDefaultAsync();
+							.FirstOrDefaultAsync();*/
+
+			var studentsInClass = await _context.ClassStudentProjects
+	.Where(csp => csp.ClassId == id) // Filter by the class Id
+	.Include(csp => csp.User) // Eager loading to load associated users
+	.Select(csp => csp.User)
+	.Where(user => user.RoleSettingId == 5)
+	.ToListAsync();
+
 			var fileName = "ClassID:" + id + ".xlsx";
-			return GenerateExcel(fileName, studentInClass);
+			return GenerateExcel(fileName, studentsInClass);
 		}
 
 		private FileResult GenerateExcel(string fileName, IEnumerable<User> users)
