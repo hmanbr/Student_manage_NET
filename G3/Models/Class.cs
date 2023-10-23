@@ -7,7 +7,7 @@ namespace G3.Models
     {
         public Class()
         {
-            ClassSettings = new HashSet<ClassSetting>();
+            Classsettings = new HashSet<Classsetting>();
             Milestones = new HashSet<Milestone>();
             Projects = new HashSet<Project>();
         }
@@ -19,7 +19,7 @@ namespace G3.Models
         public string Status { get; set; } = null!;
 
         public virtual Subject? Subject { get; set; }
-        public virtual ICollection<ClassSetting> ClassSettings { get; set; }
+        public virtual ICollection<Classsetting> Classsettings { get; set; }
         public virtual ICollection<Milestone> Milestones { get; set; }
         public virtual ICollection<Project> Projects { get; set; }
     }

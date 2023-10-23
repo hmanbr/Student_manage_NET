@@ -117,11 +117,11 @@ CREATE TABLE `ClassSetting` (
 
 -- CreateTable
 CREATE TABLE `Project` (
-    `Id` INTEGER NOT NULL,
+    `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `ProjectCode` VARCHAR(191) NOT NULL,
     `EnglishName` VARCHAR(191) NOT NULL,
     `VietNameseName` VARCHAR(191) NOT NULL,
-    `ProjectStatus` VARCHAR(191) NOT NULL,
+    `Status` BOOLEAN NOT NULL DEFAULT false,
     `Description` TEXT NOT NULL,
     `GroupName` VARCHAR(191) NOT NULL,
     `MentorId` INTEGER NOT NULL,

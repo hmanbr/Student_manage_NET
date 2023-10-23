@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using G3.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace G3.Controllers
 {
+    [AuthActionFilter]
     public class SubjectsettingsController : Controller
     {
         private readonly SWPContext _context;
@@ -51,17 +53,18 @@ namespace G3.Controllers
 
         [Route("/Subjectsettings/SubjectSettingList")]
         
-        public async Task<IActionResult> SubjectSettingList(string search, string SortBy, int page = 1, int pageSize = 5)
+        public async Task<IActionResult> SubjectSettingList(string search, string SortBy, string StatusFilter, int page = 1, int pageSize = 5)
         {
 
            
-            var Query = _context.SubjectSettings.Include(s => s.Subject);
+            var Query = _context.Subjectsettings.Include(s => s.Subject);
 
             ViewData["search"] = search;
 
             if (!String.IsNullOrEmpty(search))
             {
                 Query = Query.Where(x => x.Subject.SubjectCode.Contains(search) || x.Subject.Name.Contains(search)).Include(m => m.Subject);
+
 
             }
 
@@ -71,10 +74,19 @@ namespace G3.Controllers
                 Query = Query.OrderBy(x => x.Subject.SubjectCode).Include(m => m.Subject);
 
             }
-            else
+            else if (SortBy == "DESC")
             {
                 Query = Query.OrderByDescending(x => x.Subject.SubjectCode).Include(m => m.Subject);
 
+            }
+            if (StatusFilter == "true")
+            {
+                Query = Query.Where(x => x.Subject.Status == true).Include(m => m.Subject);              
+  
+            }
+            else if (StatusFilter == "false")
+            {
+                Query = Query.Where(x => x.Subject.Status == false).Include(m => m.Subject);
             }
 
             var totalItems = Query.Count();
@@ -83,7 +95,7 @@ namespace G3.Controllers
 
             if (page < 1)
             {
-                //test
+                
                 page = 1;
             }
             else if (page > totalPages)
@@ -169,9 +181,9 @@ namespace G3.Controllers
         [Route("/Subjectsettings/Create")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubjectSettingAdd([Bind("Id,Value,Description,SubjectId")] SubjectSetting subjectsetting)
+        public async Task<IActionResult> SubjectSettingAdd([Bind("Id,Value,Description,SubjectId")] Subjectsetting subjectsetting)
         {
-            if (_context.SubjectSettings.Any(s => s.SubjectId == subjectsetting.SubjectId))
+            if (_context.Subjectsettings.Any(s => s.SubjectId == subjectsetting.SubjectId))
             {
                 ViewData["exist"] = "This subject has been setup";
                 ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "SubjectCode", subjectsetting.SubjectId);
@@ -188,11 +200,11 @@ namespace G3.Controllers
         [Route("/Subjectsettings/Edit")]
         public async Task<IActionResult> SubjectSettingEdit(int? id)
         {
-            if (id == null || _context.SubjectSettings == null)
+            if (id == null || _context.Subjectsettings == null)
             {
                 return NotFound();
             }
-            var subjectsetting = await _context.SubjectSettings.FindAsync(id);
+            var subjectsetting = await _context.Subjectsettings.FindAsync(id);
             
             if (subjectsetting == null)
             {
@@ -200,7 +212,7 @@ namespace G3.Controllers
             }
             
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "SubjectCode", subjectsetting.SubjectId);
-           
+            ViewData["SubjectName"] = new SelectList(_context.Subjects, "Id", "Name", subjectsetting.SubjectId);
             return View(subjectsetting);
             
         }
@@ -211,14 +223,14 @@ namespace G3.Controllers
         [Route("/Subjectsettings/Edit")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubjectSettingEdit(int id, [Bind("Id,Value,Description,SubjectId")] SubjectSetting subjectsetting)
+        public async Task<IActionResult> SubjectSettingEdit(int id, [Bind("Id,Value,Description,SubjectId")] Subjectsetting subjectsetting)
         {
             if (id != subjectsetting.Id)
             {
                 return NotFound();
             }
 
-            if (_context.SubjectSettings.Any(p => p.SubjectId == subjectsetting.SubjectId && p.Id != id))
+            if (_context.Subjectsettings.Any(p => p.SubjectId == subjectsetting.SubjectId && p.Id != id))
             {
                 ViewData["exist"] = "This subject has been setup";
                 ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "SubjectCode", subjectsetting.SubjectId);
@@ -264,7 +276,7 @@ namespace G3.Controllers
         }
         private bool SubjectsettingExists(int id)
         {
-          return (_context.SubjectSettings?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Subjectsettings?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

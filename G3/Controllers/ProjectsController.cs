@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using G3.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace G3.Controllers
 {
@@ -19,90 +20,165 @@ namespace G3.Controllers
         }
 
         // GET: Projects
-        [Route("/Project/Index")]
-        public async Task<IActionResult> Index()
+        [Route("/Projects/ProjectList")]
+        public async Task<IActionResult> ProjectList(string search, string SortBy,string StatusFilter, string ClassFilter, int page = 1, int pageSize = 5)
         {
-            var sWPContext = _context.Projects.Include(p => p.Class);
-            return View(await sWPContext.ToListAsync());
-        }
+          
 
-        // GET: Projects/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Projects == null)
+            var query = _context.Projects.AsQueryable().Include(p => p.Class).Include(p => p.Mentor);
+            
+            ViewData["search"] = search;
+            if (!String.IsNullOrEmpty(search))
             {
-                return NotFound();
+                query = query.Where(x => x.ProjectCode.Contains(search)).Include(p => p.Class).Include(p => p.Mentor);
             }
 
-            var project = await _context.Projects
-                .Include(p => p.Class)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (project == null)
+            ViewData["Sort"] = SortBy;
+            if (SortBy == "ASC")
             {
-                return NotFound();
+                query = query.OrderBy(x => x.ProjectCode).Include(p => p.Class).Include(p => p.Mentor);
+            }
+            else if(SortBy =="DESC")
+            {
+                query = query.OrderByDescending(x => x.ProjectCode).Include(p => p.Class).Include(p => p.Mentor);
             }
 
-            return View(project);
+            if (StatusFilter == "true" )
+            {              
+                query = query.Where(x => x.Status == true).Include(p => p.Class).Include(p => p.Mentor);
+                
+            }
+            else if (StatusFilter == "false")
+            {
+                query = query.Where(x => x.Status == false).Include(p => p.Class).Include(p => p.Mentor);
+            }
+
+            var totalItems = query.Count();
+
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            if (page < 1)
+            {
+                //test
+                page = 1;
+            }
+            else if (page > totalPages)
+            {
+                page = totalPages;
+            }
+
+            query = query
+
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize).Include(p => p.Class).Include(p => p.Mentor);
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+
+
+            return View(await query.ToListAsync());
         }
 
+        
+        /*  // GET: Projects/Details/5
+          public async Task<IActionResult> Details(int? id)
+          {
+              if (id == null || _context.Projects == null)
+              {
+                  return NotFound();
+              }
+
+              var project = await _context.Projects
+                  .Include(p => p.Class)
+                  .Include(p => p.Mentor)
+                  .FirstOrDefaultAsync(m => m.Id == id);
+              if (project == null)
+              {
+                  return NotFound();
+              }
+
+              return View(project);
+          }*/
+
+        [Route("/Projects/ProjectNew")]
         // GET: Projects/Create
-        public IActionResult Create()
+        public IActionResult ProjectNew()
         {
-            ViewData["ClassId"] = new SelectList(_context.Classes, "Id", "Id");
+            ViewData["ClassId"] = new SelectList(_context.Classes, "Id", "Name");
+            ViewData["MentorId"] = new SelectList(_context.Users.Where(s => s.RoleSettingId == 4), "Id", "Name");
             return View();
         }
 
         // POST: Projects/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Route("/Projects/ProjectNew")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ClassId")] Project project)
+        public async Task<IActionResult> ProjectNew([Bind("Id,ProjectCode,EnglishName,VietNameseName,Status,Description,GroupName,MentorId,ClassId")] Project project)
         {
-            if (ModelState.IsValid)
+            if (_context.Projects.Any(p => p.ProjectCode == project.ProjectCode))
             {
-                _context.Add(project);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ViewData["exist"] = "The Project code already exists";
+                ViewData["ClassId"] = new SelectList(_context.Classes, "Id", "Name", project.ClassId);
+                ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Name", project.MentorId);
+                return View(project);
+               
             }
-            ViewData["ClassId"] = new SelectList(_context.Classes, "Id", "Id", project.ClassId);
-            return View(project);
+            _context.Add(project);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Create Successful";
+            return RedirectToAction(nameof(ProjectList));
+
         }
 
+        [Route("/Projects/ProjectDetail")]
         // GET: Projects/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> ProjectDetail(int? id)
         {
             if (id == null || _context.Projects == null)
             {
                 return NotFound();
             }
-
+            
             var project = await _context.Projects.FindAsync(id);
             if (project == null)
             {
                 return NotFound();
             }
-            ViewData["ClassId"] = new SelectList(_context.Classes, "Id", "Id", project.ClassId);
+            ViewData["ClassId"] = new SelectList(_context.Classes, "Id", "Name", project.ClassId);
+            ViewData["MentorId"] = new SelectList(_context.Users.Where(u => u.RoleSettingId==4), "Id", "Name", project.MentorId);        
             return View(project);
         }
 
         // POST: Projects/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Route("/Projects/ProjectDetail")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ClassId")] Project project)
+        public async Task<IActionResult> ProjectDetail(int id, [Bind("Id,ProjectCode,EnglishName,VietNameseName,Status,Description,GroupName,MentorId,ClassId")] Project project)
         {
             if (id != project.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (_context.Projects.Any(p => p.ProjectCode == project.ProjectCode && p.Id != id))
+            {
+                ViewData["exist"] = "The Project code already exists";
+                ViewData["ClassId"] = new SelectList(_context.Classes, "Id", "Name", project.ClassId);
+                ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Name", project.MentorId);
+                return View(project);
+
+            }
+            else
             {
                 try
                 {
                     _context.Update(project);
+                    TempData["SuccessMessageEdit"] = "Update Successful.";
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -116,14 +192,44 @@ namespace G3.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+               
             }
-            ViewData["ClassId"] = new SelectList(_context.Classes, "Id", "Id", project.ClassId);
-            return View(project);
+            return RedirectToAction(nameof(ProjectList));
         }
 
+
+
+        /*   [Route("/Projects/ProjectDelete")]
+           public async Task<IActionResult> ProjectDelete(int? id)
+           {
+               if (id == null)
+               {
+                   return NotFound();
+               }
+               var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+               if (project == null)
+               {
+                   return NotFound();
+               }
+
+               if (project.Status == true)
+               {
+
+                   TempData["DeleteMessageFales"] = "Delete False, you can not delete an active project";
+                   return RedirectToAction(nameof(ProjectList));
+
+               }
+
+               _context.Projects.Remove(project);
+               TempData["DeleteMessageSuccess"] = "Delete Successful";
+               await _context.SaveChangesAsync();
+               return RedirectToAction(nameof(ProjectList));
+
+           }*/
+
+        [Route("/Projects/ProjectDelete")]
         // GET: Projects/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> ProjectDelete(int? id)
         {
             if (id == null || _context.Projects == null)
             {
@@ -132,6 +238,7 @@ namespace G3.Controllers
 
             var project = await _context.Projects
                 .Include(p => p.Class)
+                .Include(p => p.Mentor)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (project == null)
             {
@@ -140,24 +247,37 @@ namespace G3.Controllers
 
             return View(project);
         }
-
         // POST: Projects/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [Route("/Projects/ProjectDelete")]
+        [HttpPost, ActionName("ProjectDelete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> ProjectDeleteConfirmed(int id)
         {
             if (_context.Projects == null)
             {
                 return Problem("Entity set 'SWPContext.Projects'  is null.");
             }
-            var project = await _context.Projects.FindAsync(id);
-            if (project != null)
+            var project = await _context.Projects.Include(p => p.Class)
+                .Include(p => p.Mentor)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (project == null)
             {
-                _context.Projects.Remove(project);
+                return NotFound();
             }
-            
+
+            if (project.Status == true)
+            {
+
+                TempData["DeleteMessageFales"] = "Delete False, you can not delete an active project";
+
+                return View(project);
+
+            }
+            _context.Projects.Remove(project);
+            TempData["DeleteMessageSuccess"] = "Delete Successful";
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(ProjectList));
+
         }
 
         private bool ProjectExists(int id)

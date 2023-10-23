@@ -15,7 +15,7 @@ namespace G3.Models
         public string ProjectCode { get; set; } = null!;
         public string EnglishName { get; set; } = null!;
         public string VietNameseName { get; set; } = null!;
-        public string ProjectStatus { get; set; } = null!;
+        public bool? Status { get; set; }
         public string Description { get; set; } = null!;
         public string GroupName { get; set; } = null!;
         public int MentorId { get; set; }
