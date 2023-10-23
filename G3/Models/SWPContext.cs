@@ -19,9 +19,9 @@ namespace G3.Models
         public virtual DbSet<Assignee> Assignees { get; set; } = null!;
         public virtual DbSet<Assignment> Assignments { get; set; } = null!;
         public virtual DbSet<Class> Classes { get; set; } = null!;
-        public virtual DbSet<ClassSetting> ClassSettings { get; set; } = null!;
+        public virtual DbSet<Classsetting> ClassSettings { get; set; } = null!;
         public virtual DbSet<ClassStudentProject> ClassStudentProjects { get; set; } = null!;
-        public virtual DbSet<GitLabUser> GitLabUsers { get; set; } = null!;
+        public virtual DbSet<Gitlabuser> GitLabUsers { get; set; } = null!;
         public virtual DbSet<Issue> Issues { get; set; } = null!;
         public virtual DbSet<Milestone> Milestones { get; set; } = null!;
         public virtual DbSet<Project> Projects { get; set; } = null!;
@@ -145,7 +145,7 @@ namespace G3.Models
                 entity.Property(e => e.Value).HasMaxLength(191);
 
                 entity.HasOne(d => d.Class)
-                    .WithMany(p => p.Classsettings)
+                    .WithMany(p => p.ClassSettings)
                     .HasForeignKey(d => d.ClassId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("ClassSetting_classId_fkey");
@@ -180,7 +180,7 @@ namespace G3.Models
                     .HasConstraintName("ClassStudentProject_UserId_fkey");
             });
 
-            modelBuilder.Entity<GitLabUser>(entity =>
+            modelBuilder.Entity<Gitlabuser>(entity =>
             {
                 entity.ToTable("gitlabuser");
 
@@ -201,7 +201,7 @@ namespace G3.Models
                 entity.Property(e => e.WebUrl).HasMaxLength(191);
 
                 entity.HasOne(d => d.User)
-                    .WithOne(p => p.Gitlabuser)
+                    .WithOne(p => p.GitLabUser)
                     .HasForeignKey<Gitlabuser>(d => d.UserId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("GitLabUser_UserId_fkey");

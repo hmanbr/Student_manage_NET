@@ -10,6 +10,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace G3.Controllers
 {
+    [AuthActionFilter]
     public class ProjectsController : Controller
     {
         private readonly SWPContext _context;
@@ -105,7 +106,7 @@ namespace G3.Controllers
         // GET: Projects/Create
         public IActionResult ProjectNew()
         {
-            ViewData["ClassId"] = new SelectList(_context.Classes, "Id", "Name");
+            ViewData["ClassId"] = new SelectList(_context.Classes, "GitLabGroupId", "Name");
             ViewData["MentorId"] = new SelectList(_context.Users.Where(s => s.RoleSettingId == 4), "Id", "Name");
             return View();
         }
@@ -147,7 +148,7 @@ namespace G3.Controllers
             {
                 return NotFound();
             }
-            ViewData["ClassId"] = new SelectList(_context.Classes, "Id", "Name", project.ClassId);
+            ViewData["ClassId"] = new SelectList(_context.Classes, "GitLabGroupId", "Name", project.ClassId);
             ViewData["MentorId"] = new SelectList(_context.Users.Where(u => u.RoleSettingId==4), "Id", "Name", project.MentorId);        
             return View(project);
         }
@@ -176,7 +177,7 @@ namespace G3.Controllers
             else
             {
                 try
-                {
+                {                                    
                     _context.Update(project);
                     TempData["SuccessMessageEdit"] = "Update Successful.";
                     await _context.SaveChangesAsync();

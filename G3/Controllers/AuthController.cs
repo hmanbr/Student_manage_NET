@@ -116,9 +116,9 @@ namespace G3.Controllers
                     return View("Views/Admin/AdminHome.cshtml");
                 case "SUBJECT_MANAGER":
                     return View("Views/Manager/ManagerHome.cshtml");
-                /*case "CLASS_MANAGER":
-                    return View("Views/Admin/AdminHome.cshtml");
-                case "MENTOR":
+                case "CLASS_MANAGER":
+                    return View("Views/ClassManager/ClassManager.cshtml");
+                /*case "MENTOR":
                     return View("Views/Admin/AdminHome.cshtml");
                 case "STUDENT":
                     return View("Views/Admin/AdminHome.cshtml");*/
@@ -282,12 +282,13 @@ namespace G3.Controllers
                     return View("Views/Admin/AdminHome.cshtml");
                 case "SUBJECT_MANAGER":
                     return View("Views/Manager/ManagerHome.cshtml");
-               /* case "CLASS_MANAGER":
-                    return View("Views/Admin/AdminHome.cshtml");
-                case "MENTOR":
-                    return View("Views/Admin/AdminHome.cshtml");
-                case "STUDENT":
-                    return View("Views/Admin/AdminHome.cshtml");*/
+                case "CLASS_MANAGER":
+                    return View("Views/ClassManager/ClassManager.cshtml");
+                    /* 
+                     case "MENTOR":
+                         return View("Views/Admin/AdminHome.cshtml");
+                     case "STUDENT":
+                         return View("Views/Admin/AdminHome.cshtml");*/
             }
 
             return View();
