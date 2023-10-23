@@ -21,10 +21,10 @@ namespace G3.Models
         public DateTime StartDate { get; set; }
         public bool Expired { get; set; }
         public string WebUrl { get; set; } = null!;
-        public int? ClassId { get; set; }
+        public int? GroupId { get; set; }
         public int? ProjectId { get; set; }
 
-        public virtual Class? Class { get; set; }
+        public virtual Class? Group { get; set; }
         public virtual Project? Project { get; set; }
         public virtual ICollection<Issue> Issues { get; set; }
     }

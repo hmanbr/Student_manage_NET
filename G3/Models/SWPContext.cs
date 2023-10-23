@@ -270,7 +270,7 @@ namespace G3.Models
             {
                 entity.ToTable("Milestone", "SWP");
 
-                entity.HasIndex(e => e.ClassId, "Milestone_ClassId_fkey");
+                entity.HasIndex(e => e.GroupId, "Milestone_GroupId_fkey");
 
                 entity.HasIndex(e => e.ProjectId, "Milestone_ProjectId_fkey");
 
@@ -292,12 +292,12 @@ namespace G3.Models
 
                 entity.Property(e => e.WebUrl).HasMaxLength(191);
 
-                entity.HasOne(d => d.Class)
+                entity.HasOne(d => d.Group)
                     .WithMany(p => p.Milestones)
                     .HasPrincipalKey(p => p.GitLabGroupId)
-                    .HasForeignKey(d => d.ClassId)
+                    .HasForeignKey(d => d.GroupId)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Milestone_ClassId_fkey");
+                    .HasConstraintName("Milestone_GroupId_fkey");
 
                 entity.HasOne(d => d.Project)
                     .WithMany(p => p.Milestones)
