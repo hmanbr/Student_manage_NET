@@ -4,6 +4,12 @@ CREATE DATABASE SWP;
 
 USE SWP;
 
+DROP DATABASE IF EXISTS SWP;
+
+CREATE DATABASE SWP;
+
+USE SWP;
+
 -- CreateTable
 CREATE TABLE `User` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -138,7 +144,7 @@ CREATE TABLE `Project` (
     `Description` TEXT NOT NULL,
     `GroupName` VARCHAR(191) NOT NULL,
     `MentorId` INTEGER NOT NULL,
-    `GroupId` INTEGER NULL,
+    `ClassId` INTEGER NULL,
 
     PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -156,7 +162,7 @@ CREATE TABLE `Milestone` (
     `StartDate` DATETIME(3) NOT NULL,
     `Expired` BOOLEAN NOT NULL DEFAULT false,
     `WebUrl` VARCHAR(191) NOT NULL,
-    `GroupId` INTEGER NULL,
+    `ClassId` INTEGER NULL,
     `ProjectId` INTEGER NULL,
 
     PRIMARY KEY (`Id`)
@@ -239,10 +245,10 @@ ALTER TABLE `ClassSetting` ADD CONSTRAINT `ClassSetting_classId_fkey` FOREIGN KE
 ALTER TABLE `Project` ADD CONSTRAINT `Project_MentorId_fkey` FOREIGN KEY (`MentorId`) REFERENCES `User`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Project` ADD CONSTRAINT `Project_GroupId_fkey` FOREIGN KEY (`GroupId`) REFERENCES `Class`(`GitLabGroupId`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Project` ADD CONSTRAINT `Project_ClassId_fkey` FOREIGN KEY (`ClassId`) REFERENCES `Class`(`GitLabGroupId`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Milestone` ADD CONSTRAINT `Milestone_GroupId_fkey` FOREIGN KEY (`GroupId`) REFERENCES `Class`(`GitLabGroupId`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Milestone` ADD CONSTRAINT `Milestone_ClassId_fkey` FOREIGN KEY (`ClassId`) REFERENCES `Class`(`GitLabGroupId`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Milestone` ADD CONSTRAINT `Milestone_ProjectId_fkey` FOREIGN KEY (`ProjectId`) REFERENCES `Project`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -270,6 +276,26 @@ ALTER TABLE `Issue` ADD CONSTRAINT `Issue_AssigneeId_fkey` FOREIGN KEY (`Assigne
 
 -- AddForeignKey
 ALTER TABLE `Issue` ADD CONSTRAINT `Issue_ProjectId_fkey` FOREIGN KEY (`ProjectId`) REFERENCES `Project`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Administrator', 'ADMIN');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Subject Manager', 'SUBJECT_MANAGER');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Class Manager', 'CLASS_MAMAGER');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Mentor', 'MENTOR');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Student', 'STUDENT');
+
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'fpt.edu.vn', 'fpt.edu.vn');
+INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('DOMAIN', 'gmail.com', 'gmail.com');
+
+INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Status`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('admin@fpt.edu.vn', 6, 1, '$2a$11$cxw.dCQrU8IhFUUTkti8E.J1lE4DTN623yAS4xpRSHuX9UbSVsg8K',true, 'Administrator', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
+INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Status`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('subject_manager@fpt.edu.vn', 6, 2, '$2a$11$DxRisl20ebF0JUabLWNyHeCxSjin6TZBLrVQyhCTHtroqCtzRLZxC',true, 'Subject Manager', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
+INSERT INTO `SWP`.`User` (`Email`, `DomainSettingId`, `RoleSettingId`, `Hash`, `Status`, `Name`, `Gender`, `CreatedAt`, `UpdatedAt`) VALUES ('class_manager@fpt.edu.vn', 6, 3, '$2a$11$dWdwVbzKlOWKR7VHwywwH.rt0Tqxar9.8.Y2I46OSYRwymKKVTEnW',true, 'Class Manager', '1', '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
+
+INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('PRF192', 'Programming Fundamentals', 'This is Programming Fundamentals Subject');
+INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('DBI202', 'Introduction to Databases', 'This is Introduction to Databases Subject');
+INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('NWC202', 'Computer Networking', 'This is Computer Networking Subject');
+INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('PRN292', '.NET and C#', 'This is .NET and C# Subject');
+
+INSERT INTO `SWP`.`Class` (`Name`, `Description`, `GitLabGroupId`, `SubjectId`, `Status`) VALUES ('SE1735', 'This is SE1735 class', '76753267', '1', '1');
 
 INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Administrator', 'ADMIN');
 INSERT INTO `SWP`.`Setting` (`Type`, `Name`, `Value`) VALUES ('ROLE', 'Subject Manager', 'SUBJECT_MANAGER');

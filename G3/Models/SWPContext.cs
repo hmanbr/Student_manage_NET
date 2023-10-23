@@ -24,7 +24,6 @@ namespace G3.Models
         public virtual DbSet<GitLabUser> GitLabUsers { get; set; } = null!;
         public virtual DbSet<Issue> Issues { get; set; } = null!;
         public virtual DbSet<Milestone> Milestones { get; set; } = null!;
-        public virtual DbSet<PrismaMigration> PrismaMigrations { get; set; } = null!;
         public virtual DbSet<Project> Projects { get; set; } = null!;
         public virtual DbSet<Setting> Settings { get; set; } = null!;
         public virtual DbSet<Subject> Subjects { get; set; } = null!;
@@ -271,7 +270,7 @@ namespace G3.Models
             {
                 entity.ToTable("Milestone", "SWP");
 
-                entity.HasIndex(e => e.GroupId, "Milestone_GroupId_fkey");
+                entity.HasIndex(e => e.ClassId, "Milestone_ClassId_fkey");
 
                 entity.HasIndex(e => e.ProjectId, "Milestone_ProjectId_fkey");
 
@@ -293,12 +292,12 @@ namespace G3.Models
 
                 entity.Property(e => e.WebUrl).HasMaxLength(191);
 
-                entity.HasOne(d => d.Group)
+                entity.HasOne(d => d.Class)
                     .WithMany(p => p.Milestones)
                     .HasPrincipalKey(p => p.GitLabGroupId)
-                    .HasForeignKey(d => d.GroupId)
+                    .HasForeignKey(d => d.ClassId)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Milestone_GroupId_fkey");
+                    .HasConstraintName("Milestone_ClassId_fkey");
 
                 entity.HasOne(d => d.Project)
                     .WithMany(p => p.Milestones)
@@ -307,47 +306,11 @@ namespace G3.Models
                     .HasConstraintName("Milestone_ProjectId_fkey");
             });
 
-            modelBuilder.Entity<PrismaMigration>(entity =>
-            {
-                entity.ToTable("_prisma_migrations", "SWP");
-
-                entity.Property(e => e.Id)
-                    .HasMaxLength(36)
-                    .HasColumnName("id");
-
-                entity.Property(e => e.AppliedStepsCount).HasColumnName("applied_steps_count");
-
-                entity.Property(e => e.Checksum)
-                    .HasMaxLength(64)
-                    .HasColumnName("checksum");
-
-                entity.Property(e => e.FinishedAt)
-                    .HasColumnType("datetime(3)")
-                    .HasColumnName("finished_at");
-
-                entity.Property(e => e.Logs)
-                    .HasColumnType("text")
-                    .HasColumnName("logs");
-
-                entity.Property(e => e.MigrationName)
-                    .HasMaxLength(255)
-                    .HasColumnName("migration_name");
-
-                entity.Property(e => e.RolledBackAt)
-                    .HasColumnType("datetime(3)")
-                    .HasColumnName("rolled_back_at");
-
-                entity.Property(e => e.StartedAt)
-                    .HasColumnType("datetime(3)")
-                    .HasColumnName("started_at")
-                    .HasDefaultValueSql("'CURRENT_TIMESTAMP(3)'");
-            });
-
             modelBuilder.Entity<Project>(entity =>
             {
                 entity.ToTable("Project", "SWP");
 
-                entity.HasIndex(e => e.GroupId, "Project_GroupId_fkey");
+                entity.HasIndex(e => e.ClassId, "Project_ClassId_fkey");
 
                 entity.HasIndex(e => e.MentorId, "Project_MentorId_fkey");
 
@@ -363,12 +326,12 @@ namespace G3.Models
 
                 entity.Property(e => e.VietNameseName).HasMaxLength(191);
 
-                entity.HasOne(d => d.Group)
+                entity.HasOne(d => d.Class)
                     .WithMany(p => p.Projects)
                     .HasPrincipalKey(p => p.GitLabGroupId)
-                    .HasForeignKey(d => d.GroupId)
+                    .HasForeignKey(d => d.ClassId)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Project_GroupId_fkey");
+                    .HasConstraintName("Project_ClassId_fkey");
 
                 entity.HasOne(d => d.Mentor)
                     .WithMany(p => p.Projects)
