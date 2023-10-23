@@ -102,7 +102,19 @@ namespace G3.Controllers
             milestones = _context.Milestones.Where(m => m.GroupId == @class.GitLabGroupId).ToList();
             ViewData["milestones"] = milestones;
             return View();
+        }
 
+        [Route("milestones/{id}")]
+        public async Task<IActionResult> MilestoneDetail(int? id)
+        {
+
+            if (id == null || _context.Milestones == null) return NotFound();
+
+            var Milestone = await _context.Milestones.Include(m => m.Group).FirstOrDefaultAsync(m => m.Id == id);
+            if (Milestone == null) return NotFound();
+
+            ViewData["Milestone"] = Milestone;
+            return View();
         }
 
 
@@ -124,11 +136,11 @@ namespace G3.Controllers
         [Route("/classNew")]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,SubjectId,Status")] Class @class)
         {
-            
+
             if (ModelState.IsValid)
             {
 
-                if(_context.Classes.Any(c => c.Name == @class.Name))
+                if (_context.Classes.Any(c => c.Name == @class.Name))
                 {
                     ViewData["error"] = "This class has exist!!";
                 }
@@ -139,7 +151,7 @@ namespace G3.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-               
+
             }
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", @class.SubjectId);
             return View(@class);

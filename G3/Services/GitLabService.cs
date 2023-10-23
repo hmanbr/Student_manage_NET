@@ -4,7 +4,7 @@ using NGitLab.Models;
 
 namespace G3.Services
 {
-    public class GitLabService: IGitLabService
+    public class GitLabService : IGitLabService
     {
         private readonly IConfiguration Configuration;
         public GitLabClient client;
@@ -19,6 +19,11 @@ namespace G3.Services
         {
             IMilestoneClient milestoneClient = client.GetGroupMilestone(groupId);
             return milestoneClient.All.ToList();
+        }
+
+        public List<Label> GetProjects(int groupId)
+        {
+            return client.Labels.ForGroup(groupId: groupId).ToList();
         }
     }
 }
