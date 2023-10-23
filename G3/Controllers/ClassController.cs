@@ -33,7 +33,7 @@ namespace G3.Controllers
 
             return tab switch
             {
-                "general" => View(),
+                "general" => View(@class),
                 "milestones" => RunMilestone(@class, gitLabService),
                 _ => View(),
             };
