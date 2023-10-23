@@ -16,7 +16,6 @@ namespace G3.Controllers
         [Route("/classList")]
         public async Task<IActionResult> Index()
         {
-
             var sWPContext = _context.Classes.Include(c => c.Subject);
             return View(await sWPContext.ToListAsync());
         }
@@ -109,9 +108,11 @@ namespace G3.Controllers
 
 
         // GET: Class/Create
+        [Route("/classNew")]
         public IActionResult Create()
         {
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id");
+
             return View();
         }
 
@@ -120,21 +121,35 @@ namespace G3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("/classNew")]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,SubjectId,Status")] Class @class)
         {
+            
             if (ModelState.IsValid)
             {
-                _context.Add(@class);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                if(_context.Classes.Any(c => c.Name == @class.Name))
+                {
+                    ViewData["error"] = "This class has exist!!";
+                }
+                else
+                {
+                    _context.Add(@class);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+
+               
             }
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", @class.SubjectId);
             return View(@class);
         }
 
         // GET: Class/Edit/5
+        [Route("/classEdit")]
         public async Task<IActionResult> Edit(int? id)
         {
+
             if (id == null || _context.Classes == null)
             {
                 return NotFound();
@@ -154,6 +169,7 @@ namespace G3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("/classEdit")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,SubjectId,Status")] Class @class)
         {
             if (id != @class.Id)
@@ -165,6 +181,7 @@ namespace G3.Controllers
             {
                 try
                 {
+
                     _context.Update(@class);
                     await _context.SaveChangesAsync();
                 }
@@ -186,6 +203,7 @@ namespace G3.Controllers
         }
 
         // GET: Class/Delete/5
+        [Route("/classDelete")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Classes == null)
@@ -207,7 +225,8 @@ namespace G3.Controllers
         // POST: Class/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [Route("/classDelete")]
+        public async Task<IActionResult> Delete(int id)
         {
             if (_context.Classes == null)
             {
