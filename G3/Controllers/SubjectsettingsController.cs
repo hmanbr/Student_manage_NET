@@ -181,7 +181,7 @@ namespace G3.Controllers
         [Route("/Subjectsettings/Create")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubjectSettingAdd([Bind("Id,Value,Description,SubjectId")] SubjectSetting subjectsetting)
+        public async Task<IActionResult> SubjectSettingAdd([Bind("Id,Value,Description,SubjectId")] Subjectsetting subjectsetting)
         {
             if (_context.SubjectSettings.Any(s => s.SubjectId == subjectsetting.SubjectId))
             {
@@ -223,7 +223,7 @@ namespace G3.Controllers
         [Route("/Subjectsettings/Edit")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubjectSettingEdit(int id, [Bind("Id,Value,Description,SubjectId")] SubjectSetting subjectsetting)
+        public async Task<IActionResult> SubjectSettingEdit(int id, [Bind("Id,Value,Description,SubjectId")] Subjectsetting subjectsetting)
         {
             if (id != subjectsetting.Id)
             {
