@@ -30,12 +30,12 @@ namespace G3.Controllers
             var @class = await _context.Classes.Include(c => c.Subject).FirstOrDefaultAsync(m => m.Id == id);
             if (@class == null) return NotFound();
 
-            RunMilestone(@class, gitLabService);
+            ViewData["tab"] = tab ?? "general";
 
             return tab switch
             {
                 "general" => View(),
-                "milestone" => RunMilestone(@class, gitLabService),
+                "milestones" => RunMilestone(@class, gitLabService),
                 _ => View(),
             };
 
@@ -47,8 +47,8 @@ namespace G3.Controllers
             if (groupId == null) return View();
 
 
-            List<NGitLab.Models.Milestone> Milestone = gitLabService.GetMilestoneByGroupId((int)groupId);
-            List<Models.Milestone> milestones = Milestone.Select(m => new Models.Milestone
+            List<NGitLab.Models.Milestone> gitlabMilestone = gitLabService.GetMilestoneByGroupId((int)groupId);
+            List<Models.Milestone> milestones = gitlabMilestone.Select(m => new Models.Milestone
             {
                 Id = m.Id,
                 Iid = m.Iid,
@@ -99,7 +99,11 @@ namespace G3.Controllers
 
 
             _context.Database.ExecuteSqlRaw(sql);
+
+            milestones = _context.Milestones.Where(m => m.GroupId == @class.GitLabGroupId).ToList();
+            ViewData["milestones"] = milestones;
             return View();
+
         }
 
 
