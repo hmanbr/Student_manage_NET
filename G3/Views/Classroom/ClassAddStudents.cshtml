@@ -5,7 +5,7 @@
 	int classId = (int)ViewBag.ClassId;
 }
 
-<h1>Class Students</h1>
+<h1>Class Add Students</h1>
 
 <div class="container-fluid">
 	<div class="card shadow mb-4">
@@ -101,7 +101,7 @@
 		<div>
 			<span class="mr-1">
 				<form asp-controller="Classroom" asp-action="ClassStudents" method="get">
-					<button class="btn btn-outline-primary float-left" name="id" value="@ViewBag.ClassID" type="submit">Cancel</button>
+					<button class="btn btn-outline-primary float-left" name="classid" value="@ViewBag.ClassID" type="submit">Cancel</button>
 				</form>				
 			</span>
 		</div>
