@@ -10,7 +10,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace G3.Controllers
 {
-    [AuthActionFilter]
+    /*[AuthActionFilter]*/
     public class SubjectsettingsController : Controller
     {
         private readonly SWPContext _context;

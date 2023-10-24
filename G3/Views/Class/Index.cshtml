@@ -22,11 +22,13 @@
     <div class="banner">
         <h1>List Class</h1>
         <div class="cre_btn">
-            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#DialogCreate">Create</button>
+            <p>
+                <a asp-action="Create"><span>Create New</span></a>
+            </p>
         </div>
 
         <div class="container mt-5 search_email">
-            <form asp-action="SubAsmList" method="get" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+            <form asp-action="Index" method="get" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                 <div class="input-group">
                     <input type="text" class="form-control small" placeholder="Search...."
                            aria-label="Search" aria-describedby="basic-addon2" name="searchString" value="@ViewData["SearchAss"]" style="margin-left:200px; width:500px; font-size: 15px; background-color:#f8f9fc;">
@@ -41,8 +43,8 @@
 
         <div class="sort_btn">
             <b>Sort By: </b>
-            <a asp-action="SubAsmList" asp-route-sortOrder="@ViewData["NameSort"]">Name </a> |
-            <a asp-action="SubAsmList" asp-route-sortOrder="@ViewData["TitleSort"]"> Title</a>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSort"]">Name </a> |
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSort"]"> Status</a>
         </div>
 
         <table class="table table-bordered">
@@ -57,6 +59,11 @@
                     <th>
                         Subject Name
                     </th>
+
+         @*           <th>
+                       Gitlab GroupID
+                    </th>*@
+
                     <th>
                         @Html.DisplayNameFor(model => model.Status)
                     </th>
@@ -81,6 +88,10 @@
                             @Html.DisplayFor(modelItem => item.Subject.Name)
 
                         </td>
+                        @*   <td>
+                            @Html.DisplayFor(modelItem => item.GitLabGroupId)
+
+                        </td>*@
                         <td>
                             @if (@item.Status == true)
                             {
@@ -96,27 +107,40 @@
                     @Html.DisplayFor(modelItem => item.Description)
                     </td>*@
                         <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                            <div class="cre_btn">
+                            <a asp-action="Edit_toggle2" asp-route-id="@item.Id">
+                                @if (item.Status == true)
+                                {
+                                    <i class="fa fa-check-circle" style="font-size:15px"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-check-circle" style="font-size:15px;color:black"></i>
+                                }
+                            </a>
+                            @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |*@|
+                            <a asp-action="Details" asp-route-id="@item.Id"><i class='fas fa-vote-yea' style='font-size:15px'></i></a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id"><i class='fas fa-edit' style='font-size:15px'></i></a>
+                            @*<div class="cre_btn">
                                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#DialogDelete">Create</button>
-                            </div>
+                            </div>*@
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-        @await Html.PartialAsync("DialogNewClass", new Class())
-        @*<nav aria-label="Page navigation">
+        @*@await Html.PartialAsync("DialogNewClass", new Class())*@
+        <div class="clearfix">
+            <div class="hint-text">Showing <b>5</b> record </div>
+
             <ul class="pagination">
                 @for (var i = 1; i <= ViewBag.TotalPages; i++)
                 {
                     var isActive = i == ViewBag.CurrentPage ? "active" : "";
-                    <li class="page-item @isActive"><a class="page-link" href="/admin/ListEmailDM">@i</a></li>
+                    <li class="page-item @isActive"><a class="page-link" href="/classList?page=@i&pageSize=@ViewBag.PageSize">@i</a></li>
                 }
             </ul>
-        </nav>*@
+
+        </div>
     </div>
 
 </body>

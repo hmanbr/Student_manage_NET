@@ -20,6 +20,11 @@
                 <h5 style="color:red; font-size:17px;">@ViewData["error"]</h5>
             </div>
             <div class="form-group">
+                <label asp-for="GitLabGroupId" class="control-label"></label>
+                <input asp-for="GitLabGroupId" class="form-control" />
+                <span asp-validation-for="GitLabGroupId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <textarea asp-for="Description" class="form-control"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
