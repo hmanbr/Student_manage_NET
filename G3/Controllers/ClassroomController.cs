@@ -110,7 +110,7 @@ namespace G3.Controllers
 			ViewBag.SearchString = search;
 			ViewBag.SearchPager = searchPager;
 			ViewBag.ClassId = classId;
-			return View("/Views/Classroom/ClassStudents.cshtml", usersInClass);
+			return View("/Views/Classroom/ClassStudents.cshtml", data);
 		}
 
 		[Route("/ManageClassroom/ClassDetail")]
