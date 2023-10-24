@@ -14,10 +14,63 @@ namespace G3.Controllers
 
         // GET: Class
         [Route("/classList")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchString, string selectFilter, int page = 1, int pageSize = 5)
         {
-            var sWPContext = _context.Classes.Include(c => c.Subject);
-            return View(await sWPContext.ToListAsync());
+            ViewData["NameSort"] = String.IsNullOrEmpty(sortOrder) ? "nameDesc" : "";
+            ViewData["StatusSort"] = sortOrder == "title" ? "titleDesc" : "title";
+            ViewData["SearchAss"] = searchString;
+
+            var assign = from s in _context.Classes.Include(a => a.Subject) select s;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                assign = assign.Where(s =>
+                s.Name.Contains(searchString) ||
+                s.Subject.Name.Contains(searchString) ||
+                s.Subject.SubjectCode.Contains(searchString));
+
+            }
+
+            switch (sortOrder)
+            {
+                case "nameDesc":
+                    assign = assign.OrderByDescending(s => s.Name);
+                    break;
+                case "title":
+                    assign = assign.OrderByDescending(s => s.Status);
+                    break;
+                case "titleDesc":
+                    assign = assign.OrderBy(s => s.Status);
+                    break;
+                default:
+                    assign = assign.OrderBy(s => s.Name);
+                    break;
+            }
+
+            var totalItems = assign.Count();
+
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            if (page < 1)
+            {
+
+                page = 1;
+            }
+            else if (page > totalPages)
+            {
+                page = totalPages;
+            }
+
+            assign = assign
+
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize).Include(m => m.Subject);
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+
+            return View(await assign.ToListAsync());
         }
 
         // GET: Class/Details/5
@@ -30,7 +83,7 @@ namespace G3.Controllers
             if (@class == null) return NotFound();
 
             ViewData["tab"] = tab ?? "general";
-
+            
             return tab switch
             {
                 "general" => View(@class),
@@ -123,8 +176,7 @@ namespace G3.Controllers
         [Route("/classNew")]
         public IActionResult Create()
         {
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id");
-
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "SubjectCode");
             return View();
         }
 
@@ -134,7 +186,7 @@ namespace G3.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("/classNew")]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,SubjectId,Status")] Class @class)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,GitLabGroupId,SubjectId,Status")] Class @class)
         {
 
             if (ModelState.IsValid)
@@ -182,7 +234,7 @@ namespace G3.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("/classEdit")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,SubjectId,Status")] Class @class)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,GitLabGroupId,SubjectId,Status")] Class @class)
         {
             if (id != @class.Id)
             {
@@ -257,6 +309,23 @@ namespace G3.Controllers
         private bool ClassExists(int id)
         {
             return (_context.Classes?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [Route("/admin/editClass_toggle2")]
+        public IActionResult Edit_toggle2(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            var settingFromDB = _context.Classes.Find(id);
+            if (settingFromDB == null)
+            {
+                return NotFound();
+            }
+            settingFromDB.Status = !settingFromDB.Status;
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

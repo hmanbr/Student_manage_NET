@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using G3.Models;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace G3.Controllers
 {
@@ -20,10 +21,10 @@ namespace G3.Controllers
 
         // GET: Assignments
         [Route("/subjectAssignment")]
-        public async Task<IActionResult> SubAsmList(string sortOrder, string searchString, string selectFilter)
+        public async Task<IActionResult> SubAsmList(string sortOrder, string searchString, string selectFilter, int page = 1, int pageSize = 8)
         {
             ViewData["NameSort"] = String.IsNullOrEmpty(sortOrder) ? "nameDesc" : "";
-            ViewData["TitleSort"] = sortOrder == "title" ? "titleDesc" : "title";
+            ViewData["DateSort"] = sortOrder == "title" ? "titleDesc" : "title";
             ViewData["SearchAss"] = searchString;
    
             var assign = from s in _context.Assignments.Include(a => a.Subject) select s;
@@ -52,6 +53,26 @@ namespace G3.Controllers
                     assign = assign.OrderBy(s => s.Subject.Name);
                     break;
             }
+            var totalItems = assign.Count();
+
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            if (page < 1)
+            {
+
+                page = 1;
+            }
+            else if (page > totalPages)
+            {
+                page = totalPages;
+            }
+            assign = assign
+            .Skip((page - 1) * pageSize)
+                .Take(pageSize).Include(m => m.Subject);
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
 
             /*var sWPContext = _context.Assignments.Include(a => a.Subject);*/
             return View(await assign.ToListAsync());
@@ -81,7 +102,7 @@ namespace G3.Controllers
         [Route("/assignmentCreate")]
         public IActionResult Create()
         {
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id");
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "SubjectCode");
             return View();
         }
 
