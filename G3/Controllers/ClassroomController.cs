@@ -229,6 +229,7 @@ namespace G3.Controllers
 					//  - OpenXml Excel files (2007 format; *.xlsx, *.xlsb)
 					using (var reader = ExcelReaderFactory.CreateReader(stream))
 					{
+						bool wrongFormat = false;
 						do
 						{
 							bool isHeaderSkipped = false;
@@ -240,6 +241,14 @@ namespace G3.Controllers
 									continue;
 								}
 								User user = new User();
+
+								object emailValueCheck = reader.GetValue(0);
+								if(emailValueCheck == null)
+								{
+									ViewBag.Message = "wrongFormat";
+									wrongFormat = true;
+									break;
+								}
 								user.Email = reader.GetValue(0).ToString();
 
 								if (user.Email.Contains("gmail.com"))
@@ -251,9 +260,25 @@ namespace G3.Controllers
 									user.DomainSettingId = 6;
 								}
 
+								object nameValueCheck = reader.GetValue(1);
+								if (nameValueCheck == null)
+								{
+									ViewBag.Message = "wrongFormat";
+									wrongFormat = true;
+									break;
+								}
 								user.Name = reader.GetValue(1).ToString();
 								user.RoleSettingId = 5;
 								user.Status = true;
+
+								object genderValueCheck = reader.GetValue(2);
+								if (genderValueCheck == null)
+								{
+									ViewBag.Message = "wrongFormat";
+									wrongFormat = true;
+									break;
+								}
+
 								if (reader.GetValue(2).ToString().Equals("Male"))
 								{
 									user.Gender = true;
@@ -299,10 +324,13 @@ namespace G3.Controllers
 
 								if (classToAddUserTo != null)
 								{
-									// Check if the user is already associated with the class
-									var isUserAlreadyInClass = classToAddUserTo.User != null && classToAddUserTo.User.Email == emailToCheck;
+									var userClassAssociation = await _context.ClassStudentProjects
+																.Where(csp => csp.ClassId == classId && csp.UserId == existingUser.Id)
+																.Include(csp => csp.User)
+																.FirstOrDefaultAsync();
 
-									if (!isUserAlreadyInClass)
+
+									if (userClassAssociation == null)
 									{
 										// Create a new ClassStudentProject entry for the user
 										var newClassStudentProject = new ClassStudentProject
@@ -321,8 +349,12 @@ namespace G3.Controllers
 
 							}
 						} while (reader.NextResult());
+						ViewBag.Message = "success";
 					}
 				}
+			}else
+			{
+				ViewBag.Message = "empty";
 			}
 			ViewBag.ClassId = id;
 			return View("/Views/Classroom/UploadExcel.cshtml");
