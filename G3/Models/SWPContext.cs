@@ -19,6 +19,7 @@ namespace G3.Models
         public virtual DbSet<Assignee> Assignees { get; set; } = null!;
         public virtual DbSet<Assignment> Assignments { get; set; } = null!;
         public virtual DbSet<Class> Classes { get; set; } = null!;
+        public virtual DbSet<ClassAssignment> ClassAssignments { get; set; } = null!;
         public virtual DbSet<ClassSetting> ClassSettings { get; set; } = null!;
         public virtual DbSet<ClassStudentProject> ClassStudentProjects { get; set; } = null!;
         public virtual DbSet<GitLabUser> GitLabUsers { get; set; } = null!;
@@ -28,6 +29,7 @@ namespace G3.Models
         public virtual DbSet<Setting> Settings { get; set; } = null!;
         public virtual DbSet<Subject> Subjects { get; set; } = null!;
         public virtual DbSet<SubjectSetting> SubjectSettings { get; set; } = null!;
+        public virtual DbSet<Summit> Summits { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -84,7 +86,7 @@ namespace G3.Models
                 entity.HasOne(d => d.Subject)
                     .WithMany(p => p.Assignments)
                     .HasForeignKey(d => d.SubjectId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("Assignment_SubjectId_fkey");
             });
 
@@ -110,15 +112,42 @@ namespace G3.Models
 
                 entity.Property(e => e.Name).HasMaxLength(191);
 
-                entity.Property(e => e.Status)
-                    .IsRequired()
-                    .HasDefaultValueSql("'1'");
-
                 entity.HasOne(d => d.Subject)
                     .WithMany(p => p.Classes)
                     .HasForeignKey(d => d.SubjectId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("Class_SubjectId_fkey");
+            });
+
+            modelBuilder.Entity<ClassAssignment>(entity =>
+            {
+                entity.HasKey(e => e.Key)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("ClassAssignment", "SWP");
+
+                entity.HasIndex(e => new { e.AssignmentId, e.ClassId }, "ClassAssignment_AssignmentId_ClassId_idx");
+
+                entity.HasIndex(e => new { e.AssignmentId, e.ClassId }, "ClassAssignment_AssignmentId_ClassId_key")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.ClassId, "ClassAssignment_ClassId_fkey");
+
+                entity.HasIndex(e => e.Key, "ClassAssignment_Key_idx");
+
+                entity.Property(e => e.Key).HasMaxLength(191);
+
+                entity.HasOne(d => d.Assignment)
+                    .WithMany(p => p.ClassAssignments)
+                    .HasForeignKey(d => d.AssignmentId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("ClassAssignment_AssignmentId_fkey");
+
+                entity.HasOne(d => d.Class)
+                    .WithMany(p => p.ClassAssignments)
+                    .HasForeignKey(d => d.ClassId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("ClassAssignment_ClassId_fkey");
             });
 
             modelBuilder.Entity<ClassSetting>(entity =>
@@ -325,6 +354,10 @@ namespace G3.Models
 
                 entity.Property(e => e.ProjectCode).HasMaxLength(191);
 
+                entity.Property(e => e.Status)
+                    .HasColumnType("enum('PENDING','ACTIVE','INACTIVE')")
+                    .HasDefaultValueSql("'ACTIVE'");
+
                 entity.Property(e => e.VietNameseName).HasMaxLength(191);
 
                 entity.HasOne(d => d.Class)
@@ -337,7 +370,7 @@ namespace G3.Models
                 entity.HasOne(d => d.Mentor)
                     .WithMany(p => p.Projects)
                     .HasForeignKey(d => d.MentorId)
-                    .OnDelete(DeleteBehavior.Restrict)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("Project_MentorId_fkey");
             });
 
@@ -403,15 +436,55 @@ namespace G3.Models
 
                 entity.HasIndex(e => e.SubjectId, "SubjectSetting_SubjectId_fkey");
 
-                entity.Property(e => e.Description).HasColumnType("text");
+                entity.HasIndex(e => new { e.Type, e.Value }, "SubjectSetting_Type_Value_key")
+                    .IsUnique();
+
+                entity.Property(e => e.Name).HasColumnType("text");
+
+                entity.Property(e => e.Type).HasMaxLength(191);
 
                 entity.Property(e => e.Value).HasMaxLength(191);
 
                 entity.HasOne(d => d.Subject)
                     .WithMany(p => p.SubjectSettings)
                     .HasForeignKey(d => d.SubjectId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("SubjectSetting_SubjectId_fkey");
+            });
+
+            modelBuilder.Entity<Summit>(entity =>
+            {
+                entity.ToTable("Summit", "SWP");
+
+                entity.HasIndex(e => e.ClassAssignmentId, "Summit_ClassAssignmentId_fkey");
+
+                entity.HasIndex(e => e.ProjectId, "Summit_projectId_fkey");
+
+                entity.Property(e => e.ClassAssignmentId).HasMaxLength(191);
+
+                entity.Property(e => e.Comment).HasColumnType("text");
+
+                entity.Property(e => e.CommentTime).HasColumnType("datetime(3)");
+
+                entity.Property(e => e.FileUrl).HasMaxLength(191);
+
+                entity.Property(e => e.Grade).HasPrecision(65, 30);
+
+                entity.Property(e => e.ProjectId).HasColumnName("projectId");
+
+                entity.Property(e => e.SummitTime).HasColumnType("datetime(3)");
+
+                entity.HasOne(d => d.ClassAssignment)
+                    .WithMany(p => p.Summits)
+                    .HasForeignKey(d => d.ClassAssignmentId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("Summit_ClassAssignmentId_fkey");
+
+                entity.HasOne(d => d.Project)
+                    .WithMany(p => p.Summits)
+                    .HasForeignKey(d => d.ProjectId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("Summit_projectId_fkey");
             });
 
             modelBuilder.Entity<User>(entity =>

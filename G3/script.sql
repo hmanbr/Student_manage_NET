@@ -78,11 +78,14 @@ CREATE TABLE `ClassStudentProject` (
 -- CreateTable
 CREATE TABLE `SubjectSetting` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
+    `Type` VARCHAR(191) NOT NULL,
     `Value` VARCHAR(191) NOT NULL,
-    `Description` TEXT NULL,
-    `SubjectId` INTEGER NULL,
+    `Status` BOOLEAN NULL,
+    `Name` TEXT NULL,
+    `SubjectId` INTEGER NOT NULL,
 
     INDEX `SubjectSetting_Id_idx`(`Id`),
+    UNIQUE INDEX `SubjectSetting_Type_Value_key`(`Type`, `Value`),
     PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -91,11 +94,25 @@ CREATE TABLE `Assignment` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `Title` VARCHAR(191) NOT NULL,
     `Description` TEXT NULL,
-    `StartDate` DATETIME(3) NOT NULL,
-    `EndDate` DATETIME(3) NOT NULL,
-    `SubjectId` INTEGER NULL,
+    `StartDate` DATETIME(3) NULL,
+    `EndDate` DATETIME(3) NULL,
+    `SubjectId` INTEGER NOT NULL,
 
     INDEX `Assignment_Id_idx`(`Id`),
+    PRIMARY KEY (`Id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Summit` (
+    `Id` INTEGER NOT NULL AUTO_INCREMENT,
+    `FileUrl` VARCHAR(191) NOT NULL,
+    `SummitTime` DATETIME(3) NOT NULL,
+    `Grade` DECIMAL(65, 30) NULL,
+    `Comment` TEXT NULL,
+    `CommentTime` DATETIME(3) NULL,
+    `projectId` INTEGER NOT NULL,
+    `ClassAssignmentId` VARCHAR(191) NOT NULL,
+
     PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -106,7 +123,7 @@ CREATE TABLE `Class` (
     `Description` TEXT NULL,
     `GitLabGroupId` INTEGER NULL,
     `SubjectId` INTEGER NULL,
-    `Status` BOOLEAN NOT NULL DEFAULT true,
+    `Status` BOOLEAN NULL,
 
     INDEX `Class_Name_idx`(`Name`),
     INDEX `Class_GitLabGroupId_idx`(`GitLabGroupId`),
@@ -129,15 +146,27 @@ CREATE TABLE `ClassSetting` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `ClassAssignment` (
+    `Key` VARCHAR(191) NOT NULL,
+    `AssignmentId` INTEGER NOT NULL,
+    `ClassId` INTEGER NOT NULL,
+
+    INDEX `ClassAssignment_AssignmentId_ClassId_idx`(`AssignmentId`, `ClassId`),
+    INDEX `ClassAssignment_Key_idx`(`Key`),
+    UNIQUE INDEX `ClassAssignment_AssignmentId_ClassId_key`(`AssignmentId`, `ClassId`),
+    PRIMARY KEY (`Key`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Project` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `ProjectCode` VARCHAR(191) NOT NULL,
     `EnglishName` VARCHAR(191) NOT NULL,
-    `VietNameseName` VARCHAR(191) NOT NULL,
-    `Status` BOOLEAN NOT NULL DEFAULT false,
-    `Description` TEXT NOT NULL,
     `GroupName` VARCHAR(191) NOT NULL,
-    `MentorId` INTEGER NOT NULL,
+    `VietNameseName` VARCHAR(191) NULL,
+    `Status` ENUM('PENDING', 'ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
+    `Description` TEXT NULL,
+    `MentorId` INTEGER NULL,
     `ClassId` INTEGER NULL,
 
     PRIMARY KEY (`Id`)
@@ -225,10 +254,16 @@ ALTER TABLE `ClassStudentProject` ADD CONSTRAINT `ClassStudentProject_ProjectId_
 ALTER TABLE `ClassStudentProject` ADD CONSTRAINT `ClassStudentProject_ClassId_fkey` FOREIGN KEY (`ClassId`) REFERENCES `Class`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `SubjectSetting` ADD CONSTRAINT `SubjectSetting_SubjectId_fkey` FOREIGN KEY (`SubjectId`) REFERENCES `Subject`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `SubjectSetting` ADD CONSTRAINT `SubjectSetting_SubjectId_fkey` FOREIGN KEY (`SubjectId`) REFERENCES `Subject`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Assignment` ADD CONSTRAINT `Assignment_SubjectId_fkey` FOREIGN KEY (`SubjectId`) REFERENCES `Subject`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Assignment` ADD CONSTRAINT `Assignment_SubjectId_fkey` FOREIGN KEY (`SubjectId`) REFERENCES `Subject`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Summit` ADD CONSTRAINT `Summit_projectId_fkey` FOREIGN KEY (`projectId`) REFERENCES `Project`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Summit` ADD CONSTRAINT `Summit_ClassAssignmentId_fkey` FOREIGN KEY (`ClassAssignmentId`) REFERENCES `ClassAssignment`(`Key`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Class` ADD CONSTRAINT `Class_SubjectId_fkey` FOREIGN KEY (`SubjectId`) REFERENCES `Subject`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -237,7 +272,13 @@ ALTER TABLE `Class` ADD CONSTRAINT `Class_SubjectId_fkey` FOREIGN KEY (`SubjectI
 ALTER TABLE `ClassSetting` ADD CONSTRAINT `ClassSetting_classId_fkey` FOREIGN KEY (`classId`) REFERENCES `Class`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Project` ADD CONSTRAINT `Project_MentorId_fkey` FOREIGN KEY (`MentorId`) REFERENCES `User`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ClassAssignment` ADD CONSTRAINT `ClassAssignment_ClassId_fkey` FOREIGN KEY (`ClassId`) REFERENCES `Class`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ClassAssignment` ADD CONSTRAINT `ClassAssignment_AssignmentId_fkey` FOREIGN KEY (`AssignmentId`) REFERENCES `Assignment`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Project` ADD CONSTRAINT `Project_MentorId_fkey` FOREIGN KEY (`MentorId`) REFERENCES `User`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Project` ADD CONSTRAINT `Project_ClassId_fkey` FOREIGN KEY (`ClassId`) REFERENCES `Class`(`GitLabGroupId`) ON DELETE SET NULL ON UPDATE CASCADE;
