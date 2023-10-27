@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using G3.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using MySqlX.XDevAPI.Common;
 
 namespace G3.Controllers
 {
@@ -19,53 +20,25 @@ namespace G3.Controllers
         {
             _context = context;
         }
-        /*[Route("/Subjectsettings/SubjectSettingList")]
-        // GET: Subjectsettings
-        public async Task<IActionResult> SubjectSettingList(int page = 1, int pageSize = 5)
-        {
-            var query = _context.Subjectsettings.Include(s => s.Subject);
-            var totalItems = query.Count();
-
-            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-
-            if (page < 1)
-            {
-                //test
-                page = 1;
-            }
-            else if (page > totalPages)
-            {
-                page = totalPages;
-            }
-
-            var s = query
-
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize).ToList();
-
-            ViewBag.TotalItems = totalItems;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.CurrentPage = page;
-            ViewBag.PageSize = pageSize;
-
-            return View(s);
-        }*/
 
         [Route("/Subjectsettings/SubjectSettingList")]
+
 
         public async Task<IActionResult> SubjectSettingList(string search, string SortBy, string StatusFilter, int page = 1, int pageSize = 5)
         {
 
-
             var Query = _context.SubjectSettings.Include(s => s.Subject);
+
+
+            ViewData["SS"] = new SelectList(_context.SubjectSettings, "Id", "Description");
 
             ViewData["search"] = search;
 
             if (!String.IsNullOrEmpty(search))
             {
-                Query = Query.Where(x => x.Subject.SubjectCode.Contains(search) || x.Subject.Name.Contains(search)).Include(m => m.Subject);
 
 
+                Query = Query.Where(x => x.Subject.SubjectCode.Contains(search)).Include(m => m.Subject);
             }
 
             ViewData["Sort"] = SortBy;
@@ -112,59 +85,10 @@ namespace G3.Controllers
             ViewBag.CurrentPage = page;
             ViewBag.PageSize = pageSize;
 
+            
+
             return View(await Query.ToListAsync());
-        }
-        /*[Route("/Subjectsettings/SubjectSettingList")]
-        [HttpPost]
-        public async Task<IActionResult> SubjectSettingList(string search, string SortBy, int page = 1, int pageSize = 5)
-        {
-            var Query = _context.Subjectsettings.AsQueryable();
-
-            ViewData["search"] = search;
-
-            if (!String.IsNullOrEmpty(search))
-            {
-                Query = Query.Where(x => x.Subject.SubjectCode.Contains(search) || x.Subject.Name.Contains(search)).Include(m => m.Subject);
-
-            }
-
-            ViewData["Sort"] = SortBy;
-            if (SortBy == "ASC")
-            {
-                Query = Query.OrderBy(x => x.Subject.SubjectCode).Include(m => m.Subject);
-
-            }
-            else
-            {
-                Query = Query.OrderByDescending(x => x.Subject.SubjectCode).Include(m => m.Subject);
-
-            }
-
-            var totalItems = Query.Count();
-
-            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-
-            if (page < 1)
-            {
-                //test
-                page = 1;
-            }
-            else if (page > totalPages)
-            {
-                page = totalPages;
-            }
-
-            Query = Query
-
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize).Include(m => m.Subject);
-            ViewBag.TotalItems = totalItems;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.CurrentPage = page;
-            ViewBag.PageSize = pageSize;
-            //var sWPContext = _context.Subjectsettings.Include(s => s.Subject);
-            return View(await Query.ToListAsync());
-        }*/
+        }      
 
 
         // GET: Subjectsettings/Create

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using G3.Models;
+using MySqlX.XDevAPI.Common;
 
 namespace G3.Controllers
 {
@@ -52,7 +53,7 @@ namespace G3.Controllers
                     assign = assign.OrderBy(s => s.Subject.Name);
                     break;
             }
-
+           
             /*var sWPContext = _context.Assignments.Include(a => a.Subject);*/
             return View(await assign.ToListAsync());
         }
