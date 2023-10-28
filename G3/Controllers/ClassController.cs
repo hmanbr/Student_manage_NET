@@ -1,4 +1,5 @@
 
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace G3.Controllers
@@ -75,7 +76,7 @@ namespace G3.Controllers
 
         // GET: Class/Details/5
         [Route("/classList/{id}")]
-        public async Task<IActionResult> Details(int? id, string? tab, [FromServices] IGitLabService gitLabService)
+        public async Task<IActionResult> Details(int? id, string? tab, [FromServices] IGitLabClient gitLabClient)
         {
             if (id == null || _context.Classes == null) return NotFound();
 
@@ -87,19 +88,19 @@ namespace G3.Controllers
             return tab switch
             {
                 "general" => View(@class),
-                "milestones" => RunMilestone(@class, gitLabService),
+                "milestones" => RunMilestone(@class, gitLabClient),
                 _ => View(),
             };
 
         }
 
-        public IActionResult RunMilestone(Class @class, IGitLabService gitLabService)
+        public IActionResult RunMilestone(Class @class, IGitLabClient gitLabClient)
         {
             int? groupId = @class.GitLabGroupId;
             if (groupId == null) return View();
 
 
-            List<NGitLab.Models.Milestone> gitlabMilestone = gitLabService.GetMilestoneByGroupId((int)groupId);
+            List<NGitLab.Models.Milestone> gitlabMilestone = gitLabClient.GetGroupMilestone((int)groupId).All.ToList();
             List<Models.Milestone> milestones = gitlabMilestone.Select(m => new Models.Milestone
             {
                 Id = m.Id,
@@ -112,12 +113,10 @@ namespace G3.Controllers
                 State = m.State,
                 CreatedAt = m.CreatedAt,
                 UpdatedAt = m.UpdatedAt,
-                Expired = false,
-                WebUrl = "",
             }).ToList();
 
             string sql = @"
-                INSERT INTO `SWP`.`Milestone` (`Id`, `Iid`, `Title`, `Description`, `State`, `CreatedAt`, `UpdatedAt`, `DueDate`, `StartDate`, `Expired`, `WebUrl`, `GroupId`)
+                INSERT INTO `SWP`.`Milestone` (`Id`, `Iid`, `Title`, `Description`, `State`, `CreatedAt`, `UpdatedAt`, `DueDate`, `StartDate`, `GroupId`)
                 VALUES ";
 
 
@@ -126,7 +125,7 @@ namespace G3.Controllers
                 sql += string.Format("({0}, {1}, '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}')",
                     milestones[i].Id, milestones[i].Iid, milestones[i].Title, milestones[i].Description, milestones[i].State,
                     milestones[i].CreatedAt.ToString("yyyy-MM-dd"), milestones[i].UpdatedAt.ToString("yyyy-MM-dd"), milestones[i].DueDate.ToString("yyyy-MM-dd"), milestones[i].StartDate.ToString("yyyy-MM-dd"),
-                    milestones[i].Expired ? 1 : 0, "", @class.GitLabGroupId);
+                    @class.GitLabGroupId);
 
                 if (i < milestones.Count - 1)
                 {
@@ -144,8 +143,6 @@ namespace G3.Controllers
                 UpdatedAt = VALUES(UpdatedAt),
                 DueDate = VALUES(DueDate),
                 StartDate = VALUES(StartDate),
-                Expired = VALUES(Expired),
-                WebUrl = VALUES(WebUrl),
                 GroupId = VALUES(GroupId);
             ";
 
@@ -155,6 +152,29 @@ namespace G3.Controllers
             milestones = _context.Milestones.Where(m => m.GroupId == @class.GitLabGroupId).ToList();
             ViewData["milestones"] = milestones;
             return View();
+        }
+
+        [Route("/classList/{id}")]
+        public  async Task<ActionResult> Details([Bind("Title, Description, StartDate, DueDate")] NGitLab.Models.MilestoneCreate milestone, [FromServices] IGitLabClient gitLabClient, int? id)
+        {
+
+            if (id == null || _context.Classes == null) return NotFound();
+
+            var @class = await _context.Classes.Include(c => c.Subject).FirstOrDefaultAsync(m => m.Id == id);
+            if (@class == null) return NotFound();
+            int? groupId = @class.GitLabGroupId;
+            if (groupId == null) return View();
+            NGitLab.Models.Milestone milestone1 = gitLabClient.GetGroupMilestone((int) groupId).Create(milestone);
+            Milestone milestone2 = new Milestone {
+                Title = milestone1.Title,
+                Description = milestone1.Description,
+                StartDate = DateTime.Parse(milestone1.StartDate),
+                DueDate = DateTime.Parse(milestone1.DueDate),
+                
+
+            };
+
+                return View();
         }
 
         [Route("milestones/{id}")]

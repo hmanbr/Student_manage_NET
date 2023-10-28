@@ -25,11 +25,12 @@ namespace G3.Models
         public virtual DbSet<GitLabUser> GitLabUsers { get; set; } = null!;
         public virtual DbSet<Issue> Issues { get; set; } = null!;
         public virtual DbSet<Milestone> Milestones { get; set; } = null!;
+        public virtual DbSet<PrismaMigration> PrismaMigrations { get; set; } = null!;
         public virtual DbSet<Project> Projects { get; set; } = null!;
         public virtual DbSet<Setting> Settings { get; set; } = null!;
         public virtual DbSet<Subject> Subjects { get; set; } = null!;
         public virtual DbSet<SubjectSetting> SubjectSettings { get; set; } = null!;
-        public virtual DbSet<Summit> Summits { get; set; } = null!;
+        public virtual DbSet<Submit> Submits { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -322,8 +323,6 @@ namespace G3.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime(3)");
 
-                entity.Property(e => e.WebUrl).HasMaxLength(191);
-
                 entity.HasOne(d => d.Group)
                     .WithMany(p => p.Milestones)
                     .HasPrincipalKey(p => p.GitLabGroupId)
@@ -336,6 +335,42 @@ namespace G3.Models
                     .HasForeignKey(d => d.ProjectId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("Milestone_ProjectId_fkey");
+            });
+
+            modelBuilder.Entity<PrismaMigration>(entity =>
+            {
+                entity.ToTable("_prisma_migrations", "SWP");
+
+                entity.Property(e => e.Id)
+                    .HasMaxLength(36)
+                    .HasColumnName("id");
+
+                entity.Property(e => e.AppliedStepsCount).HasColumnName("applied_steps_count");
+
+                entity.Property(e => e.Checksum)
+                    .HasMaxLength(64)
+                    .HasColumnName("checksum");
+
+                entity.Property(e => e.FinishedAt)
+                    .HasColumnType("datetime(3)")
+                    .HasColumnName("finished_at");
+
+                entity.Property(e => e.Logs)
+                    .HasColumnType("text")
+                    .HasColumnName("logs");
+
+                entity.Property(e => e.MigrationName)
+                    .HasMaxLength(255)
+                    .HasColumnName("migration_name");
+
+                entity.Property(e => e.RolledBackAt)
+                    .HasColumnType("datetime(3)")
+                    .HasColumnName("rolled_back_at");
+
+                entity.Property(e => e.StartedAt)
+                    .HasColumnType("datetime(3)")
+                    .HasColumnName("started_at")
+                    .HasDefaultValueSql("'CURRENT_TIMESTAMP(3)'");
             });
 
             modelBuilder.Entity<Project>(entity =>
@@ -452,13 +487,13 @@ namespace G3.Models
                     .HasConstraintName("SubjectSetting_SubjectId_fkey");
             });
 
-            modelBuilder.Entity<Summit>(entity =>
+            modelBuilder.Entity<Submit>(entity =>
             {
-                entity.ToTable("Summit", "SWP");
+                entity.ToTable("Submit", "SWP");
 
-                entity.HasIndex(e => e.ClassAssignmentId, "Summit_ClassAssignmentId_fkey");
+                entity.HasIndex(e => e.ClassAssignmentId, "Submit_ClassAssignmentId_fkey");
 
-                entity.HasIndex(e => e.ProjectId, "Summit_projectId_fkey");
+                entity.HasIndex(e => e.ProjectId, "Submit_projectId_fkey");
 
                 entity.Property(e => e.ClassAssignmentId).HasMaxLength(191);
 
@@ -472,19 +507,19 @@ namespace G3.Models
 
                 entity.Property(e => e.ProjectId).HasColumnName("projectId");
 
-                entity.Property(e => e.SummitTime).HasColumnType("datetime(3)");
+                entity.Property(e => e.SubmitTime).HasColumnType("datetime(3)");
 
                 entity.HasOne(d => d.ClassAssignment)
-                    .WithMany(p => p.Summits)
+                    .WithMany(p => p.Submits)
                     .HasForeignKey(d => d.ClassAssignmentId)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("Summit_ClassAssignmentId_fkey");
+                    .HasConstraintName("Submit_ClassAssignmentId_fkey");
 
                 entity.HasOne(d => d.Project)
-                    .WithMany(p => p.Summits)
+                    .WithMany(p => p.Submits)
                     .HasForeignKey(d => d.ProjectId)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("Summit_projectId_fkey");
+                    .HasConstraintName("Submit_projectId_fkey");
             });
 
             modelBuilder.Entity<User>(entity =>

@@ -7,7 +7,7 @@ namespace G3.Models
     {
         public ClassAssignment()
         {
-            Summits = new HashSet<Summit>();
+            Submits = new HashSet<Submit>();
         }
 
         public string Key { get; set; } = null!;
@@ -16,6 +16,6 @@ namespace G3.Models
 
         public virtual Assignment Assignment { get; set; } = null!;
         public virtual Class Class { get; set; } = null!;
-        public virtual ICollection<Summit> Summits { get; set; }
+        public virtual ICollection<Submit> Submits { get; set; }
     }
 }

@@ -103,10 +103,10 @@ CREATE TABLE `Assignment` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Summit` (
+CREATE TABLE `Submit` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `FileUrl` VARCHAR(191) NOT NULL,
-    `SummitTime` DATETIME(3) NOT NULL,
+    `SubmitTime` DATETIME(3) NOT NULL,
     `Grade` DECIMAL(65, 30) NULL,
     `Comment` TEXT NULL,
     `CommentTime` DATETIME(3) NULL,
@@ -178,15 +178,13 @@ CREATE TABLE `Milestone` (
     `Iid` INTEGER NOT NULL,
     `Title` VARCHAR(191) NOT NULL,
     `Description` TEXT NULL,
+    `DueDate` DATETIME(3) NOT NULL,
+    `GroupId` INTEGER NULL,
+    `ProjectId` INTEGER NULL,
+    `StartDate` DATETIME(3) NOT NULL,
     `State` VARCHAR(191) NOT NULL,
     `CreatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `UpdatedAt` DATETIME(3) NOT NULL,
-    `DueDate` DATETIME(3) NOT NULL,
-    `StartDate` DATETIME(3) NOT NULL,
-    `Expired` BOOLEAN NOT NULL DEFAULT false,
-    `WebUrl` VARCHAR(191) NOT NULL,
-    `GroupId` INTEGER NULL,
-    `ProjectId` INTEGER NULL,
 
     UNIQUE INDEX `Milestone_Id_key`(`Id`),
     PRIMARY KEY (`Id`)
@@ -260,10 +258,10 @@ ALTER TABLE `SubjectSetting` ADD CONSTRAINT `SubjectSetting_SubjectId_fkey` FORE
 ALTER TABLE `Assignment` ADD CONSTRAINT `Assignment_SubjectId_fkey` FOREIGN KEY (`SubjectId`) REFERENCES `Subject`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Summit` ADD CONSTRAINT `Summit_projectId_fkey` FOREIGN KEY (`projectId`) REFERENCES `Project`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Submit` ADD CONSTRAINT `Submit_projectId_fkey` FOREIGN KEY (`projectId`) REFERENCES `Project`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Summit` ADD CONSTRAINT `Summit_ClassAssignmentId_fkey` FOREIGN KEY (`ClassAssignmentId`) REFERENCES `ClassAssignment`(`Key`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Submit` ADD CONSTRAINT `Submit_ClassAssignmentId_fkey` FOREIGN KEY (`ClassAssignmentId`) REFERENCES `ClassAssignment`(`Key`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Class` ADD CONSTRAINT `Class_SubjectId_fkey` FOREIGN KEY (`SubjectId`) REFERENCES `Subject`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;

@@ -10,7 +10,7 @@ namespace G3.Models
             ClassStudentProjects = new HashSet<ClassStudentProject>();
             Issues = new HashSet<Issue>();
             Milestones = new HashSet<Milestone>();
-            Summits = new HashSet<Summit>();
+            Submits = new HashSet<Submit>();
         }
 
         public int Id { get; set; }
@@ -28,6 +28,6 @@ namespace G3.Models
         public virtual ICollection<ClassStudentProject> ClassStudentProjects { get; set; }
         public virtual ICollection<Issue> Issues { get; set; }
         public virtual ICollection<Milestone> Milestones { get; set; }
-        public virtual ICollection<Summit> Summits { get; set; }
+        public virtual ICollection<Submit> Submits { get; set; }
     }
 }
