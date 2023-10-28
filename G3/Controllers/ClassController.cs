@@ -29,7 +29,6 @@ namespace G3.Controllers
                 s.Name.Contains(searchString) ||
                 s.Subject.Name.Contains(searchString) ||
                 s.Subject.SubjectCode.Contains(searchString));
-
             }
 
             switch (sortOrder)
@@ -54,7 +53,6 @@ namespace G3.Controllers
 
             if (page < 1)
             {
-
                 page = 1;
             }
             else if (page > totalPages)
@@ -63,7 +61,6 @@ namespace G3.Controllers
             }
 
             assign = assign
-
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize).Include(m => m.Subject);
             ViewBag.TotalItems = totalItems;
