@@ -68,6 +68,7 @@ CREATE TABLE `Subject` (
 -- CreateTable
 CREATE TABLE `ClassStudentProject` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
+    `Status` BOOLEAN NULL,
     `UserId` INTEGER NOT NULL,
     `ProjectId` INTEGER NOT NULL,
     `ClassId` INTEGER NOT NULL,
@@ -94,8 +95,6 @@ CREATE TABLE `Assignment` (
     `Id` INTEGER NOT NULL AUTO_INCREMENT,
     `Title` VARCHAR(191) NOT NULL,
     `Description` TEXT NULL,
-    `StartDate` DATETIME(3) NULL,
-    `EndDate` DATETIME(3) NULL,
     `SubjectId` INTEGER NOT NULL,
 
     INDEX `Assignment_Id_idx`(`Id`),
@@ -150,6 +149,8 @@ CREATE TABLE `ClassAssignment` (
     `Key` VARCHAR(191) NOT NULL,
     `AssignmentId` INTEGER NOT NULL,
     `ClassId` INTEGER NOT NULL,
+    `StartDate` DATETIME(3) NULL,
+    `EndDate` DATETIME(3) NULL,
 
     INDEX `ClassAssignment_AssignmentId_ClassId_idx`(`AssignmentId`, `ClassId`),
     INDEX `ClassAssignment_Key_idx`(`Key`),
