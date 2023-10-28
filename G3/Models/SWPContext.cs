@@ -78,10 +78,6 @@ namespace G3.Models
 
                 entity.Property(e => e.Description).HasColumnType("text");
 
-                entity.Property(e => e.EndDate).HasColumnType("datetime(3)");
-
-                entity.Property(e => e.StartDate).HasColumnType("datetime(3)");
-
                 entity.Property(e => e.Title).HasMaxLength(191);
 
                 entity.HasOne(d => d.Subject)
@@ -137,6 +133,10 @@ namespace G3.Models
                 entity.HasIndex(e => e.Key, "ClassAssignment_Key_idx");
 
                 entity.Property(e => e.Key).HasMaxLength(191);
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime(3)");
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime(3)");
 
                 entity.HasOne(d => d.Assignment)
                     .WithMany(p => p.ClassAssignments)

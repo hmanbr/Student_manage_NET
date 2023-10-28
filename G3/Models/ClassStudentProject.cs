@@ -6,6 +6,7 @@ namespace G3.Models
     public partial class ClassStudentProject
     {
         public int Id { get; set; }
+        public bool? Status { get; set; }
         public int UserId { get; set; }
         public int ProjectId { get; set; }
         public int ClassId { get; set; }
