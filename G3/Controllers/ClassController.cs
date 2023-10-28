@@ -84,7 +84,7 @@ namespace G3.Controllers
             if (@class == null) return NotFound();
 
             ViewData["tab"] = tab ?? "general";
-            
+
             return tab switch
             {
                 "general" => View(@class),
@@ -122,7 +122,7 @@ namespace G3.Controllers
 
             for (int i = 0; i < milestones.Count; i++)
             {
-                sql += string.Format("({0}, {1}, '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}')",
+                sql += string.Format("({0}, {1}, '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}')",
                     milestones[i].Id, milestones[i].Iid, milestones[i].Title, milestones[i].Description, milestones[i].State,
                     milestones[i].CreatedAt.ToString("yyyy-MM-dd"), milestones[i].UpdatedAt.ToString("yyyy-MM-dd"), milestones[i].DueDate.ToString("yyyy-MM-dd"), milestones[i].StartDate.ToString("yyyy-MM-dd"),
                     @class.GitLabGroupId);
@@ -155,7 +155,8 @@ namespace G3.Controllers
         }
 
         [Route("/classList/{id}")]
-        public  async Task<ActionResult> Details([Bind("Title, Description, StartDate, DueDate")] NGitLab.Models.MilestoneCreate milestone, [FromServices] IGitLabClient gitLabClient, int? id)
+        [HttpPost]
+        public async Task<ActionResult> Details([Bind("Title, Description, StartDate, DueDate")] NGitLab.Models.MilestoneCreate milestone, [FromServices] IGitLabClient gitLabClient, int? id)
         {
 
             if (id == null || _context.Classes == null) return NotFound();
@@ -164,17 +165,21 @@ namespace G3.Controllers
             if (@class == null) return NotFound();
             int? groupId = @class.GitLabGroupId;
             if (groupId == null) return View();
-            NGitLab.Models.Milestone milestone1 = gitLabClient.GetGroupMilestone((int) groupId).Create(milestone);
-            Milestone milestone2 = new Milestone {
+
+            NGitLab.Models.Milestone milestone1 = gitLabClient.GetGroupMilestone((int)groupId).Create(milestone);
+
+            Milestone milestone2 = new Milestone
+            {
                 Title = milestone1.Title,
                 Description = milestone1.Description,
                 StartDate = DateTime.Parse(milestone1.StartDate),
                 DueDate = DateTime.Parse(milestone1.DueDate),
-                
-
+                CreatedAt = milestone1.CreatedAt,
+                UpdatedAt = milestone1.UpdatedAt,
+                State = milestone1.State,
+                GroupId= groupId
             };
-
-                return View();
+            return View();
         }
 
         [Route("milestones/{id}")]
