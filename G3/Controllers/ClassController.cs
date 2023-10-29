@@ -81,10 +81,11 @@ namespace G3.Controllers
             if (@class == null) return NotFound();
 
             ViewData["tab"] = tab ?? "general";
+            ViewData["class"] = @class;
 
             return tab switch
             {
-                "general" => View(@class),
+                "general" => View(),
                 "milestones" => RunMilestone(@class, gitLabClient),
                 _ => View(),
             };
@@ -153,7 +154,7 @@ namespace G3.Controllers
 
         [Route("/classList/{id}")]
         [HttpPost]
-        public async Task<ActionResult> Details([Bind("Title, Description, StartDate, DueDate")] NGitLab.Models.MilestoneCreate milestone, [FromServices] IGitLabClient gitLabClient, int? id)
+        public async Task<ActionResult> CreateMilestone([Bind("Title, Description, StartDate, DueDate")] MilestoneDto milestoneDto, string tab, [FromServices] IGitLabClient gitLabClient, int? id)
         {
 
             if (id == null || _context.Classes == null) return NotFound();
@@ -163,20 +164,31 @@ namespace G3.Controllers
             int? groupId = @class.GitLabGroupId;
             if (groupId == null) return View();
 
-            NGitLab.Models.Milestone milestone1 = gitLabClient.GetGroupMilestone((int)groupId).Create(milestone);
 
-            Milestone milestone2 = new Milestone
+            NGitLab.Models.Milestone milestoneCreate = gitLabClient.GetGroupMilestone((int)groupId).Create(new NGitLab.Models.MilestoneCreate
             {
-                Title = milestone1.Title,
-                Description = milestone1.Description,
-                StartDate = DateTime.Parse(milestone1.StartDate),
-                DueDate = DateTime.Parse(milestone1.DueDate),
-                CreatedAt = milestone1.CreatedAt,
-                UpdatedAt = milestone1.UpdatedAt,
-                State = milestone1.State,
-                GroupId= groupId
+                Title = milestoneDto.Title,
+                Description = milestoneDto.Description,
+                StartDate = milestoneDto.StartDate,
+                DueDate = milestoneDto.DueDate
+            });
+
+            Milestone milestone = new Milestone
+            {
+                Id = milestoneCreate.Id,
+                Iid= milestoneCreate.Iid,
+                Title =milestoneCreate.Title,
+                Description = milestoneCreate.Description,
+                StartDate = DateTime.Parse( milestoneCreate.StartDate),
+                DueDate = DateTime.Parse(milestoneCreate.DueDate),
+                GroupId = groupId,
+                State = milestoneCreate.State
+               
             };
-            return View();
+            _context.Milestones.Add(milestone);
+            await _context.SaveChangesAsync();
+
+            return Redirect("/classList/" + id + "?tab=milestones");
         }
 
         [Route("milestones/{id}")]
