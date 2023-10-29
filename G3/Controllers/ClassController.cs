@@ -122,7 +122,7 @@ namespace G3.Controllers
             {
                 sql += string.Format("({0}, {1}, '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}')",
                     milestones[i].Id, milestones[i].Iid, milestones[i].Title, milestones[i].Description, milestones[i].State,
-                    milestones[i].CreatedAt.ToString("yyyy-MM-dd"), milestones[i].UpdatedAt.ToString("yyyy-MM-dd"), milestones[i].DueDate.ToString("yyyy-MM-dd"), milestones[i].StartDate.ToString("yyyy-MM-dd"),
+                    milestones[i].CreatedAt.ToString("yyyy-MM-dd"), milestones[i].UpdatedAt.ToString("yyyy-MM-dd"), milestones[i].DueDate?.ToString("yyyy-MM-dd"), milestones[i].StartDate?.ToString("yyyy-MM-dd"),
                     @class.GitLabGroupId);
 
                 if (i < milestones.Count - 1)

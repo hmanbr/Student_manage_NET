@@ -35,11 +35,11 @@
         </div>
         <div class="row mb-2">
             <div class="col-sm-2 font-weight-bold">Start Date:</div>
-            <div class="col-sm-10">@milestone.StartDate.ToString("yyyy-MM-dd")</div>
+            <div class="col-sm-10">@milestone.StartDate?.ToString("yyyy-MM-dd") ?? Null</div>
         </div>
         <div class="row mb-2">
             <div class="col-sm-2 font-weight-bold">Due Date:</div>
-            <div class="col-sm-10">@milestone.DueDate.ToString("yyyy-MM-dd")</div>
+            <div class="col-sm-10">@milestone.DueDate?.ToString("yyyy-MM-dd")  ?? Null</div>
         </div>
         <div class="row">
             <div class="col-sm-2 font-weight-bold">Class:</div>

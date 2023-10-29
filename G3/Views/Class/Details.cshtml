@@ -132,8 +132,8 @@
                 <tr data-="">
                     <td> @(@milestone.Title)</td>
                     <td> @(@milestone.State)</td>
-                    <td> @(@milestone.StartDate.ToString("dd-MM-yyyy")) </td>
-                    <td> @(@milestone.DueDate.ToString("dd-MM-yyyy")) </td>
+                    <td> @(@milestone.StartDate?.ToString("dd-MM-yyyy")) ?? ""</td>
+                    <td> @(@milestone.DueDate?.ToString("dd-MM-yyyy")) ?? ""</td>
                 </tr>
             }
         </tbody>

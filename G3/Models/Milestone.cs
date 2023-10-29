@@ -14,10 +14,10 @@ namespace G3.Models
         public int Iid { get; set; }
         public string Title { get; set; } = null!;
         public string? Description { get; set; }
-        public DateTime DueDate { get; set; }
+        public DateTime? DueDate { get; set; }
         public int? GroupId { get; set; }
         public int? ProjectId { get; set; }
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
         public string State { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
