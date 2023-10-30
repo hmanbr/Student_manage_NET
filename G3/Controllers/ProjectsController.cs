@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using G3.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace G3.Controllers
 {
@@ -22,16 +23,17 @@ namespace G3.Controllers
 
         // GET: Projects
         [Route("/Projects/ProjectList")]
-        public async Task<IActionResult> ProjectList(string search, string SortBy, string StatusFilter, string ClassFilter, int page = 1, int pageSize = 5)
+        public async Task<IActionResult> ProjectList( int? ClassId, int? MentorID, string search, string SortBy,string StatusFilter, string ClassFilter, int page = 1, int pageSize = 5)
         {
 
 
-            var query = _context.Projects.AsQueryable().Include(p => p.Class).Include(p => p.Mentor);
+            var query = _context.Projects.Include(p => p.Class).Include(p => p.Mentor);
+
 
             ViewData["search"] = search;
             if (!String.IsNullOrEmpty(search))
             {
-                query = query.Where(x => x.ProjectCode.Contains(search)).Include(p => p.Class).Include(p => p.Mentor);
+                query =  query.Where(x => x.ProjectCode.Contains(search) || x.EnglishName.Contains(search)).Include(p => p.Class).Include(p => p.Mentor);
             }
 
             ViewData["Sort"] = SortBy;
@@ -77,30 +79,34 @@ namespace G3.Controllers
             ViewBag.CurrentPage = page;
             ViewBag.PageSize = pageSize;
 
+            
+            ClassId = ClassId ?? 0;
+            var classIdd = _context.Classes.ToList();
+            classIdd.Insert(0, new Class { Id = 0, Name = "All" });
+
+            ViewBag.ClassId = new SelectList(classIdd, "GitLabGroupId", "Name", ClassId);
+
+            if (query.Any(x=>x.ClassId==ClassId))
+            {
+                query = query.Where(x => x.ClassId == ClassId).Include(p => p.Class).Include(p => p.Mentor);
+            }
+
+            /*MentorID = MentorID ?? 0;
+            var MentorIDD = _context.Users.ToList();
+            MentorIDD.Insert(0, new User { Id = 0, Name = "All" });
+
+            ViewBag.MentorId = new SelectList(MentorIDD.Where(x =>x.RoleSettingId == 4), "Id", "Name", MentorID);
+
+            if (query.Any(x => x.MentorId == MentorID ))
+            {
+                query = query.Where(x => x.MentorId == MentorID).Include(p => p.Class).Include(p => p.Mentor);
+            }*/
 
             return View(await query.ToListAsync());
         }
 
-
-        /*  // GET: Projects/Details/5
-          public async Task<IActionResult> Details(int? id)
-          {
-              if (id == null || _context.Projects == null)
-              {
-                  return NotFound();
-              }
-
-              var project = await _context.Projects
-                  .Include(p => p.Class)
-                  .Include(p => p.Mentor)
-                  .FirstOrDefaultAsync(m => m.Id == id);
-              if (project == null)
-              {
-                  return NotFound();
-              }
-
-              return View(project);
-          }*/
+        
+       
 
         [Route("/Projects/ProjectNew")]
         // GET: Projects/Create

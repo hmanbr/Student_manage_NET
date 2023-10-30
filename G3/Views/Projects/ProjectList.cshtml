@@ -337,6 +337,19 @@
             // Thực hiện hành động tương ứng với giá trị được chọn ở đây
         }
     </script>
+
+    <script>
+        function selectionChangedd() {
+            var selectBox = document.getElementById("ClassId");
+            var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+
+            window.location.href = '@Url.Action("ProjectList")?ClassId=' + selectedValue;
+
+            // Thực hiện hành động tương ứng với giá trị được chọn ở đây
+        }
+    </script>
+
+    
 </head>
 
 <body>
@@ -387,18 +400,29 @@
 
 
                             <form asp-action="ProjectList" method="get">
+                            <div class="filter-group">
+                                <label>Status</label>
+                                    <select class="form-control" name="StatusFilter" id="StatusFilter" onchange="selectionChangedd()">
+                                    <option  value="All">All</option>
+                                    <option  value="true">Active</option>
+                                    <option  value="false">Inactive</option>                 
+                                </select>
+                            </div>
+                            <span class="filter-icon"><i class="fa fa-filter"></i></span>
+                            </form>
+
+
+                            <form asp-action="ProjectList" method="get">
                                 <div class="filter-group">
-                                    <label>Status</label>
-                                    <select class="form-control" name="StatusFilter" id="StatusFilter"
-                                        onchange="selectionChangedd()">
-                                        <option value="All">All</option>
-                                        <option value="true">Active</option>
-                                        <option value="false">Inactive</option>
-                                    </select>
+                                    <label>Class</label>
+                                    <select asp-items="ViewBag.ClassId" class="form-control" name="ClassId" id="ClassId" onchange="selectionChangedd()">  </select>
+                                    @*<button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>*@
                                 </div>
                                 <span class="filter-icon"><i class="fa fa-filter"></i></span>
                             </form>
 
+
+                           
                         </div>
                     </div>
                 </div>
@@ -414,13 +438,13 @@
                             <th>
                                 @Html.DisplayNameFor(model => model.EnglishName)
                             </th>
-                            <th>
+                           @* <th>
                                 @Html.DisplayNameFor(model => model.VietNameseName)
                             </th>
 
                             <th>
                                 @Html.DisplayNameFor(model => model.Description)
-                            </th>
+                            </th>*@
                             <th>
                                 Group Name
                             </th>
@@ -437,7 +461,36 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model)
+@foreach (var item in Model) {
+        <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProjectCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EnglishName)
+            </td>
+           @* <td>
+                @Html.DisplayFor(modelItem => item.VietNameseName)
+            </td>
+           
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.GroupName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Class.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Mentor.Name)
+            </td>
+                <td>
+                    @{
+                        if (item.Status == true)
                         {
                             <tr>
                                 <td>
