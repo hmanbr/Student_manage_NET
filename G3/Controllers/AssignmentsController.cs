@@ -6,11 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using G3.Models;
-<<<<<<< HEAD
 using MySqlX.XDevAPI.Common;
-=======
 using DocumentFormat.OpenXml.Wordprocessing;
->>>>>>> 5fd3d45ad0ababf8c7d88c6162ae0eb8da6c4687
 
 namespace G3.Controllers
 {
@@ -56,10 +53,8 @@ namespace G3.Controllers
                     assign = assign.OrderBy(s => s.Subject.Name);
                     break;
             }
-<<<<<<< HEAD
            
             /*var sWPContext = _context.Assignments.Include(a => a.Subject);*/
-=======
             var totalItems = assign.Count();
 
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
@@ -80,7 +75,6 @@ namespace G3.Controllers
             ViewBag.CurrentPage = page;
             ViewBag.PageSize = pageSize;
 
->>>>>>> 5fd3d45ad0ababf8c7d88c6162ae0eb8da6c4687
             return View(await assign.ToListAsync());
         }
 

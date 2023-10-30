@@ -23,20 +23,12 @@ namespace G3.Controllers
 
         // GET: Projects
         [Route("/Projects/ProjectList")]
-<<<<<<< HEAD
         public async Task<IActionResult> ProjectList( int? ClassId, int? MentorID, string search, string SortBy,string StatusFilter, string ClassFilter, int page = 1, int pageSize = 5)
         {
 
 
             var query = _context.Projects.Include(p => p.Class).Include(p => p.Mentor);
 
-=======
-        public async Task<IActionResult> ProjectList(string search, string SortBy, string StatusFilter, string ClassFilter, int page = 1, int pageSize = 5)
-        {
-
-
-            var query = _context.Projects.AsQueryable().Include(p => p.Class).Include(p => p.Mentor);
->>>>>>> 5fd3d45ad0ababf8c7d88c6162ae0eb8da6c4687
 
             ViewData["search"] = search;
             if (!String.IsNullOrEmpty(search))
@@ -113,31 +105,8 @@ namespace G3.Controllers
             return View(await query.ToListAsync());
         }
 
-<<<<<<< HEAD
         
        
-=======
-
-        /*  // GET: Projects/Details/5
-          public async Task<IActionResult> Details(int? id)
-          {
-              if (id == null || _context.Projects == null)
-              {
-                  return NotFound();
-              }
-
-              var project = await _context.Projects
-                  .Include(p => p.Class)
-                  .Include(p => p.Mentor)
-                  .FirstOrDefaultAsync(m => m.Id == id);
-              if (project == null)
-              {
-                  return NotFound();
-              }
-
-              return View(project);
-          }*/
->>>>>>> 5fd3d45ad0ababf8c7d88c6162ae0eb8da6c4687
 
         [Route("/Projects/ProjectNew")]
         // GET: Projects/Create
