@@ -4,6 +4,24 @@
 	Layout = "~/Views/Shared/AdminLayout.cshtml";
 	int classId = (int)ViewBag.ClassId;
 }
+﻿@if (!string.IsNullOrEmpty(ViewBag.Message) && ViewBag.Message == "success")
+{
+	<div class="alert alert-success" role="alert">
+		All records inserted successfully
+	</div>
+}
+else if (!string.IsNullOrEmpty(ViewBag.Message) && ViewBag.Message == "empty")
+{
+	<div class="alert alert-warning" role="alert">
+		File is empty
+	</div>
+}
+else if (!string.IsNullOrEmpty(ViewBag.Message) &&  ViewBag.Message == "wrongFormat")
+{
+	<div class="alert alert-warning" role="alert">
+		File is wrong format
+	</div>
+}
 
 <form method="post" enctype="multipart/form-data">
 	<div class="row">
@@ -19,3 +37,7 @@
 		</div>
 	</div>
 </form>
+
+<a asp-action="GetExcelTemplate" asp-controller="Classroom">Get excel template</a>
+<br />
+<a class="btn btn-primary" asp-action="ClassStudents" asp-controller="Classroom" asp-route-classId="@ViewBag.ClassId">Back to class's student list</a>

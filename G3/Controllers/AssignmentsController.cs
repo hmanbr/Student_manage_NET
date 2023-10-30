@@ -6,7 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using G3.Models;
+<<<<<<< HEAD
 using MySqlX.XDevAPI.Common;
+=======
+using DocumentFormat.OpenXml.Wordprocessing;
+>>>>>>> 5fd3d45ad0ababf8c7d88c6162ae0eb8da6c4687
 
 namespace G3.Controllers
 {
@@ -21,10 +25,10 @@ namespace G3.Controllers
 
         // GET: Assignments
         [Route("/subjectAssignment")]
-        public async Task<IActionResult> SubAsmList(string sortOrder, string searchString, string selectFilter)
+        public async Task<IActionResult> SubAsmList(string sortOrder, string searchString, string selectFilter, int page = 1, int pageSize = 8)
         {
             ViewData["NameSort"] = String.IsNullOrEmpty(sortOrder) ? "nameDesc" : "";
-            ViewData["TitleSort"] = sortOrder == "title" ? "titleDesc" : "title";
+            ViewData["DateSort"] = sortOrder == "title" ? "titleDesc" : "title";
             ViewData["SearchAss"] = searchString;
    
             var assign = from s in _context.Assignments.Include(a => a.Subject) select s;
@@ -35,7 +39,6 @@ namespace G3.Controllers
                 s.Title.Contains(searchString) || 
                 s.Subject.Name.Contains(searchString) || 
                 s.Subject.SubjectCode.Contains(searchString));
-
             }
 
             switch (sortOrder)
@@ -44,17 +47,40 @@ namespace G3.Controllers
                     assign = assign.OrderByDescending(s => s.Subject.Name);
                     break;
                 case "title":
-                    assign = assign.OrderBy(s => s.Title);
+                    assign = assign.OrderByDescending(s => s.Title);
                     break;
                 case "titleDesc":
-                    assign = assign.OrderByDescending(s => s.Title);
+                    assign = assign.OrderBy(s => s.Title);
                     break;
                 default:
                     assign = assign.OrderBy(s => s.Subject.Name);
                     break;
             }
+<<<<<<< HEAD
            
             /*var sWPContext = _context.Assignments.Include(a => a.Subject);*/
+=======
+            var totalItems = assign.Count();
+
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            if (page < 1)
+            {
+                page = 1;
+            }
+            else if (page > totalPages)
+            {
+                page = totalPages;
+            }
+            assign = assign
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize).Include(m => m.Subject);
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+
+>>>>>>> 5fd3d45ad0ababf8c7d88c6162ae0eb8da6c4687
             return View(await assign.ToListAsync());
         }
 
@@ -82,7 +108,7 @@ namespace G3.Controllers
         [Route("/assignmentCreate")]
         public IActionResult Create()
         {
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id");
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "SubjectCode");
             return View();
         }
 
@@ -92,9 +118,9 @@ namespace G3.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("/assignmentCreate")]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,StartDate,EndDate,SubjectId")] Assignment assignment)
+         public async Task<IActionResult> Create([Bind("Id,Title,Description,SubjectId")] Assignment assignment)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _context.Add(assignment);
                 await _context.SaveChangesAsync();
@@ -119,7 +145,7 @@ namespace G3.Controllers
             {
                 return NotFound();
             }
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", assignment.SubjectId);
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "SubjectCode", assignment.SubjectId);
             return View(assignment);
         }
 
@@ -129,14 +155,14 @@ namespace G3.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("/assignmentEdit")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,StartDate,EndDate,SubjectId")] Assignment assignment)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,SubjectId")] Assignment assignment)
         {
             if (id != assignment.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 try
                 {

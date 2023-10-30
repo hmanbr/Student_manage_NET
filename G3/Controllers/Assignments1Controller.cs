@@ -56,7 +56,7 @@ namespace G3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,StartDate,EndDate,SubjectId")] Assignment assignment)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,SubjectId")] Assignment assignment)
         {
             if (ModelState.IsValid)
             {
@@ -90,7 +90,7 @@ namespace G3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,StartDate,EndDate,SubjectId")] Assignment assignment)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,SubjectId")] Assignment assignment)
         {
             if (id != assignment.Id)
             {

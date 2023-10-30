@@ -7,7 +7,7 @@
 
 }
 
-<h1>ClassDetail</h1>
+<h1>Class Detail</h1>
 
 <div class="container-fluid">
 	<div class="row">
@@ -45,7 +45,7 @@
 		<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
 			<h6 class="m-0 font-weight-bold text-primary">Student List</h6>
 			<form method="get" asp-action="ClassStudents" asp-controller="Classroom">
-				<input type="hidden" name="id" value="@classId" />
+				<input type="hidden" name="classId" value="@ViewBag.ClassId" />
 				<button type="submit" class="btn btn-outline-primary float-right">Manage students</button>
 			</form>
 		</div>
@@ -99,5 +99,5 @@
 </div>
 
 <div>
-	<a asp-action="Index">Back to List</a>
+	<a class="btn btn-outline-primary float-left" asp-action="ClassList" asp-controller="Classroom">Back to List</a>
 </div>

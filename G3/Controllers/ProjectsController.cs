@@ -23,12 +23,20 @@ namespace G3.Controllers
 
         // GET: Projects
         [Route("/Projects/ProjectList")]
+<<<<<<< HEAD
         public async Task<IActionResult> ProjectList( int? ClassId, int? MentorID, string search, string SortBy,string StatusFilter, string ClassFilter, int page = 1, int pageSize = 5)
         {
 
 
             var query = _context.Projects.Include(p => p.Class).Include(p => p.Mentor);
 
+=======
+        public async Task<IActionResult> ProjectList(string search, string SortBy, string StatusFilter, string ClassFilter, int page = 1, int pageSize = 5)
+        {
+
+
+            var query = _context.Projects.AsQueryable().Include(p => p.Class).Include(p => p.Mentor);
+>>>>>>> 5fd3d45ad0ababf8c7d88c6162ae0eb8da6c4687
 
             ViewData["search"] = search;
             if (!String.IsNullOrEmpty(search))
@@ -41,20 +49,20 @@ namespace G3.Controllers
             {
                 query = query.OrderBy(x => x.ProjectCode).Include(p => p.Class).Include(p => p.Mentor);
             }
-            else if(SortBy =="DESC")
+            else if (SortBy == "DESC")
             {
                 query = query.OrderByDescending(x => x.ProjectCode).Include(p => p.Class).Include(p => p.Mentor);
             }
 
-            if (StatusFilter == "true" )
-            {              
-                query = query.Where(x => x.Status == true).Include(p => p.Class).Include(p => p.Mentor);
-                
-            }
-            else if (StatusFilter == "false")
-            {
-                query = query.Where(x => x.Status == false).Include(p => p.Class).Include(p => p.Mentor);
-            }
+            // if (StatusFilter == "true" )
+            // {              
+            //     query = query.Where(x => x.Status == true).Include(p => p.Class).Include(p => p.Mentor);
+
+            // }
+            // else if (StatusFilter == "false")
+            // {
+            //     query = query.Where(x => x.Status == false).Include(p => p.Class).Include(p => p.Mentor);
+            // }
 
             var totalItems = query.Count();
 
@@ -105,8 +113,31 @@ namespace G3.Controllers
             return View(await query.ToListAsync());
         }
 
+<<<<<<< HEAD
         
        
+=======
+
+        /*  // GET: Projects/Details/5
+          public async Task<IActionResult> Details(int? id)
+          {
+              if (id == null || _context.Projects == null)
+              {
+                  return NotFound();
+              }
+
+              var project = await _context.Projects
+                  .Include(p => p.Class)
+                  .Include(p => p.Mentor)
+                  .FirstOrDefaultAsync(m => m.Id == id);
+              if (project == null)
+              {
+                  return NotFound();
+              }
+
+              return View(project);
+          }*/
+>>>>>>> 5fd3d45ad0ababf8c7d88c6162ae0eb8da6c4687
 
         [Route("/Projects/ProjectNew")]
         // GET: Projects/Create
@@ -131,7 +162,7 @@ namespace G3.Controllers
                 ViewData["ClassId"] = new SelectList(_context.Classes, "Id", "Name", project.ClassId);
                 ViewData["MentorId"] = new SelectList(_context.Users, "Id", "Name", project.MentorId);
                 return View(project);
-               
+
             }
             _context.Add(project);
             await _context.SaveChangesAsync();
@@ -148,14 +179,14 @@ namespace G3.Controllers
             {
                 return NotFound();
             }
-            
+
             var project = await _context.Projects.FindAsync(id);
             if (project == null)
             {
                 return NotFound();
             }
             ViewData["ClassId"] = new SelectList(_context.Classes, "GitLabGroupId", "Name", project.ClassId);
-            ViewData["MentorId"] = new SelectList(_context.Users.Where(u => u.RoleSettingId==4), "Id", "Name", project.MentorId);        
+            ViewData["MentorId"] = new SelectList(_context.Users.Where(u => u.RoleSettingId == 4), "Id", "Name", project.MentorId);
             return View(project);
         }
 
@@ -183,7 +214,7 @@ namespace G3.Controllers
             else
             {
                 try
-                {                                    
+                {
                     _context.Update(project);
                     TempData["SuccessMessageEdit"] = "Update Successful.";
                     await _context.SaveChangesAsync();
@@ -199,7 +230,7 @@ namespace G3.Controllers
                         throw;
                     }
                 }
-               
+
             }
             return RedirectToAction(nameof(ProjectList));
         }
@@ -272,14 +303,14 @@ namespace G3.Controllers
                 return NotFound();
             }
 
-            if (project.Status == true)
-            {
+            // if (project.Status == true)
+            // {
 
-                TempData["DeleteMessageFales"] = "Delete False, you can not delete an active project";
+            //     TempData["DeleteMessageFales"] = "Delete False, you can not delete an active project";
 
-                return View(project);
+            //     return View(project);
 
-            }
+            // }
             _context.Projects.Remove(project);
             TempData["DeleteMessageSuccess"] = "Delete Successful";
             await _context.SaveChangesAsync();
@@ -289,7 +320,7 @@ namespace G3.Controllers
 
         private bool ProjectExists(int id)
         {
-          return (_context.Projects?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Projects?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

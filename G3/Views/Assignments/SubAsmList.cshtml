@@ -43,7 +43,7 @@
         <div class="sort_btn">
             <b>Sort By: </b>
             <a asp-action="SubAsmList" asp-route-sortOrder="@ViewData["NameSort"]">Name </a> |
-            <a asp-action="SubAsmList" asp-route-sortOrder="@ViewData["TitleSort"]"> Title</a>
+            <a asp-action="SubAsmList" asp-route-sortOrder="@ViewData["DateSort"]"> Date</a>
         </div>
 
         <table class="table table-bordered">
@@ -61,12 +61,7 @@
                     <th>
                         Subject Name
                     </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.StartDate)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.EndDate)
-                    </th>
+                    
                     <th>
                         Action
                     </th>
@@ -93,35 +88,30 @@
                         <td>
                             @Html.DisplayFor(modelItem => item.Subject.Name)
                         </td>
+                        
                         <td>
-                            @Html.DisplayFor(modelItem => item.StartDate)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.EndDate)
-                        </td>
-
-                        @*<td>
-                    @Html.DisplayFor(modelItem => item.Subject.Id)
-                    </td>*@
-                        <td>
+                            
                           @*  <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |*@
-                            <a asp-action="Details" asp-route-id="@item.Id"><i class='fas fa-vote-yea' style='font-size:12px'></i></a> |
-                            <a asp-action="Delete" asp-route-id="@item.Id"><i class='fas fa-edit' style='font-size:12px'></i></a>
+                            <a asp-action="Details" asp-route-id="@item.Id"><i class='fas fa-edit' style='font-size:15px'></i></a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id"><i class="fa fa-trash" style="font-size:15px"></i></a>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
 
-        @*<nav aria-label="Page navigation">
+        <div class="clearfix">
+            <div class="hint-text">Showing <b>8</b> record </div>
+
             <ul class="pagination">
                 @for (var i = 1; i <= ViewBag.TotalPages; i++)
                 {
                     var isActive = i == ViewBag.CurrentPage ? "active" : "";
-                    <li class="page-item @isActive"><a class="page-link" href="/admin/ListEmailDM">@i</a></li>
+                    <li class="page-item @isActive"><a class="page-link" href="/subjectAssignment?page=@i&pageSize=@ViewBag.PageSize">@i</a></li>
                 }
             </ul>
-        </nav>*@
+
+        </div>
     </div>
 
 </body>

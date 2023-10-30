@@ -8,7 +8,7 @@
 @if (TempData["DeleteMessageFales"] != null)
 {
     <div class="alert alert-success" role="alert" id="successMessage">
-        @TempData["DeleteMessageFales"]
+    @TempData["DeleteMessageFales"]
     </div>
 }
 
@@ -25,64 +25,64 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Id)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             Project Code
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ProjectCode)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             English Name
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.EnglishName)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             Vietnamese Name
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.VietNameseName)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Status)
         </dt>
-        <dd class = "col-sm-10">
-            @if(Model.Status == true)
-            {               
-                <p>Active</p>
-            }
-            else if(Model.Status == false)
-            {          
-                <p>Inactive</p>
-            }
-  
-        </dd>
-        <dt class = "col-sm-2">
+        @* <dd class = "col-sm-10">
+        @if(Model.Status == true)
+        {
+        <p>Actice</p>
+        }
+        else if(Model.Status == false)
+        {
+        <p>Inactive</p>
+        }
+
+        </dd> *@
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Description)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Description)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.GroupName)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.GroupName)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Class)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Class.Name)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Mentor)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Mentor.Name)
         </dd>
     </dl>
-    
+
     <form asp-action="ProjectDelete">
         <input type="hidden" asp-for="Id" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |

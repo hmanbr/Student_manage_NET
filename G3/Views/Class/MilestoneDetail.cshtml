@@ -1,0 +1,49 @@
+@model G3.Models.Class
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/SubjectManagerLayout.cshtml";
+}
+
+@{
+    Milestone milestone = (Milestone)ViewData["Milestone"]!;
+}
+
+<div class="card bg-light mb-4">
+    <h4 class="card-header">Class</h4>
+    <div class="card-body">
+        <div class="row mb-2">
+            <div class="col-sm-2 font-weight-bold">Id:</div>
+            <div class="col-sm-10">@milestone.Id</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-sm-2 font-weight-bold">Title:</div>
+            <div class="col-sm-10">@milestone.Title</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-sm-2 font-weight-bold">Description:</div>
+            <div class="col-sm-10">
+                @if (string.IsNullOrEmpty(milestone.Description))
+                {
+                    <span class="text-muted">No description</span>
+                }
+                else
+                {
+                    <span>@milestone.Description</span>
+                }
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-sm-2 font-weight-bold">Start Date:</div>
+            <div class="col-sm-10">@milestone.StartDate?.ToString("yyyy-MM-dd") ?? Null</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-sm-2 font-weight-bold">Due Date:</div>
+            <div class="col-sm-10">@milestone.DueDate?.ToString("yyyy-MM-dd")  ?? Null</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2 font-weight-bold">Class:</div>
+            <div class="col-sm-10">@(@milestone.Group?.Name ?? "No Class")</div>
+        </div>
+    </div>
+</div>

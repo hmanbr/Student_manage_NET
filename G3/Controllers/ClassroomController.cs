@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.Data;
 using System.Text;
+using G3.Views.Shared.Components.SearchBar;
 
 namespace G3.Controllers
 {
@@ -19,24 +20,97 @@ namespace G3.Controllers
 		}
 
 		[Route("/ManageClassroom/ClassesList")]
-		public async Task<IActionResult> ClassList(string search)
+		public async Task<IActionResult> ClassList(string search, int pg = 1)
 		{
-			if (string.IsNullOrEmpty(search))
+
+
+			var classlist = await _context.Classes.Include(subject => subject.Subject).ToListAsync();
+
+			if (!string.IsNullOrEmpty(search))
 			{
-				var classlist = await _context.Classes.Include(subject => subject.Subject).ToListAsync();
-				// Pass the list of settings to the view.
-				return View("/Views/Classroom/ClassesList.cshtml", classlist);
+				classlist = await _context.Classes
+					.Where(cls => cls.Name.Contains(search))
+					.Include(subject => subject.Subject).ToListAsync();
 			}
-			else
+
+			const int pageSize = 5;
+			if (pg < 1)
 			{
-				var classlist = await _context.Classes.Include(subject => subject.Subject)
-								.Where(classlist => classlist.Id.Equals(search) || classlist.Name.Contains(search) || classlist.Subject.SubjectCode.Contains(search))
+				pg = 1;
+			}
+
+			int recsCount = classlist.Count();
+
+			var pager = new Pager(recsCount, pg, pageSize);
+
+			int recSkip = (pg - 1) * pageSize;
+
+			var data = classlist.Skip(recSkip).Take(pager.PageSize).ToList();
+
+			SPager searchPager = new SPager(recsCount, pg, pageSize)
+			{
+				Action = "ClassList",
+				Controller = "Classroom",
+				SearchText = search,
+			};
+
+			this.ViewBag.Pager = pager;
+
+			ViewBag.SearchString = search;
+			ViewBag.SearchPager = searchPager;
+
+			// Pass the list of settings to the view.
+			return View("/Views/Classroom/ClassesList.cshtml", data);
+		}
+
+		[Route("/ManageClassroom/ClassStudents")]
+		public async Task<IActionResult> ClassStudents(int classId, string search, int pg = 1)
+		{
+			var usersInClass = await _context.ClassStudentProjects
+								.Where(csp => csp.ClassId == classId) // Filter by the class Id
+								.Include(csp => csp.User) // Eager loading to load associated users
+								.Select(csp => csp.User)
+								.Where(user => user.RoleSettingId == 5)
 								.ToListAsync();
 
-				// Pass the list of settings to the view.
-				return View("/Views/Classroom/ClassesList.cshtml", classlist);
+			if (!string.IsNullOrEmpty(search))
+			{
+				usersInClass = await _context.ClassStudentProjects
+								.Where(csp => csp.ClassId == classId) // Filter by the class Id
+								.Include(csp => csp.User) // Eager loading to load associated users
+								.Select(csp => csp.User)
+								.Where(user => user.RoleSettingId == 5) // Filter by RoleSettingId
+								.Where(user => user.Name.Contains(search)) // Search by user name
+								.ToListAsync();
 			}
 
+			const int pageSize = 5;
+			if (pg < 1)
+			{
+				pg = 1;
+			}
+
+			int recsCount = usersInClass.Count();
+
+			var pager = new Pager(recsCount, pg, pageSize);
+
+			int recSkip = (pg - 1) * pageSize;
+
+			var data = usersInClass.Skip(recSkip).Take(pager.PageSize).ToList();
+
+			SPager searchPager = new SPager(recsCount, pg, pageSize)
+			{
+				Action = "ClassStudents",
+				Controller = "Classroom",
+				SearchText = search,
+			};
+
+			this.ViewBag.Pager = pager;
+
+			ViewBag.SearchString = search;
+			ViewBag.SearchPager = searchPager;
+			ViewBag.ClassId = classId;
+			return View("/Views/Classroom/ClassStudents.cshtml", data);
 		}
 
 		[Route("/ManageClassroom/ClassDetail")]
@@ -50,36 +124,18 @@ namespace G3.Controllers
 							.ToListAsync();*/
 
 			var usersInClass = await _context.ClassStudentProjects
-	.Where(csp => csp.ClassId == id) // Filter by the class Id
-	.Include(csp => csp.User) // Eager loading to load associated users
-	.Select(csp => csp.User)
-	.Take(5) // Limit to the first 5 users
-	.ToListAsync();
+								.Where(csp => csp.ClassId == id) // Filter by the class Id
+								.Include(csp => csp.User) // Eager loading to load associated users
+								.Select(csp => csp.User)
+								.Take(5) // Limit to the first 5 users
+								.ToListAsync();
 
 
 			ViewBag.ClassId = id;
 			return View("/Views/Classroom/ClassDetail.cshtml", usersInClass);
 		}
 
-		[Route("/ManageClassroom/ClassStudents")]
-		public async Task<IActionResult> ClassStudents(int id)
-		{
-			/*var usersInClass = await _context.Classes
-							.Where(cls => cls.Id == id)
-							.Include(cls => cls.Users) // Eager loading to load associated users
-							.Select(cls => cls.Users.Where(user => user.RoleSettingId == 5))
-							.FirstOrDefaultAsync();*/
 
-			var usersInClass = await _context.ClassStudentProjects
-	.Where(csp => csp.ClassId == id) // Filter by the class Id
-	.Include(csp => csp.User) // Eager loading to load associated users
-	.Select(csp => csp.User)
-	.Where(user => user.RoleSettingId == 5)
-	.ToListAsync();
-
-			ViewBag.ClassId = id;
-			return View("/Views/Classroom/ClassStudents.cshtml", usersInClass);
-		}
 
 		[Route("/ManageClassroom/ClassAddStudents")]
 		public async Task<IActionResult> ClassAddStudents(int id)
@@ -173,6 +229,7 @@ namespace G3.Controllers
 					//  - OpenXml Excel files (2007 format; *.xlsx, *.xlsb)
 					using (var reader = ExcelReaderFactory.CreateReader(stream))
 					{
+						bool wrongFormat = false;
 						do
 						{
 							bool isHeaderSkipped = false;
@@ -184,6 +241,14 @@ namespace G3.Controllers
 									continue;
 								}
 								User user = new User();
+
+								object emailValueCheck = reader.GetValue(0);
+								if(emailValueCheck == null)
+								{
+									ViewBag.Message = "wrongFormat";
+									wrongFormat = true;
+									break;
+								}
 								user.Email = reader.GetValue(0).ToString();
 
 								if (user.Email.Contains("gmail.com"))
@@ -195,9 +260,25 @@ namespace G3.Controllers
 									user.DomainSettingId = 6;
 								}
 
+								object nameValueCheck = reader.GetValue(1);
+								if (nameValueCheck == null)
+								{
+									ViewBag.Message = "wrongFormat";
+									wrongFormat = true;
+									break;
+								}
 								user.Name = reader.GetValue(1).ToString();
 								user.RoleSettingId = 5;
 								user.Status = true;
+
+								object genderValueCheck = reader.GetValue(2);
+								if (genderValueCheck == null)
+								{
+									ViewBag.Message = "wrongFormat";
+									wrongFormat = true;
+									break;
+								}
+
 								if (reader.GetValue(2).ToString().Equals("Male"))
 								{
 									user.Gender = true;
@@ -243,10 +324,13 @@ namespace G3.Controllers
 
 								if (classToAddUserTo != null)
 								{
-									// Check if the user is already associated with the class
-									var isUserAlreadyInClass = classToAddUserTo.User != null && classToAddUserTo.User.Email == emailToCheck;
+									var userClassAssociation = await _context.ClassStudentProjects
+																.Where(csp => csp.ClassId == classId && csp.UserId == existingUser.Id)
+																.Include(csp => csp.User)
+																.FirstOrDefaultAsync();
 
-									if (!isUserAlreadyInClass)
+
+									if (userClassAssociation == null)
 									{
 										// Create a new ClassStudentProject entry for the user
 										var newClassStudentProject = new ClassStudentProject
@@ -265,8 +349,12 @@ namespace G3.Controllers
 
 							}
 						} while (reader.NextResult());
+						ViewBag.Message = "success";
 					}
 				}
+			}else
+			{
+				ViewBag.Message = "empty";
 			}
 			ViewBag.ClassId = id;
 			return View("/Views/Classroom/UploadExcel.cshtml");
@@ -283,11 +371,11 @@ namespace G3.Controllers
 							.FirstOrDefaultAsync();*/
 
 			var studentsInClass = await _context.ClassStudentProjects
-	.Where(csp => csp.ClassId == id) // Filter by the class Id
-	.Include(csp => csp.User) // Eager loading to load associated users
-	.Select(csp => csp.User)
-	.Where(user => user.RoleSettingId == 5)
-	.ToListAsync();
+									.Where(csp => csp.ClassId == id) // Filter by the class Id
+									.Include(csp => csp.User) // Eager loading to load associated users
+									.Select(csp => csp.User)
+									.Where(user => user.RoleSettingId == 5)
+									.ToListAsync();
 
 			var fileName = "ClassID:" + id + ".xlsx";
 			return GenerateExcel(fileName, studentsInClass);
@@ -321,6 +409,21 @@ namespace G3.Controllers
 				}
 			}
 		}
-	}
 
+		[HttpGet]
+		[Route("/ManageClassroom/DownloadTemplate")]
+		public IActionResult GetExcelTemplate()
+		{
+			string path = "wwwroot/Template/Template.xlsx"; // Use a relative path
+
+			if (System.IO.File.Exists(path))
+			{
+				var fileBytes = System.IO.File.ReadAllBytes(path);
+				return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Template.xlsx");
+			}
+
+			return RedirectToAction("UploadExcel");
+		}
+
+	}
 }

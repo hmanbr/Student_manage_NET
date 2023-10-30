@@ -1,4 +1,4 @@
-@model G3.Models.Class
+@model G3.Dtos.MilestoneDto
 
 @{
     ViewData["Title"] = "Details";
@@ -8,55 +8,182 @@
 @{
     string tab = ViewData["tab"]?.ToString() ?? "general";
     List<Milestone> milestones = ViewData["milestones"] as List<Milestone> ?? new();
+    Class @class = (Class)ViewData["class"];
 }
 
-<!-- Tabs navs -->
+
+
+
 <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
     <li class="nav-item" role="presentation">
-        <a class="nav-link @(tab == "general" ? "active":"")" id="ex1-tab-1" data-mdb-toggle="tab" href="?tab=general"
-            role="tab" aria-controls="ex1-tabs-1" aria-selected="true">General</a>
+        <a class="nav-link @(@tab == "general" ? "active":"")" id="ex1-tab-1" data-mdb-toggle="tab" href="?tab=general"
+           role="tab" aria-controls="ex1-tabs-1" aria-selected="true">General</a>
     </li>
     <li class="nav-item" role="presentation">
-        <a class="nav-link @(tab == "milestones" ? "active":"")" id="ex1-tab-2" data-mdb-toggle="tab"
-            href="?tab=milestones" role="tab" aria-controls="ex1-tabs-2" aria-selected="false">Milestone</a>
+        <a class="nav-link @(@tab == "milestones" ? "active":"")" id="ex1-tab-2" data-mdb-toggle="tab"
+           href="?tab=milestones" role="tab" aria-controls="ex1-tabs-2" aria-selected="false">Milestone</a>
     </li>
     <li class="nav-item" role="presentation">
-        <a class="nav-link @(tab == "setting" ? "active":"")" id="ex1-tab-3" data-mdb-toggle="tab" href="?tab=setting"
-            role="tab" aria-controls="ex1-tabs-3" aria-selected="false">Setting</a>
+        <a class="nav-link @(@tab == "setting" ? "active":"")" id="ex1-tab-3" data-mdb-toggle="tab" href="?tab=setting"
+           role="tab" aria-controls="ex1-tabs-3" aria-selected="false">Setting</a>
     </li>
 </ul>
 
 <div class="tab-content" id="ex1-content">
     <div class="tab-pane fade @(tab == "general" ? "show active":"")" id="ex1-tabs-1" role="tabpanel"
-        aria-labelledby="ex1-tab-1">
-        Tab 1 content
+         aria-labelledby="ex1-tab-1">
+        <div>
+            <h4>Class</h4>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-2">
+                    Class name
+                </dt>
+                <dd class="col-sm-10">
+                    @(@class!.Name)
+                </dd>
+                <dt class="col-sm-2">
+                    Subject Code
+                </dt>
+                <dd class="col-sm-10">
+                    @(@class!.Subject!.SubjectCode)
+                </dd>
+                <dt class="col-sm-2">
+                    Subject Name
+                </dt>
+                <dd class="col-sm-10">
+                    @(@class!.Subject!.Name)
+                </dd>
+                <dt class="col-sm-2">
+                    Description
+                </dt>
+                <dd class="col-sm-10">
+                    @(@class!.Description)
+                </dd>
+
+            </dl>
+        </div>
+        <div>
+            <a asp-action="Edit" asp-route-id="@(@class!.Id)">Edit</a>
+
+        </div>
     </div>
     <div class="tab-pane fade @(tab == "milestones" ? "show active":"")" id="ex1-tabs-2" role="tabpanel"
-        aria-labelledby="ex1-tab-2">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th> Title </th>
-                    <th> Description </th>
-                    <th> StartDate </th>
-                    <th> EndDate</th>
+         aria-labelledby="ex1-tab-2">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+            New Milestone
+        </button>
+
+        <!-- Modal -->
+
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form asp-action="CreateMilestone">
+                        @Html.Hidden("FormType", "CreateMilestone")
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">New Milestone</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label asp-for="Title">Title</label>
+                                <input asp-for="Title" class="form-control">
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Description">Description</label>
+                                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="StartDate">Start Date</label>
+                                <input asp-for="StartDate" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" />
+                                <span asp-validation-for="StartDate" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="DueDate">End Date</label>
+                                <input asp-for="DueDate" type="date" class="form-control" />
+                                <span asp-validation-for="DueDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table class="table table-border">
+        <thead>
+            <tr>
+                <th> Title </th>
+                <th> Status </th>
+                <th> StartDate </th>
+                <th> EndDate</th>
+                <th> Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var milestone in milestones)
+            {
+                <tr data-="">
+                    <td> @(@milestone.Title)</td>
+                    <td> @(@milestone.State)</td>
+                    <td> @(@milestone.StartDate?.ToString("dd-MM-yyyy"))</td>
+                    <td> @(@milestone.DueDate?.ToString("dd-MM-yyyy"))</td>
+                    <td>
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#editModal_@milestone.Id">Edit</button>
+                        @Html.ActionLink("Delete", "Delete", new { id = milestone.Id }, new { @class = "btn btn-danger" })
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var milestone in milestones)
-                {
-                    <tr>
-                        <td> @(@milestone.Title)</td>
-                        <td> @(@milestone.Description) </td>
-                        <td> @(@milestone.StartDate.ToString("yyyy-MM-dd")) </td>
-                        <td> @(@milestone.DueDate.ToString("yyyy-MM-dd")) </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    <div class="tab-pane fade @(tab == "setting" ? "show active":"")" id="ex1-tabs-3" role="tabpanel"
-        aria-labelledby="ex1-tab-3">
-        Tab 3 content
-    </div>
+                <div class="modal fade" id="editModal_@milestone.Id" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel">Edit Milestone</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form asp-action="CreateMilestone">
+                                    @Html.Hidden("FormType", "UpdateMilestone")
+                                    @Html.Hidden("MilestoneId", milestone.Id)
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => milestone.Title)
+                                        @Html.TextBoxFor(model => milestone.Title, new { @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => milestone.Description)
+                                        @Html.TextAreaFor(model => milestone.Description, new { @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => milestone.StartDate)
+                                        @Html.EditorFor(model => milestone.StartDate, new { htmlAttributes = new { @class = "form-control" } })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => milestone.DueDate)
+                                        @Html.EditorFor(model => milestone.DueDate, new { htmlAttributes = new { @class = "form-control" } })
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="tab-pane fade @(tab == "setting" ? "show active":"")" id="ex1-tabs-3" role="tabpanel"
+     aria-labelledby="ex1-tab-3">
+    Tab 3 content
+</div>
+<a asp-action="Index">Back to List</a>
 </div>

@@ -1,4 +1,6 @@
 
+using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace G3.Controllers
@@ -14,16 +16,65 @@ namespace G3.Controllers
 
         // GET: Class
         [Route("/classList")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchString, string selectFilter, int page = 1, int pageSize = 5)
         {
+            ViewData["NameSort"] = String.IsNullOrEmpty(sortOrder) ? "nameDesc" : "";
+            ViewData["StatusSort"] = sortOrder == "title" ? "titleDesc" : "title";
+            ViewData["SearchAss"] = searchString;
 
-            var sWPContext = _context.Classes.Include(c => c.Subject);
-            return View(await sWPContext.ToListAsync());
+            var assign = from s in _context.Classes.Include(a => a.Subject) select s;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                assign = assign.Where(s =>
+                s.Name.Contains(searchString) ||
+                s.Subject.Name.Contains(searchString) ||
+                s.Subject.SubjectCode.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "nameDesc":
+                    assign = assign.OrderByDescending(s => s.Name);
+                    break;
+                case "title":
+                    assign = assign.OrderByDescending(s => s.Status);
+                    break;
+                case "titleDesc":
+                    assign = assign.OrderBy(s => s.Status);
+                    break;
+                default:
+                    assign = assign.OrderBy(s => s.Name);
+                    break;
+            }
+
+            var totalItems = assign.Count();
+
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            if (page < 1)
+            {
+                page = 1;
+            }
+            else if (page > totalPages)
+            {
+                page = totalPages;
+            }
+
+            assign = assign
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize).Include(m => m.Subject);
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+
+            return View(await assign.ToListAsync());
         }
 
         // GET: Class/Details/5
         [Route("/classList/{id}")]
-        public async Task<IActionResult> Details(int? id, string? tab, [FromServices] IGitLabService gitLabService)
+        public async Task<IActionResult> Details(int? id, string? tab, [FromServices] IGitLabClient gitLabClient)
         {
             if (id == null || _context.Classes == null) return NotFound();
 
@@ -31,50 +82,67 @@ namespace G3.Controllers
             if (@class == null) return NotFound();
 
             ViewData["tab"] = tab ?? "general";
+            ViewData["class"] = @class;
 
             return tab switch
             {
                 "general" => View(),
-                "milestones" => RunMilestone(@class, gitLabService),
+                "milestones" => RunMilestone(@class, gitLabClient),
                 _ => View(),
             };
 
         }
 
-        public IActionResult RunMilestone(Class @class, IGitLabService gitLabService)
+        public IActionResult RunMilestone(Class @class, IGitLabClient gitLabClient)
         {
             int? groupId = @class.GitLabGroupId;
             if (groupId == null) return View();
 
 
-            List<NGitLab.Models.Milestone> gitlabMilestone = gitLabService.GetMilestoneByGroupId((int)groupId);
-            List<Models.Milestone> milestones = gitlabMilestone.Select(m => new Models.Milestone
+            List<NGitLab.Models.Milestone> gitlabMilestone = gitLabClient.GetGroupMilestone((int)groupId).All.ToList();
+            List<Models.Milestone> milestones = gitlabMilestone.Select(m =>
             {
-                Id = m.Id,
-                Iid = m.Iid,
-                Title = m.Title,
-                Description = m.Description,
-                DueDate = DateTime.Now,
-                GroupId = m.GroupId,
-                StartDate = DateTime.Now,
-                State = m.State,
-                CreatedAt = m.CreatedAt,
-                UpdatedAt = m.UpdatedAt,
-                Expired = false,
-                WebUrl = "",
+
+                var mile = new Models.Milestone
+                {
+                    Id = m.Id,
+                    Iid = m.Iid,
+                    Title = m.Title,
+                    Description = m.Description,
+                    GroupId = m.GroupId,
+                    State = m.State,
+                    CreatedAt = m.CreatedAt,
+                    UpdatedAt = m.UpdatedAt,
+                };
+                if (m.StartDate != null)
+                {
+                    mile.StartDate = DateTime.Parse(m.StartDate);
+                }
+                if (m.DueDate != null)
+                {
+                    mile.DueDate = DateTime.Parse(m.DueDate);
+                }
+                return mile;
             }).ToList();
 
             string sql = @"
-                INSERT INTO `SWP`.`Milestone` (`Id`, `Iid`, `Title`, `Description`, `State`, `CreatedAt`, `UpdatedAt`, `DueDate`, `StartDate`, `Expired`, `WebUrl`, `GroupId`)
+                INSERT INTO `SWP`.`Milestone` (`Id`, `Iid`, `Title`, `Description`, `State`, `CreatedAt`, `UpdatedAt`, `DueDate`, `StartDate`, `GroupId`)
                 VALUES ";
 
 
             for (int i = 0; i < milestones.Count; i++)
             {
-                sql += string.Format("({0}, {1}, '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}')",
-                    milestones[i].Id, milestones[i].Iid, milestones[i].Title, milestones[i].Description, milestones[i].State,
-                    milestones[i].CreatedAt.ToString("yyyy-MM-dd"), milestones[i].UpdatedAt.ToString("yyyy-MM-dd"), milestones[i].DueDate.ToString("yyyy-MM-dd"), milestones[i].StartDate.ToString("yyyy-MM-dd"),
-                    milestones[i].Expired ? 1 : 0, "", @class.GitLabGroupId);
+                sql += string.Format("({0}, {1}, '{2}', '{3}', '{4}', '{5}', '{6}', {7}, {8}, '{9}')",
+                    milestones[i].Id,
+                    milestones[i].Iid,
+                    milestones[i].Title,
+                    milestones[i].Description,
+                    milestones[i].State,
+                    milestones[i].CreatedAt.ToString("yyyy-MM-dd"),
+                    milestones[i].UpdatedAt.ToString("yyyy-MM-dd"),
+                    milestones[i].DueDate != null ? "\'" + milestones[i].DueDate?.ToString("yyyy-MM-dd") + "\'" : "null",
+                    milestones[i].StartDate != null ? "\'" + milestones[i].StartDate?.ToString("yyyy-MM-dd") + "\'" : "null",
+                    @class.GitLabGroupId);
 
                 if (i < milestones.Count - 1)
                 {
@@ -92,8 +160,6 @@ namespace G3.Controllers
                 UpdatedAt = VALUES(UpdatedAt),
                 DueDate = VALUES(DueDate),
                 StartDate = VALUES(StartDate),
-                Expired = VALUES(Expired),
-                WebUrl = VALUES(WebUrl),
                 GroupId = VALUES(GroupId);
             ";
 
@@ -103,15 +169,90 @@ namespace G3.Controllers
             milestones = _context.Milestones.Where(m => m.GroupId == @class.GitLabGroupId).ToList();
             ViewData["milestones"] = milestones;
             return View();
+        }
 
+        [Route("/classList/{id}")]
+        [HttpPost]
+        public async Task<ActionResult> CreateMilestone([Bind("Title, Description, StartDate, DueDate")] MilestoneDto milestoneDto, IFormCollection collections, string tab, [FromServices] IGitLabClient gitLabClient, int? id)
+        {
+            var type = collections["FormType"];
+
+            if (id == null || _context.Classes == null) return NotFound();
+
+            var @class = await _context.Classes.Include(c => c.Subject).FirstOrDefaultAsync(m => m.Id == id);
+            if (@class == null) return NotFound();
+            int? groupId = @class.GitLabGroupId;
+            if (groupId == null) return View();
+
+
+            switch (type)
+            {
+                case "CreateMileston":
+                    NGitLab.Models.Milestone milestoneCreate = gitLabClient.GetGroupMilestone((int)groupId).Create(new NGitLab.Models.MilestoneCreate
+                    {
+                        Title = milestoneDto.Title,
+                        Description = milestoneDto.Description,
+                        StartDate = milestoneDto.StartDate,
+                        DueDate = milestoneDto.DueDate
+                    });
+
+                    Milestone milestone = new Milestone
+                    {
+                        Id = milestoneCreate.Id,
+                        Iid = milestoneCreate.Iid,
+                        Title = milestoneCreate.Title,
+                        Description = milestoneCreate.Description,
+                        StartDate = DateTime.Parse(milestoneCreate.StartDate),
+                        DueDate = DateTime.Parse(milestoneCreate.DueDate),
+                        GroupId = groupId,
+                        State = milestoneCreate.State
+
+                    };
+                    _context.Milestones.Add(milestone);
+                    await _context.SaveChangesAsync();
+
+                    return Redirect("/classList/" + id + "?tab=milestones");
+                case "UpdateMilestone":
+                    dynamic MilestoneId = collections["MilestoneId"];
+
+                    var milestoneUpdate = new NGitLab.Models.MilestoneUpdate
+                    {
+                        Title = collections["milestone.Title"],
+                        Description = collections["milestone.Description"],
+                    };
+
+                    if (!string.IsNullOrEmpty(collections["milestone.StartDate"])) milestoneUpdate.StartDate = DateTime.Parse(collections["milestone.StartDate"]).ToString("yyyy-MM-dd");
+                    if (!string.IsNullOrEmpty(collections["milestone.DueDate"])) milestoneUpdate.DueDate = DateTime.Parse(collections["milestone.DueDate"]).ToString("yyyy-MM-dd");
+
+                    var a = gitLabClient.GetGroupMilestone((int)groupId).Update(int.Parse(MilestoneId), milestoneUpdate);
+                    return Redirect("/classList/" + id + "?tab=milestones");
+                default:
+                    return View();
+            };
+
+
+        }
+
+        [Route("milestones/{id}")]
+        public async Task<IActionResult> MilestoneDetail(int? id)
+        {
+
+            if (id == null || _context.Milestones == null) return NotFound();
+
+            var Milestone = await _context.Milestones.Include(m => m.Group).FirstOrDefaultAsync(m => m.Id == id);
+            if (Milestone == null) return NotFound();
+
+            ViewData["Milestone"] = Milestone;
+            return View();
         }
 
 
 
         // GET: Class/Create
+        [Route("/classNew")]
         public IActionResult Create()
         {
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id");
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "SubjectCode");
             return View();
         }
 
@@ -120,21 +261,35 @@ namespace G3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,SubjectId,Status")] Class @class)
+        [Route("/classNew")]
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,GitLabGroupId,SubjectId,Status")] Class @class)
         {
+
             if (ModelState.IsValid)
             {
-                _context.Add(@class);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                if (_context.Classes.Any(c => c.Name == @class.Name))
+                {
+                    ViewData["error"] = "This class has exist!!";
+                }
+                else
+                {
+                    _context.Add(@class);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+
+
             }
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", @class.SubjectId);
             return View(@class);
         }
 
         // GET: Class/Edit/5
+        [Route("/classEdit")]
         public async Task<IActionResult> Edit(int? id)
         {
+
             if (id == null || _context.Classes == null)
             {
                 return NotFound();
@@ -154,7 +309,8 @@ namespace G3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,SubjectId,Status")] Class @class)
+        [Route("/classEdit")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,GitLabGroupId,SubjectId,Status")] Class @class)
         {
             if (id != @class.Id)
             {
@@ -165,6 +321,7 @@ namespace G3.Controllers
             {
                 try
                 {
+
                     _context.Update(@class);
                     await _context.SaveChangesAsync();
                 }
@@ -186,6 +343,7 @@ namespace G3.Controllers
         }
 
         // GET: Class/Delete/5
+        [Route("/classDelete")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Classes == null)
@@ -207,7 +365,8 @@ namespace G3.Controllers
         // POST: Class/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [Route("/classDelete")]
+        public async Task<IActionResult> Delete(int id)
         {
             if (_context.Classes == null)
             {
@@ -226,6 +385,23 @@ namespace G3.Controllers
         private bool ClassExists(int id)
         {
             return (_context.Classes?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [Route("/admin/editClass_toggle2")]
+        public IActionResult Edit_toggle2(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            var settingFromDB = _context.Classes.Find(id);
+            if (settingFromDB == null)
+            {
+                return NotFound();
+            }
+            settingFromDB.Status = !settingFromDB.Status;
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

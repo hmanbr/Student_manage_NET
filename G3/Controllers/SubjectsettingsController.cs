@@ -11,7 +11,7 @@ using MySqlX.XDevAPI.Common;
 
 namespace G3.Controllers
 {
-    [AuthActionFilter]
+    /*[AuthActionFilter]*/
     public class SubjectsettingsController : Controller
     {
         private readonly SWPContext _context;
