@@ -1,5 +1,6 @@
 
 using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace G3.Controllers
@@ -172,8 +173,9 @@ namespace G3.Controllers
 
         [Route("/classList/{id}")]
         [HttpPost]
-        public async Task<ActionResult> CreateMilestone([Bind("Title, Description, StartDate, DueDate")] MilestoneDto milestoneDto, string tab, [FromServices] IGitLabClient gitLabClient, int? id)
+        public async Task<ActionResult> CreateMilestone([Bind("Title, Description, StartDate, DueDate")] MilestoneDto milestoneDto, IFormCollection collections, string tab, [FromServices] IGitLabClient gitLabClient, int? id)
         {
+            var type = collections["FormType"];
 
             if (id == null || _context.Classes == null) return NotFound();
 
@@ -183,30 +185,52 @@ namespace G3.Controllers
             if (groupId == null) return View();
 
 
-            NGitLab.Models.Milestone milestoneCreate = gitLabClient.GetGroupMilestone((int)groupId).Create(new NGitLab.Models.MilestoneCreate
+            switch (type)
             {
-                Title = milestoneDto.Title,
-                Description = milestoneDto.Description,
-                StartDate = milestoneDto.StartDate,
-                DueDate = milestoneDto.DueDate
-            });
+                case "CreateMileston":
+                    NGitLab.Models.Milestone milestoneCreate = gitLabClient.GetGroupMilestone((int)groupId).Create(new NGitLab.Models.MilestoneCreate
+                    {
+                        Title = milestoneDto.Title,
+                        Description = milestoneDto.Description,
+                        StartDate = milestoneDto.StartDate,
+                        DueDate = milestoneDto.DueDate
+                    });
 
-            Milestone milestone = new Milestone
-            {
-                Id = milestoneCreate.Id,
-                Iid = milestoneCreate.Iid,
-                Title = milestoneCreate.Title,
-                Description = milestoneCreate.Description,
-                StartDate = DateTime.Parse(milestoneCreate.StartDate),
-                DueDate = DateTime.Parse(milestoneCreate.DueDate),
-                GroupId = groupId,
-                State = milestoneCreate.State
+                    Milestone milestone = new Milestone
+                    {
+                        Id = milestoneCreate.Id,
+                        Iid = milestoneCreate.Iid,
+                        Title = milestoneCreate.Title,
+                        Description = milestoneCreate.Description,
+                        StartDate = DateTime.Parse(milestoneCreate.StartDate),
+                        DueDate = DateTime.Parse(milestoneCreate.DueDate),
+                        GroupId = groupId,
+                        State = milestoneCreate.State
 
+                    };
+                    _context.Milestones.Add(milestone);
+                    await _context.SaveChangesAsync();
+
+                    return Redirect("/classList/" + id + "?tab=milestones");
+                case "UpdateMilestone":
+                    dynamic MilestoneId = collections["MilestoneId"];
+
+                    var milestoneUpdate = new NGitLab.Models.MilestoneUpdate
+                    {
+                        Title = collections["milestone.Title"],
+                        Description = collections["milestone.Description"],
+                    };
+
+                    if (!string.IsNullOrEmpty(collections["milestone.StartDate"])) milestoneUpdate.StartDate = DateTime.Parse(collections["milestone.StartDate"]).ToString("yyyy-MM-dd");
+                    if (!string.IsNullOrEmpty(collections["milestone.DueDate"])) milestoneUpdate.DueDate = DateTime.Parse(collections["milestone.DueDate"]).ToString("yyyy-MM-dd");
+
+                    var a = gitLabClient.GetGroupMilestone((int)groupId).Update(int.Parse(MilestoneId), milestoneUpdate);
+                    return Redirect("/classList/" + id + "?tab=milestones");
+                default:
+                    return View();
             };
-            _context.Milestones.Add(milestone);
-            await _context.SaveChangesAsync();
 
-            return Redirect("/classList/" + id + "?tab=milestones");
+
         }
 
         [Route("milestones/{id}")]
