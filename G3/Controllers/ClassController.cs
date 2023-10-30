@@ -99,18 +99,29 @@ namespace G3.Controllers
 
 
             List<NGitLab.Models.Milestone> gitlabMilestone = gitLabClient.GetGroupMilestone((int)groupId).All.ToList();
-            List<Models.Milestone> milestones = gitlabMilestone.Select(m => new Models.Milestone
+            List<Models.Milestone> milestones = gitlabMilestone.Select(m =>
             {
-                Id = m.Id,
-                Iid = m.Iid,
-                Title = m.Title,
-                Description = m.Description,
-                DueDate = DateTime.Parse(m.DueDate),
-                GroupId = m.GroupId,
-                StartDate = DateTime.Parse(m.StartDate),
-                State = m.State,
-                CreatedAt = m.CreatedAt,
-                UpdatedAt = m.UpdatedAt,
+
+                var mile = new Models.Milestone
+                {
+                    Id = m.Id,
+                    Iid = m.Iid,
+                    Title = m.Title,
+                    Description = m.Description,
+                    GroupId = m.GroupId,
+                    State = m.State,
+                    CreatedAt = m.CreatedAt,
+                    UpdatedAt = m.UpdatedAt,
+                };
+                if (m.StartDate != null)
+                {
+                    mile.StartDate = DateTime.Parse(m.StartDate);
+                }
+                if (m.DueDate != null)
+                {
+                    mile.DueDate = DateTime.Parse(m.DueDate);
+                }
+                return mile;
             }).ToList();
 
             string sql = @"
@@ -120,9 +131,16 @@ namespace G3.Controllers
 
             for (int i = 0; i < milestones.Count; i++)
             {
-                sql += string.Format("({0}, {1}, '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}')",
-                    milestones[i].Id, milestones[i].Iid, milestones[i].Title, milestones[i].Description, milestones[i].State,
-                    milestones[i].CreatedAt.ToString("yyyy-MM-dd"), milestones[i].UpdatedAt.ToString("yyyy-MM-dd"), milestones[i].DueDate?.ToString("yyyy-MM-dd"), milestones[i].StartDate?.ToString("yyyy-MM-dd"),
+                sql += string.Format("({0}, {1}, '{2}', '{3}', '{4}', '{5}', '{6}', {7}, {8}, '{9}')",
+                    milestones[i].Id,
+                    milestones[i].Iid,
+                    milestones[i].Title,
+                    milestones[i].Description,
+                    milestones[i].State,
+                    milestones[i].CreatedAt.ToString("yyyy-MM-dd"),
+                    milestones[i].UpdatedAt.ToString("yyyy-MM-dd"),
+                    milestones[i].DueDate != null ? "\'" + milestones[i].DueDate?.ToString("yyyy-MM-dd") + "\'" : "null",
+                    milestones[i].StartDate != null ? "\'" + milestones[i].StartDate?.ToString("yyyy-MM-dd") + "\'" : "null",
                     @class.GitLabGroupId);
 
                 if (i < milestones.Count - 1)
@@ -176,14 +194,14 @@ namespace G3.Controllers
             Milestone milestone = new Milestone
             {
                 Id = milestoneCreate.Id,
-                Iid= milestoneCreate.Iid,
-                Title =milestoneCreate.Title,
+                Iid = milestoneCreate.Iid,
+                Title = milestoneCreate.Title,
                 Description = milestoneCreate.Description,
-                StartDate = DateTime.Parse( milestoneCreate.StartDate),
+                StartDate = DateTime.Parse(milestoneCreate.StartDate),
                 DueDate = DateTime.Parse(milestoneCreate.DueDate),
                 GroupId = groupId,
                 State = milestoneCreate.State
-               
+
             };
             _context.Milestones.Add(milestone);
             await _context.SaveChangesAsync();
