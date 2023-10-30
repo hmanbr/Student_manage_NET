@@ -488,56 +488,26 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Mentor.Name)
             </td>
-                <td>
-                    @{
-                        if (item.Status == true)
-                        {
-                            <tr>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Id)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.ProjectCode)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.EnglishName)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.VietNameseName)
-                                </td>
-
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Description)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.GroupName)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Class.Name)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Mentor.Name)
-                                </td>
-                                <td>
+                 <td>
                                     @{
-                                        @* if (item.Status == true)
-                                {
-                                <span class="text-success">Active</span>
-                                }
-                                else
-                                {
-                                <span class="text-danger">Inactive</span>
-                                } *@
+                                        if (item.Status == "ACTIVE")
+                                        {
+                                            <span class="text-success">Active</span>
+                                        }
+                                        else if (item.Status == "INACTIVE")
+                                        {
+                                            <span class="text-danger">Inactive</span>
+                                        }
                                     }
-                                </td>
+                </td>              
 
-                                <td>
-                                    <a asp-action="ProjectDetail" asp-route-id="@item.Id" class="settings" title="Settings"
-                                        data-toggle="tooltip"><i class="material-icons">&#xE8B8;</i></a>
+    <td>
+        <a asp-action="ProjectDetail" asp-route-id="@item.Id" class="settings" title="Settings"
+                 data-toggle="tooltip"><i class="material-icons">&#xE8B8;</i></a>
 
-                                    <a asp-action="ProjectDelete" asp-route-id="@item.Id" class="delete" title="Delete"
-                                        data-toggle="tooltip"><i class="material-icons">&#xE5C9;</i></a>
-                                </td>
+        <a asp-action="ProjectDelete" asp-route-id="@item.Id" class="delete" title="Delete"
+                        data-toggle="tooltip"><i class="material-icons">&#xE5C9;</i></a>
+        </td>
 
                             </tr>
                         }
@@ -564,8 +534,5 @@
     </div>
 
 
-    @*////*@
 
-
-    @*/////*@
 </body>
