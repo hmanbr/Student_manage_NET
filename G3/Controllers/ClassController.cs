@@ -226,6 +226,19 @@ namespace G3.Controllers
 
                     var a = gitLabClient.GetGroupMilestone((int)groupId).Update(int.Parse(MilestoneId), milestoneUpdate);
                     return Redirect("/classList/" + id + "?tab=milestones");
+
+                case "DeleteMilestone":
+                    int MilestoneDelete = int.Parse(collections["MilestoneId"]);
+
+                    gitLabClient.GetGroupMilestone((int)groupId).Delete(MilestoneDelete);
+
+                    var milestoneDelete = _context.Milestones.FirstOrDefault(m => m.Id == MilestoneDelete);
+                    if (milestoneDelete != null)
+                    {
+                        _context.Milestones.Remove(milestoneDelete);
+                        _context.SaveChanges();
+                    }
+                    return Redirect("/classList/" + id + "?tab=milestones");
                 default:
                     return View();
             };
