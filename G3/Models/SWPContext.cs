@@ -391,7 +391,7 @@ namespace G3.Models
 
                 entity.Property(e => e.Status)
                     .HasColumnType("enum('PENDING','ACTIVE','INACTIVE')")
-                    .HasDefaultValueSql("'ACTIVE'");
+                    .HasDefaultValueSql("'INACTIVE'");
 
                 entity.Property(e => e.VietNameseName).HasMaxLength(191);
 

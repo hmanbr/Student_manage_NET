@@ -165,9 +165,10 @@ CREATE TABLE `Project` (
     `EnglishName` VARCHAR(191) NOT NULL,
     `GroupName` VARCHAR(191) NOT NULL,
     `VietNameseName` VARCHAR(191) NULL,
-    `Status` ENUM('PENDING', 'ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
+    `Status` ENUM('PENDING', 'ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'INACTIVE',
     `Description` TEXT NULL,
     `MentorId` INTEGER NULL,
+    `GitLabProjectId` INTEGER NULL,
     `ClassId` INTEGER NULL,
 
     PRIMARY KEY (`Id`)

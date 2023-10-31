@@ -21,6 +21,7 @@ namespace G3.Models
         public string Status { get; set; } = null!;
         public string? Description { get; set; }
         public int? MentorId { get; set; }
+        public int? GitLabProjectId { get; set; }
         public int? ClassId { get; set; }
 
         public virtual Class? Class { get; set; }
