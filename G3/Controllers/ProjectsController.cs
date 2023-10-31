@@ -46,15 +46,15 @@ namespace G3.Controllers
                 query = query.OrderByDescending(x => x.ProjectCode).Include(p => p.Class).Include(p => p.Mentor);
             }
 
-            // if (StatusFilter == "true" )
-            // {              
-            //     query = query.Where(x => x.Status == true).Include(p => p.Class).Include(p => p.Mentor);
+             if (StatusFilter == "true" )
+             {              
+                query = query.Where(x => x.Status == "ACTIVE").Include(p => p.Class).Include(p => p.Mentor);
 
-            // }
-            // else if (StatusFilter == "false")
-            // {
-            //     query = query.Where(x => x.Status == false).Include(p => p.Class).Include(p => p.Mentor);
-            // }
+             }
+             else if (StatusFilter == "false")
+             {
+                 query = query.Where(x => x.Status == "INACTIVE").Include(p => p.Class).Include(p => p.Mentor);
+             }
 
             var totalItems = query.Count();
 
@@ -205,34 +205,8 @@ namespace G3.Controllers
         }
 
 
-
-        /*   [Route("/Projects/ProjectDelete")]
-           public async Task<IActionResult> ProjectDelete(int? id)
-           {
-               if (id == null)
-               {
-                   return NotFound();
-               }
-               var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
-               if (project == null)
-               {
-                   return NotFound();
-               }
-
-               if (project.Status == true)
-               {
-
-                   TempData["DeleteMessageFales"] = "Delete False, you can not delete an active project";
-                   return RedirectToAction(nameof(ProjectList));
-
-               }
-
-               _context.Projects.Remove(project);
-               TempData["DeleteMessageSuccess"] = "Delete Successful";
-               await _context.SaveChangesAsync();
-               return RedirectToAction(nameof(ProjectList));
-
-           }*/
+      
+       
 
         [Route("/Projects/ProjectDelete")]
         // GET: Projects/Delete/5
@@ -272,14 +246,14 @@ namespace G3.Controllers
                 return NotFound();
             }
 
-            // if (project.Status == true)
-            // {
+            if (project.Status == "ACTIVE")
+            {
 
-            //     TempData["DeleteMessageFales"] = "Delete False, you can not delete an active project";
+                 TempData["DeleteMessageFales"] = "Delete False, you can not delete an active project";
 
-            //     return View(project);
+               return View(project);
 
-            // }
+           }
             _context.Projects.Remove(project);
             TempData["DeleteMessageSuccess"] = "Delete Successful";
             await _context.SaveChangesAsync();
