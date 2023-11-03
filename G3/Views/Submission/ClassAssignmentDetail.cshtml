@@ -1,0 +1,156 @@
+﻿@model G3.Models.ClassAssignment
+
+@{
+	ViewData["Title"] = "ClassAssignmentDetail";
+	Layout = "~/Views/Shared/AdminLayout.cshtml";
+	var newestSubmit = Model.Submits.OrderByDescending(sub => sub.SubmitTime).FirstOrDefault();
+}
+
+<h1>Class Assignment Detail</h1>
+
+<h4>@Model.Assignment.Title</h4>
+<hr />
+<div class="card shadow mb-4">
+	<div class="card-header py-3">
+		<h6 class="m-0 font-weight-bold text-primary">@Model.Key</h6>
+	</div>
+	<div class="card-body text-center">
+		<table class="table table-bordered" cellspacing="0">
+			<tr>
+				<td>Submission status</td>
+				@if (Model.Submits != null && Model.Submits.Any())
+				{
+					if (newestSubmit.Grade == null)
+					{
+						<td class="text-white bg-info">Submitted for grading</td>
+					}
+					else
+					{
+						<td class="text-white bg-success">Gradded</td>
+					}
+				}
+				else
+				{
+					<td class="text-white bg-danger">No submit for this assignment.</td>
+				}
+			</tr>
+			<tr>
+				<td>Grading status</td>
+				@if (Model.Submits != null && Model.Submits.Any())
+				{
+					if (newestSubmit.Grade != null)
+					{
+						<td>@newestSubmit.Grade</td>
+					}
+					else
+					{
+						<td>Not graded</td>
+					}
+				}
+				else
+				{
+					<td>Not graded</td>
+				}
+			</tr>
+			<tr>
+				<td>Due date</td>
+				@if (Model.EndDate.HasValue)
+				{
+					<td>
+						@Model.EndDate.Value.ToString("dddd, d MMMM yyyy, h:mm tt")
+					</td>
+				}
+			</tr>
+			<tr>
+				<td>Time remaining</td>
+
+				@{
+					DateTime now = DateTime.Now;
+					DateTime? endDate = Model.EndDate;
+					if (Model.Submits != null && Model.Submits.Any())
+					{
+						var timeDifference = newestSubmit.SubmitTime - Model.EndDate;
+
+						if (timeDifference.Value.TotalMilliseconds > 0)
+						{
+							<td class="text-danger bg-success">Assignment was submitted @Math.Floor(timeDifference.Value.TotalHours) hours and @timeDifference.Value.Minutes minutes late.</td>
+						}
+						else if (timeDifference.Value.TotalMilliseconds < 0)
+						{
+							timeDifference = -timeDifference; // Get positive time difference
+							<td class="text-white bg-success">Assignment was submitted @Math.Floor(timeDifference.Value.TotalHours) hours and @timeDifference.Value.Minutes minutes early.</td>
+						}
+						else
+						{
+							<td>Assignment was submitted on time.</td>
+						}
+					}
+					else if (endDate.HasValue)
+					{
+						if (endDate.Value > now)
+						{
+							// Calculate time remaining
+							TimeSpan timeRemaining = endDate.Value - now;
+							string timeRemainingString = "";
+
+							if (timeRemaining.Days > 0)
+							{
+								timeRemainingString += timeRemaining.Days + " days, ";
+							}
+
+							timeRemainingString += timeRemaining.Hours + " hours, " + timeRemaining.Minutes + " minutes";
+
+
+							<td>Time remaining: @timeRemainingString </td>
+
+						}
+						else
+						{
+							// EndDate has passed
+							TimeSpan overdue = now - endDate.Value;
+							string overdueString = "";
+
+							if (overdue.Days > 0)
+							{
+								overdueString += overdue.Days + " days, ";
+							}
+
+							overdueString += overdue.Hours + " hours, " + overdue.Minutes + " minutes";
+
+							<td class="text-danger">Is overdue by: @overdueString</td>
+						}
+					}
+					else
+					{
+						<td>End Date is not available</td>
+					}
+				}
+
+			</tr>
+			<tr>
+				<td>Last modified</td>
+				<td>
+					@if (Model.Submits != null && Model.Submits.Any())
+					{
+						<a asp-controller="Submission" asp-action="DownloadFile" asp-route-fileUrl="@newestSubmit.FileUrl">@ViewBag.FileName</a>
+					}else
+					{
+						<span>@ViewBag.FileName</span>
+					}
+				</td>
+			</tr>
+			<tr>
+				<td>Teacher comment</td>
+				@if (newestSubmit != null)
+				{
+					<td>@newestSubmit.Comment</td>
+				}
+				else
+				{
+					<td>_</td>
+				}
+			</tr>
+		</table>
+		<a class="btn btn-outline-primary mx-auto" asp-action="SubmissionCreate" asp-controller="Submission" asp-route-key="@Model.Key" asp-route-classId="@Model.ClassId">Create/Edit Submission</a>
+	</div>
+</div>
