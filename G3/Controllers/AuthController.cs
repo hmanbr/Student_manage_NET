@@ -130,7 +130,7 @@ namespace G3.Controllers
         [Route("sign-up")]
         public IActionResult SignUp()
         {
-            return View();
+            return View(new SignUpDto());
         }
 
         [Route("confirm/{token}")]
@@ -155,75 +155,76 @@ namespace G3.Controllers
         [Route("sign-in")]
         public IActionResult SignIn()
         {
-            return View();
+            return View(new SignInDto());
         }
 
         [Route("change-password")]
         [AuthActionFilter]
         public IActionResult ChangePassword()
         {
-            return View();
+            return View(new ChangePasswordDto());
         }
-
 
         [Route("forgot-password")]
         public IActionResult ForgotPassword()
         {
-            return View();
+            return View(new ForgotPasswordDto());
         }
 
         [Route("reset-password/{token}")]
         public IActionResult ResetPassword()
         {
-            return View();
+            return View(new ResetPasswordDto());
         }
 
         [Route("sign-up")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SignUp([Bind("Email,Password,ConfirmPassword")] SignUpDto signUpDto, [FromServices] IMailService mailService, [FromServices] IHashService hashService)
+        public async Task<IActionResult> SignUp(SignUpDto signUpDto, [FromServices] IMailService mailService, [FromServices] IHashService hashService)
         {
             if (!ModelState.IsValid) return View();
             if (signUpDto.Password != signUpDto.ConfirmPassword)
             {
                 ViewBag.AlertMessage = "Password not match";
-                return View();
+                return View(signUpDto);
             }
 
             string? domain = mailService.GetDomain(signUpDto.Email);
             if (domain == null)
             {
                 ViewBag.AlertMessage = "Email Domain False";
-                return View();
+                return View(signUpDto);
             }
 
             Setting? domainSetting = _context.Settings.FirstOrDefault(setting => setting.Type == "DOMAIN" && setting.Value == domain);
             if (domainSetting == null)
             {
                 ViewBag.AlertMessage = "Email Domain Not Accept";
-                return View();
+                return View(signUpDto);
             }
 
             User? user = _context.Users.FirstOrDefault(user => user.Email == signUpDto.Email);
 
-            if (user != null && user.Status == true)
+            if (user != null)
             {
                 ViewBag.AlertMessage = "User alredy exist";
+                return View(signUpDto);
+
             }
 
 
             if (user != null && user.Status == false)
             {
                 ViewBag.AlertMessage = "User Blocked";
+                return View(signUpDto);
+
             }
-
-
 
             Setting? roleSetting = _context.Settings.FirstOrDefault(setting => setting.Type == "ROLE" && setting.Value == "STUDENT");
             if (roleSetting == null)
             {
                 ViewBag.AlertMessage = "Student Role Not Found";
-                return View();
+                return View(signUpDto);
             }
 
 
@@ -241,13 +242,14 @@ namespace G3.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             mailService.SendMailConfirm(signUpDto.Email, hash);
-            return View(signUpDto);
+            ViewBag.AlertMessageSuccess = "An email has been sent to you, please confirm";
+            return View(new SignUpDto());
         }
 
         [Route("sign-in")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult SignIn([Bind("Email,Password")] SignInDto signInDto, [FromServices] IHashService hashService)
+        public IActionResult SignIn(SignInDto signInDto, [FromServices] IHashService hashService)
         {
             if (!ModelState.IsValid) return View();
 
@@ -256,17 +258,17 @@ namespace G3.Controllers
             if (user == null || !hashService.Verify(signInDto.Password, user.Hash!))
             {
                 ViewBag.AlertMessage = "Please check email or password";
-                return View();
+                return View(signInDto);
             }
             if (user != null && user.Status == false)
             {
                 ViewBag.AlertMessage = "User blocked";
-                return View();
+                return View(signInDto);
             }
             if (user != null && user.Status == null)
             {
                 ViewBag.AlertMessage = "User alredy not confirm";
-                return View();
+                return View(signInDto);
             }
 
             string userJsonString = JsonSerializer.Serialize(user!, new JsonSerializerOptions()
@@ -298,14 +300,14 @@ namespace G3.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthActionFilter]
-        public async Task<IActionResult> ChangePassword([Bind("OldPassword,NewPassword,ConfirmPassword")] ChangePasswordDto dto, [FromServices] IHashService hashService)
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto dto, [FromServices] IHashService hashService)
         {
             if (!ModelState.IsValid) return View();
 
             if (dto.NewPassword != dto.ConfirmPassword)
             {
                 ViewBag.AlertMessage = "Password not match";
-                return View();
+                return View(dto);
             }
 
             string userJsonString = HttpContext.Session.GetString("User")!;
@@ -313,24 +315,25 @@ namespace G3.Controllers
 
             User? user = _context.Users.FirstOrDefault(user => user.Id == userId);
 
-            if (user == null) return View();
+            if (user == null) return View(dto);
 
             if (!hashService.Verify(dto.OldPassword, user.Hash))
             {
                 ViewBag.AlertMessage = "Password incorrect";
-                return View();
+                return View(dto);
             }
 
             user.Hash = hashService.HashPassword(dto.NewPassword);
             await _context.SaveChangesAsync();
+            ViewBag.AlertMessageSuccess = "Password was successfully changed";
 
-            return View();
+            return View(new ChangePasswordDto());
         }
 
         [Route("forgot-password")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword([Bind("Email")] ForgotPasswordDto dto, [FromServices] IMailService mailService, [FromServices] IHashService hashService)
+        public async Task<IActionResult> ForgotPassword( ForgotPasswordDto dto, [FromServices] IMailService mailService, [FromServices] IHashService hashService)
         {
             if (!ModelState.IsValid) return View();
 
@@ -339,7 +342,7 @@ namespace G3.Controllers
             if (user == null)
             {
                 ViewBag.AlertMessage = "Email invalid";
-                return View();
+                return View(dto);
             }
 
             string hash = hashService.RandomHash();
@@ -347,22 +350,23 @@ namespace G3.Controllers
             user.ResetPassToken = hash;
             await _context.SaveChangesAsync();
             mailService.SendResetPassword(dto.Email, hash);
+            ViewBag.AlertMessageSuccess = "Please check your email";
 
-            return View();
+            return View(new ForgotPasswordDto());
         }
 
 
         [Route("reset-password/{token}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword([Bind("Password,ConfirmPassword")] ResetPasswordDto dto, [FromServices] IHashService hashService, string token)
+        public async Task<IActionResult> ResetPassword( ResetPasswordDto dto, [FromServices] IHashService hashService, string token)
         {
             if (!ModelState.IsValid) return View();
 
             if (dto.Password != dto.ConfirmPassword)
             {
                 ViewBag.AlertMessage = "Password not match";
-                return View();
+                return View(dto);
             }
 
             User? user = _context.Users.FirstOrDefault(user => user.ResetPassToken == token);
@@ -370,14 +374,16 @@ namespace G3.Controllers
             if (user == null)
             {
                 ViewBag.AlertMessage = "Token invalid";
-                return View();
+                return View(dto);
             }
 
             user.ResetPassToken = null;
             user.Hash = hashService.HashPassword(dto.Password);
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(SignIn));
+            ViewBag.AlertMessageSuccess = "Password has been reset successfully";
+
+            return View(new ResetPasswordDto());
         }
 
         [Route("/logout")]
