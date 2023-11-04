@@ -1,0 +1,61 @@
+﻿@model G3.Models.ClassAssignment
+
+@{
+	ViewData["Title"] = "SubmissionCreate";
+	Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<h1>Submission Create/Edit</h1>
+<hr />
+<div class="card shadow mb-4">
+	<div class="card-header py-3">
+		<h6 class="m-0 font-weight-bold text-primary">Submit file</h6>
+	</div>
+	<div class="card-body text-center">
+		<form method="post" enctype="multipart/form-data">
+			<div id="file-upload-form">
+				<span>Allow jpg, doc, xlsx, pdf, zip, mp4. File size limit 100MB</span><br />
+				<label class="form-label">Upload file</label>
+				<input type="file" name="file" id="fileInput">
+				<span id="fileSizeError" style="color: red;"></span>
+				<input type="hidden" name="key" value="@ViewBag.Key" />
+				<input type="hidden" name="classId" value="@ViewBag.ClassId" />
+			</div>
+			<div>
+				<button type="submit" class="btn btn-primary">Upload</button>
+			</div>
+		</form>
+	</div>
+</div>
+<a class="btn btn-primary" asp-action="ClassAssignmentDetail" asp-route-key="@ViewBag.Key">Back To Details</a>
+<style>
+	#file-upload-form {
+		border: 2px dashed #ccc;
+		padding: 20px;
+		text-align: center;
+		cursor: pointer;
+	}
+
+		#file-upload-form:hover {
+			border-color: #007bff;
+		}
+</style>
+<script>
+	document.getElementById('fileInput').addEventListener('change', function () {
+		var maxSize = 100 * 1024 * 1024; // 100MB in bytes
+		var fileInput = this;
+		var fileSizeError = document.getElementById('fileSizeError');
+
+		if (fileInput.files.length > 0) {
+			var fileSize = fileInput.files[0].size;
+
+			if (fileSize > maxSize) {
+				fileSizeError.innerText = 'File size should be 100MB or less.';
+				fileInput.value = ''; // Clear the file input
+			} else {
+				fileSizeError.innerText = '';
+			}
+		}
+	});
+</script>
+

@@ -22,8 +22,6 @@ namespace G3.Controllers
 		[Route("/ManageClassroom/ClassesList")]
 		public async Task<IActionResult> ClassList(string search, int pg = 1)
 		{
-
-
 			var classlist = await _context.Classes.Include(subject => subject.Subject).ToListAsync();
 
 			if (!string.IsNullOrEmpty(search))
