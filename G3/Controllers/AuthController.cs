@@ -130,8 +130,7 @@ namespace G3.Controllers
         [Route("sign-up")]
         public IActionResult SignUp()
         {
-            var model = new SignUpDto();
-            return View(model);
+            return View(new SignUpDto());
         }
 
         [Route("confirm/{token}")]
@@ -163,20 +162,19 @@ namespace G3.Controllers
         [AuthActionFilter]
         public IActionResult ChangePassword()
         {
-            return View();
+            return View(new ChangePasswordDto());
         }
-
 
         [Route("forgot-password")]
         public IActionResult ForgotPassword()
         {
-            return View();
+            return View(new ForgotPasswordDto());
         }
 
         [Route("reset-password/{token}")]
         public IActionResult ResetPassword()
         {
-            return View();
+            return View(new ResetPasswordDto());
         }
 
         [Route("sign-up")]
@@ -244,7 +242,8 @@ namespace G3.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             mailService.SendMailConfirm(signUpDto.Email, hash);
-            return View(signUpDto);
+            ViewBag.AlertMessageSuccess = "An email has been sent to you, please confirm";
+            return View(new SignUpDto());
         }
 
         [Route("sign-in")]
@@ -301,14 +300,14 @@ namespace G3.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthActionFilter]
-        public async Task<IActionResult> ChangePassword([Bind("OldPassword,NewPassword,ConfirmPassword")] ChangePasswordDto dto, [FromServices] IHashService hashService)
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto dto, [FromServices] IHashService hashService)
         {
             if (!ModelState.IsValid) return View();
 
             if (dto.NewPassword != dto.ConfirmPassword)
             {
                 ViewBag.AlertMessage = "Password not match";
-                return View();
+                return View(dto);
             }
 
             string userJsonString = HttpContext.Session.GetString("User")!;
@@ -316,24 +315,25 @@ namespace G3.Controllers
 
             User? user = _context.Users.FirstOrDefault(user => user.Id == userId);
 
-            if (user == null) return View();
+            if (user == null) return View(dto);
 
             if (!hashService.Verify(dto.OldPassword, user.Hash))
             {
                 ViewBag.AlertMessage = "Password incorrect";
-                return View();
+                return View(dto);
             }
 
             user.Hash = hashService.HashPassword(dto.NewPassword);
             await _context.SaveChangesAsync();
+            ViewBag.AlertMessageSuccess = "Password was successfully changed";
 
-            return View();
+            return View(new ChangePasswordDto());
         }
 
         [Route("forgot-password")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword([Bind("Email")] ForgotPasswordDto dto, [FromServices] IMailService mailService, [FromServices] IHashService hashService)
+        public async Task<IActionResult> ForgotPassword( ForgotPasswordDto dto, [FromServices] IMailService mailService, [FromServices] IHashService hashService)
         {
             if (!ModelState.IsValid) return View();
 
@@ -342,7 +342,7 @@ namespace G3.Controllers
             if (user == null)
             {
                 ViewBag.AlertMessage = "Email invalid";
-                return View();
+                return View(dto);
             }
 
             string hash = hashService.RandomHash();
@@ -350,22 +350,23 @@ namespace G3.Controllers
             user.ResetPassToken = hash;
             await _context.SaveChangesAsync();
             mailService.SendResetPassword(dto.Email, hash);
+            ViewBag.AlertMessageSuccess = "Please check your email";
 
-            return View();
+            return View(new ForgotPasswordDto());
         }
 
 
         [Route("reset-password/{token}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword([Bind("Password,ConfirmPassword")] ResetPasswordDto dto, [FromServices] IHashService hashService, string token)
+        public async Task<IActionResult> ResetPassword( ResetPasswordDto dto, [FromServices] IHashService hashService, string token)
         {
             if (!ModelState.IsValid) return View();
 
             if (dto.Password != dto.ConfirmPassword)
             {
                 ViewBag.AlertMessage = "Password not match";
-                return View();
+                return View(dto);
             }
 
             User? user = _context.Users.FirstOrDefault(user => user.ResetPassToken == token);
@@ -373,14 +374,16 @@ namespace G3.Controllers
             if (user == null)
             {
                 ViewBag.AlertMessage = "Token invalid";
-                return View();
+                return View(dto);
             }
 
             user.ResetPassToken = null;
             user.Hash = hashService.HashPassword(dto.Password);
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(SignIn));
+            ViewBag.AlertMessageSuccess = "Password has been reset successfully";
+
+            return View(new ResetPasswordDto());
         }
 
         [Route("/logout")]
