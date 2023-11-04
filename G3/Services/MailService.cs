@@ -26,7 +26,7 @@ namespace G3.Services {
         
         public void SendMailConfirm(string emailReceiver, string hash) {
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Admin", emailSender));
+            message.From.Add(new MailboxAddress("Admin", "tunahe140525@fpt.edu.vn"));
             message.To.Add(new MailboxAddress(emailReceiver, emailReceiver));
             message.Subject = "Email Confirmation";
             message.Body = new TextPart("plain") { Text = url + "/auth/confirm/" + hash };

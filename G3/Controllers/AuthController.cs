@@ -130,7 +130,8 @@ namespace G3.Controllers
         [Route("sign-up")]
         public IActionResult SignUp()
         {
-            return View();
+            var model = new SignUpDto();
+            return View(model);
         }
 
         [Route("confirm/{token}")]
@@ -155,7 +156,7 @@ namespace G3.Controllers
         [Route("sign-in")]
         public IActionResult SignIn()
         {
-            return View();
+            return View(new SignInDto());
         }
 
         [Route("change-password")]
@@ -181,49 +182,51 @@ namespace G3.Controllers
         [Route("sign-up")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SignUp([Bind("Email,Password,ConfirmPassword")] SignUpDto signUpDto, [FromServices] IMailService mailService, [FromServices] IHashService hashService)
+        public async Task<IActionResult> SignUp(SignUpDto signUpDto, [FromServices] IMailService mailService, [FromServices] IHashService hashService)
         {
             if (!ModelState.IsValid) return View();
             if (signUpDto.Password != signUpDto.ConfirmPassword)
             {
                 ViewBag.AlertMessage = "Password not match";
-                return View();
+                return View(signUpDto);
             }
 
             string? domain = mailService.GetDomain(signUpDto.Email);
             if (domain == null)
             {
                 ViewBag.AlertMessage = "Email Domain False";
-                return View();
+                return View(signUpDto);
             }
 
             Setting? domainSetting = _context.Settings.FirstOrDefault(setting => setting.Type == "DOMAIN" && setting.Value == domain);
             if (domainSetting == null)
             {
                 ViewBag.AlertMessage = "Email Domain Not Accept";
-                return View();
+                return View(signUpDto);
             }
 
             User? user = _context.Users.FirstOrDefault(user => user.Email == signUpDto.Email);
 
-            if (user != null && user.Status == true)
+            if (user != null)
             {
                 ViewBag.AlertMessage = "User alredy exist";
+                return View(signUpDto);
+
             }
 
 
             if (user != null && user.Status == false)
             {
                 ViewBag.AlertMessage = "User Blocked";
+                return View(signUpDto);
+
             }
-
-
 
             Setting? roleSetting = _context.Settings.FirstOrDefault(setting => setting.Type == "ROLE" && setting.Value == "STUDENT");
             if (roleSetting == null)
             {
                 ViewBag.AlertMessage = "Student Role Not Found";
-                return View();
+                return View(signUpDto);
             }
 
 
@@ -247,7 +250,7 @@ namespace G3.Controllers
         [Route("sign-in")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult SignIn([Bind("Email,Password")] SignInDto signInDto, [FromServices] IHashService hashService)
+        public IActionResult SignIn(SignInDto signInDto, [FromServices] IHashService hashService)
         {
             if (!ModelState.IsValid) return View();
 
@@ -256,17 +259,17 @@ namespace G3.Controllers
             if (user == null || !hashService.Verify(signInDto.Password, user.Hash!))
             {
                 ViewBag.AlertMessage = "Please check email or password";
-                return View();
+                return View(signInDto);
             }
             if (user != null && user.Status == false)
             {
                 ViewBag.AlertMessage = "User blocked";
-                return View();
+                return View(signInDto);
             }
             if (user != null && user.Status == null)
             {
                 ViewBag.AlertMessage = "User alredy not confirm";
-                return View();
+                return View(signInDto);
             }
 
             string userJsonString = JsonSerializer.Serialize(user!, new JsonSerializerOptions()
