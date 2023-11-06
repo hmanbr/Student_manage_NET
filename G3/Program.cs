@@ -3,7 +3,8 @@ using NGitLab;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+Syncfusion.Licensing.SyncfusionLicenseProvider
+    .RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NHaF5cXmVCf1JpRGJGfV5yd0VHYFZTTXxbQE0SNHVRdkdgWH5edHVVRGlYU0RzXkc=");
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 

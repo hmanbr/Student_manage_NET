@@ -1,53 +1,23 @@
-﻿@model IEnumerable<G3.Models.ClassAssignment>
+﻿@model IEnumerable<G3.Models.User>
 
 @{
-    ViewData["Title"] = "Index";
+	ViewData["Title"] = "Index";
+	Layout = "~/Views/Shared/AdminLayout.cshtml";
 }
-
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Assignment)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Class)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Assignment.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Class.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Key">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Key">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Key">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<ejs-grid id="Grid" allowPaging="true" allowSorting="true" toolbar="@(new List<string>() {"Edit", "Update","Cancel", "Search" })">
+	<e-data-manager url="/ManageEvaluation/UrlDataSource?projectId=@ViewBag.ProjectId&classId=@ViewBag.ClassId" adaptor="UrlAdaptor" updateUrl="/ManageEvaluation/Update"></e-data-manager>
+	<e-grid-editSettings allowEditing="true" mode="Normal"></e-grid-editSettings>
+	<e-grid-columns>
+		
+
+	</e-grid-columns>
+</ejs-grid>
+<style>
+	/* Example of more specific selectors */
+	.e-toolbar {
+		border: 5px solid rgb(173, 255, 47);
+	}
+
+</style>
