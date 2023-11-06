@@ -340,3 +340,33 @@ INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('NWC202
 INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('PRN292', '.NET and C#', 'This is .NET and C# Subject');
 
 INSERT INTO `SWP`.`Class` (`Name`, `Description`, `GitLabGroupId`, `SubjectId`, `Status`) VALUES ('SE1735', 'This is SE1735 class', '76753267', '1', '1');
+
+-- minh insert random
+INSERT INTO project (ProjectCode, EnglishName, GroupName, VietNameseName, Status, Description, MentorId, GitLabProjectId, ClassId)
+VALUES
+( 'SPP', 'student portal', 'G3', 'ngu nhu lon', 'PENDING', 'xam lon', '1', '213124', '76753267'),
+( 'LMS', 'learning stuff', 'G2', 'binh thuong', 'PENDING', 'bruh', '1', '432423', '76753267'),
+( 'CMS', 'CMS fake', 'G1', 'ahhhhhhh', 'PENDING', 'fpt hahaha', '1', '232242', '76753267');
+
+INSERT INTO class (Name, Description, GitLabGroupId, SubjectId, Status)
+VALUES
+('JP1234', 'This is JP1234 class', '12342', '2', '1'),
+('SE9999', 'This is SE9999 class', '4324324', '3', '1');
+
+INSERT INTO user (Email, DomainSettingId, RoleSettingId, Hash, Status, ConfirmToken, ConfirmTokenVerifyAt, ResetPassToken, Avatar, Name, DateOfBirth, Phone, Address, Gender, Description, CreatedAt, UpdatedAt)
+VALUES
+('dog123@gmail.com', '7', '4', '1', NULL, NULL, 'Dog mentor', '0', NULL, '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000'),
+('joebiden@fpt.edu.vn', '6', '5', '1', NULL, NULL, 'Joe biden', '0', NULL, '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000'),
+('obamacube@fpt.edu.vn', '6', '5', '1', NULL, NULL, 'Obama bin laden', '1', NULL, '2023-09-23 14:32:45.302', '0001-01-01 00:00:00.000');
+
+INSERT INTO assignment (Title, Description, SubjectId)
+VALUES
+('Inter 1', 'prf inter 1', '1'),
+('Inter 2', 'prf inter 2', '1'),
+('Inter 3', 'prf inter 3', '1');
+
+INSERT INTO classassignment (Key, AssignmentId, ClassId, StartDate, EndDate, MilestoneId)
+VALUES
+('PRJ192_SE1735_ASS1', '1', '1', '2023-09-23 14:32:45.302', '2023-10-23 14:32:45.302', '1'),
+('PRJ192_SE1735_ASS2', '2', '1', '2023-10-23 14:32:45.302', '2023-11-23 14:32:45.302', '1'),
+('PRJ192_SE1735_ASS3', '3', '1', '2023-11-23 14:32:45.302', '2023-11-30 14:32:45.302', '1');
