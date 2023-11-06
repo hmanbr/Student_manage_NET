@@ -10,14 +10,28 @@
 	<e-data-manager url="/ManageEvaluation/UrlDataSource?projectId=@ViewBag.ProjectId&classId=@ViewBag.ClassId" adaptor="UrlAdaptor" updateUrl="/ManageEvaluation/Update"></e-data-manager>
 	<e-grid-editSettings allowEditing="true" mode="Normal"></e-grid-editSettings>
 	<e-grid-columns>
-		
-
+        <e-grid-column field="Id" headerText="ID" isPrimaryKey="true"></e-grid-column>
+        <e-grid-column field="Name" headerText="Name" allowEditing="false"></e-grid-column>
+        <e-grid-column field="" headerText="Total Mark"></e-grid-column>
+        <e-grid-column field="" headerText="Inter 1"></e-grid-column>
+        <e-grid-column field="" headerText="Inter 2"></e-grid-column>
+        <e-grid-column field="" headerText="Inter 3"></e-grid-column>
+        <e-grid-column field="" headerText="DB Score"></e-grid-column>
+        <e-grid-column field="" headerText="Doc Score"></e-grid-column>
 	</e-grid-columns>
 </ejs-grid>
+
 <style>
 	/* Example of more specific selectors */
-	.e-toolbar {
-		border: 5px solid rgb(173, 255, 47);
-	}
+    <style >
+    /* Reduce the font size of the toolbar items */
+    #Grid .e-toolbar-item {
+        font-size: 12px; /* Adjust the font size as needed */
+    }
 
+    /* Reduce the padding and height of the toolbar items */
+    #Grid .e-toolbar-item .e-btn {
+        padding: 4px 8px; /* Adjust the padding as needed */
+        height: 10%; /* Adjust the height as needed */
+    }
 </style>

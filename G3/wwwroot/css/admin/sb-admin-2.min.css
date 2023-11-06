@@ -11518,7 +11518,3 @@ body.sidebar-toggled footer.sticky-footer {
     width: 100%
 }
 
-.compact-toolbar .e-toolbar-item {
-    padding: 5px 10px; /* Adjust padding as needed */
-    font-size: 14px; /* Adjust font size as needed */
-}
