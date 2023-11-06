@@ -11,6 +11,8 @@ namespace G3.Models
         public decimal? Grade { get; set; }
         public string? Comment { get; set; }
         public DateTime? CommentTime { get; set; }
+        public string? StudentComment { get; set; }
+        public DateTime? StudentCommentTime { get; set; }
         public int ProjectId { get; set; }
         public string ClassAssignmentId { get; set; } = null!;
 
