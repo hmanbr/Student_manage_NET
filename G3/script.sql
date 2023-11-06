@@ -109,6 +109,8 @@ CREATE TABLE `Submit` (
     `Grade` DECIMAL(65, 30) NULL,
     `Comment` TEXT NULL,
     `CommentTime` DATETIME(3) NULL,
+    `StudentComment` TEXT NULL,
+    `StudentCommentTime` DATETIME(3) NULL,
     `projectId` INTEGER NOT NULL,
     `ClassAssignmentId` VARCHAR(191) NOT NULL,
 
@@ -151,6 +153,7 @@ CREATE TABLE `ClassAssignment` (
     `ClassId` INTEGER NOT NULL,
     `StartDate` DATETIME(3) NULL,
     `EndDate` DATETIME(3) NULL,
+    `MilestoneId` INTEGER NULL,
 
     INDEX `ClassAssignment_AssignmentId_ClassId_idx`(`AssignmentId`, `ClassId`),
     INDEX `ClassAssignment_Key_idx`(`Key`),
@@ -231,6 +234,8 @@ CREATE TABLE `Issue` (
     `CreatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `UpdatedAt` DATETIME(3) NOT NULL,
     `ProjectId` INTEGER NULL,
+    `Complexity` ENUM('Complex', 'Medium', 'Simple') NULL,
+    `Quality` ENUM('High', 'Medium', 'Low') NULL,
 
     PRIMARY KEY (`Id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -276,6 +281,9 @@ ALTER TABLE `ClassAssignment` ADD CONSTRAINT `ClassAssignment_ClassId_fkey` FORE
 
 -- AddForeignKey
 ALTER TABLE `ClassAssignment` ADD CONSTRAINT `ClassAssignment_AssignmentId_fkey` FOREIGN KEY (`AssignmentId`) REFERENCES `Assignment`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ClassAssignment` ADD CONSTRAINT `ClassAssignment_MilestoneId_fkey` FOREIGN KEY (`MilestoneId`) REFERENCES `Milestone`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Project` ADD CONSTRAINT `Project_MentorId_fkey` FOREIGN KEY (`MentorId`) REFERENCES `User`(`Id`) ON DELETE SET NULL ON UPDATE CASCADE;

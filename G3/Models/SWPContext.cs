@@ -25,7 +25,6 @@ namespace G3.Models
         public virtual DbSet<GitLabUser> GitLabUsers { get; set; } = null!;
         public virtual DbSet<Issue> Issues { get; set; } = null!;
         public virtual DbSet<Milestone> Milestones { get; set; } = null!;
-        public virtual DbSet<PrismaMigration> PrismaMigrations { get; set; } = null!;
         public virtual DbSet<Project> Projects { get; set; } = null!;
         public virtual DbSet<Setting> Settings { get; set; } = null!;
         public virtual DbSet<Subject> Subjects { get; set; } = null!;
@@ -132,6 +131,8 @@ namespace G3.Models
 
                 entity.HasIndex(e => e.Key, "ClassAssignment_Key_idx");
 
+                entity.HasIndex(e => e.MilestoneId, "ClassAssignment_MilestoneId_fkey");
+
                 entity.Property(e => e.Key).HasMaxLength(191);
 
                 entity.Property(e => e.EndDate).HasColumnType("datetime(3)");
@@ -149,6 +150,12 @@ namespace G3.Models
                     .HasForeignKey(d => d.ClassId)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("ClassAssignment_ClassId_fkey");
+
+                entity.HasOne(d => d.Milestone)
+                    .WithMany(p => p.ClassAssignments)
+                    .HasForeignKey(d => d.MilestoneId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("ClassAssignment_MilestoneId_fkey");
             });
 
             modelBuilder.Entity<ClassSetting>(entity =>
@@ -253,11 +260,15 @@ namespace G3.Models
 
                 entity.Property(e => e.ClosedAt).HasColumnType("datetime(3)");
 
+                entity.Property(e => e.Complexity).HasColumnType("enum('Complex','Medium','Simple')");
+
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime(3)")
                     .HasDefaultValueSql("'CURRENT_TIMESTAMP(3)'");
 
                 entity.Property(e => e.Description).HasColumnType("text");
+
+                entity.Property(e => e.Quality).HasColumnType("enum('High','Medium','Low')");
 
                 entity.Property(e => e.Status).HasColumnType("enum('closed','opened')");
 
@@ -335,42 +346,6 @@ namespace G3.Models
                     .HasForeignKey(d => d.ProjectId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("Milestone_ProjectId_fkey");
-            });
-
-            modelBuilder.Entity<PrismaMigration>(entity =>
-            {
-                entity.ToTable("_prisma_migrations", "SWP");
-
-                entity.Property(e => e.Id)
-                    .HasMaxLength(36)
-                    .HasColumnName("id");
-
-                entity.Property(e => e.AppliedStepsCount).HasColumnName("applied_steps_count");
-
-                entity.Property(e => e.Checksum)
-                    .HasMaxLength(64)
-                    .HasColumnName("checksum");
-
-                entity.Property(e => e.FinishedAt)
-                    .HasColumnType("datetime(3)")
-                    .HasColumnName("finished_at");
-
-                entity.Property(e => e.Logs)
-                    .HasColumnType("text")
-                    .HasColumnName("logs");
-
-                entity.Property(e => e.MigrationName)
-                    .HasMaxLength(255)
-                    .HasColumnName("migration_name");
-
-                entity.Property(e => e.RolledBackAt)
-                    .HasColumnType("datetime(3)")
-                    .HasColumnName("rolled_back_at");
-
-                entity.Property(e => e.StartedAt)
-                    .HasColumnType("datetime(3)")
-                    .HasColumnName("started_at")
-                    .HasDefaultValueSql("'CURRENT_TIMESTAMP(3)'");
             });
 
             modelBuilder.Entity<Project>(entity =>
@@ -506,6 +481,10 @@ namespace G3.Models
                 entity.Property(e => e.Grade).HasPrecision(65, 30);
 
                 entity.Property(e => e.ProjectId).HasColumnName("projectId");
+
+                entity.Property(e => e.StudentComment).HasColumnType("text");
+
+                entity.Property(e => e.StudentCommentTime).HasColumnType("datetime(3)");
 
                 entity.Property(e => e.SubmitTime).HasColumnType("datetime(3)");
 
