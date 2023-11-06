@@ -14,60 +14,33 @@
                         <div class="row justify-content-center">
                             <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
                                 <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
-                                <form asp-action="SignUp" class="mx-1 mx-md-4">
+                                @using (Html.BeginForm("SignUp", "Auth", FormMethod.Post))
+                                {
                                     <div class="form-group mb-3">
                                         <label asp-for="Email">Email</label>
-                                        <input asp-for="Email" type="email" class="form-control">
+                                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
                                         <span asp-validation-for="Email" class="text-danger"></span>
                                     </div>
                                     <div class="form-group mb-3">
                                         <label asp-for="Password">Password</label>
-                                        <input asp-for="Password" type="password" class="form-control">
+                                        @Html.TextBoxFor(m => m.Password, new { @class = "form-control", @type = "password" })
                                         <span asp-validation-for="Password" class="text-danger"></span>
                                     </div>
                                     <div class="form-group mb-3">
                                         <label asp-for="ConfirmPassword">Confirm Password</label>
-                                        <input asp-for="ConfirmPassword" type="password" class="form-control">
+                                        @Html.TextBoxFor(m => m.ConfirmPassword, new { @class = "form-control", @type = "password" })
                                         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
 
                                     </div>
-                                    @*<div class="form-group mb-3">
-                                        <label asp-for="Name" class="control-label"></label>
-                                        <input asp-for="Name" class="form-control" />
-                                        <span asp-validation-for="Name" class="text-danger"></span>
-                                    </div>
+
                                     <div class="form-group mb-3">
-                                        <label asp-for="DateOfBirth" class="control-label">Date Of Birth</label>
-                                        <input asp-for="DateOfBirth" class="form-control" />
-                                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                        <a href="/auth/sign-in">Are you have account?</a>
                                     </div>
-                                    <div class="form-group mb-3">
-                                        <label asp-for="Phone" class="control-label"></label>
-                                        <input asp-for="Phone" class="form-control" />
-                                        <span asp-validation-for="Phone" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-group mb-3">
-                                        <label asp-for="Address" class="control-label"></label>
-                                        <input asp-for="Address" class="form-control" />
-                                        <span asp-validation-for="Address" class="text-danger"></span>
-                                    </div>
-                                    <div class="mb-3">
-                                        @foreach (var gender in new bool[] { true, false })
-                                        {
-                                            <div class="form-check" style="padding-left: 0px !important">
-                                                <input type="radio" asp-for="Gender" value="@gender" id="Gender@(gender)" />@if (gender)
-                                                {
-                                                    <label for="Gender@(gender)">Male</label>
-                                                }
-                                                else
-                                                {
-                                                    <label for="Gender@(gender)">Female</label>
-                                                }
-                                            </div>
-                                        }
-                                    </div>*@
+
                                     <button type="submit" class="btn btn-primary w-100">Submit</button>
-                                </form>
+                                }
+
+
 
                             </div>
                             <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
@@ -85,8 +58,22 @@
 
 @if (!string.IsNullOrEmpty(ViewBag.AlertMessage))
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
         @ViewBag.AlertMessage
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <script>setTimeout(function () {
+            $(".alert").alert('close');
+        }, 5000);</script>
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.AlertMessageSuccess))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @ViewBag.AlertMessageSuccess
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>

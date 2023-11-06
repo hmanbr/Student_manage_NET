@@ -15,9 +15,11 @@ namespace G3.Models
         public int ClassId { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public int? MilestoneId { get; set; }
 
         public virtual Assignment Assignment { get; set; } = null!;
         public virtual Class Class { get; set; } = null!;
+        public virtual Milestone? Milestone { get; set; }
         public virtual ICollection<Submit> Submits { get; set; }
     }
 }
