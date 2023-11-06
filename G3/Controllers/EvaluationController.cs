@@ -48,13 +48,13 @@ namespace G3.Controllers
 
 		[HttpPost]
 		[Route("/ManageEvaluation/Update")]
-		public ActionResult Update([FromBody] CRUDModel<Submit> value)
+		public ActionResult Update([FromBody] CRUDModel<User> value)
 		{
 			//do stuff
 			var ord = value;
 
-			Submit val = _context.Submits.Where(or => or.Id == ord.Value.Id).FirstOrDefault();
-			val.FileUrl = ord.Value.FileUrl;
+			User val = _context.Users.Where(or => or.Id == ord.Value.Id).FirstOrDefault();
+			val.Name = ord.Value.Name;
 			_context.SaveChanges();
 			return Json(value);
 		}
