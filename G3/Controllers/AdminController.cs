@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using G3.Views.Shared.Components.SearchBar;
+using Microsoft.AspNetCore.Mvc;
 using System.Xml.Linq;
 
 namespace G3.Controllers
@@ -22,23 +23,50 @@ namespace G3.Controllers
 
 
 		[Route("/Admin/RolesList")]
-		public async Task<IActionResult> RolesList(string search) //this is a combanation of RoleList and SearchRole though GET
+		public async Task<IActionResult> RolesList(string search, int pg = 1) //this is a combanation of RoleList and SearchRole though GET
 		{
+			var settings = await _context.Settings.Where(setting => setting.Type == "ROLE").ToListAsync();
 			if (string.IsNullOrEmpty(search))
 			{
-				var settings = await _context.Settings.Where(setting => setting.Type == "ROLE").ToListAsync();
+				settings = await _context.Settings.Where(setting => setting.Type == "ROLE").ToListAsync();
 				// Pass the list of settings to the view.
-				return View("/Views/Admin/RolesList.cshtml", settings);
 			}
 			else
 			{
-				var settings = await _context.Settings
-					.Where(setting => setting.Type == "ROLE" && setting.Name.Contains(search))
+				settings = await _context.Settings
+				    .Where(setting => setting.Type == "ROLE" && setting.Name.Contains(search))
 					.ToListAsync();
-
-				// Pass the list of settings to the view.
-				return View("/Views/Admin/RolesList.cshtml", settings);
+				
+				
 			}
+			// Pass the list of settings to the view.
+			const int pageSize = 5;
+			if (pg < 1)
+			{
+				pg = 1;
+			}
+
+			int recsCount = settings.Count();
+
+			var pager = new Pager(recsCount, pg, pageSize);
+
+			int recSkip = (pg - 1) * pageSize;
+
+			var data = settings.Skip(recSkip).Take(pager.PageSize).ToList();
+
+			SPager searchPager = new SPager(recsCount, pg, pageSize)
+			{
+				Action = "RolesList",
+				Controller = " Admin",
+				SearchText = search,
+			};
+
+			this.ViewBag.Pager = pager;
+
+			ViewBag.SearchString = search;
+			ViewBag.SearchPager = searchPager;
+			// Pass the list of settings to the view.
+			return View("/Views/Admin/RolesList.cshtml", settings);
 		}
 
 		//GET

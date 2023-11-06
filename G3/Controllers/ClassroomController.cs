@@ -7,18 +7,24 @@ using System.ComponentModel;
 using System.Data;
 using System.Text;
 using G3.Views.Shared.Components.SearchBar;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using G3.Services;
+using MailKit;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace G3.Controllers
 {
 	public class ClassroomController : Controller
 	{
 		private readonly SWPContext _context;
+		private readonly IWebHostEnvironment _webHostEnvironment;
 
-		public ClassroomController(SWPContext context)
+		public ClassroomController(SWPContext context, IWebHostEnvironment webHostEnvironment)
 		{
 			_context = context;
 		}
-
+		
 		[Route("/ManageClassroom/ClassesList")]
 		public async Task<IActionResult> ClassList(string search, int pg = 1)
 		{
@@ -149,21 +155,9 @@ namespace G3.Controllers
 		{
 			User existingUser = _context.Users.FirstOrDefault(u => u.Id == stuId);
 
-			/*var classToAddUserTo = await _context.Classes
-				.Where(c => c.Id == classId)
-				.Include(c => c.Users)
-				.FirstOrDefaultAsync();
-
-			if (classToAddUserTo != null && !classToAddUserTo.Users.Any(u => u.Email == existingUser.Email))
-			{
-				// Add the user to the class
-				classToAddUserTo.Users.Add(existingUser);
-				await _context.SaveChangesAsync(); // Save the class-user relationship
-			}*/
-
 			var classToAddUserTo = await _context.ClassStudentProjects
-	.Where(csp => csp.ClassId == classId)
-	.FirstOrDefaultAsync();
+							.Where(csp => csp.ClassId == classId)
+							.FirstOrDefaultAsync();
 
 			if (classToAddUserTo != null)
 			{
@@ -179,6 +173,7 @@ namespace G3.Controllers
 						UserId = existingUser.Id,
 						ClassId = classToAddUserTo.ClassId,
 						ProjectId = 1,
+						Status = true,
 
 						// Set the ProjectId property if applicable
 					};
@@ -187,10 +182,40 @@ namespace G3.Controllers
 					await _context.SaveChangesAsync(); // Save the new class-user relationship
 				}
 			}
+			var usersInClass = await _context.ClassStudentProjects
+								.Where(csp => csp.ClassId == classId) // Filter by the class Id
+								.Include(csp => csp.User) // Eager loading to load associated users
+								.Select(csp => csp.User)
+								.Take(5) // Limit to the first 5 users
+								.ToListAsync();
+			int pg = 1;
+			const int pageSize = 5;
+			if (pg < 1)
+			{
+				pg = 1;
+			}
 
+			int recsCount = usersInClass.Count();
 
+			var pager = new Pager(recsCount, pg, pageSize);
+
+			int recSkip = (pg - 1) * pageSize;
+
+			var data = usersInClass.Skip(recSkip).Take(pager.PageSize).ToList();
+
+			SPager searchPager = new SPager(recsCount, pg, pageSize)
+			{
+				Action = "ClassStudents",
+				Controller = "Classroom",
+				SearchText = string.Empty,
+			};
+
+			this.ViewBag.Pager = pager;
+
+			ViewBag.SearchString = string.Empty;
+			ViewBag.SearchPager = searchPager;
 			ViewBag.ClassId = classId;
-			return RedirectToAction("ClassStudents", "Classroom", new { id = classId });
+			return RedirectToAction("ClassStudents", "Classroom", new { classId = classId });
 		}
 
 		[Route("/ManageClassroom/UploadExcel")]
@@ -202,7 +227,7 @@ namespace G3.Controllers
 
 		[Route("/ManageClassroom/UploadExcel")]
 		[HttpPost]
-		public async Task<IActionResult> UploadExcel(IFormFile file, int id) // need to fix this excel function
+		public async Task<IActionResult> UploadExcel(IFormFile file, int id, [FromServices] IHashService hashService, [FromServices] Services.IMailService mailService) // need to fix this excel function
 		{
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -241,7 +266,7 @@ namespace G3.Controllers
 								User user = new User();
 
 								object emailValueCheck = reader.GetValue(0);
-								if(emailValueCheck == null)
+								if (emailValueCheck == null)
 								{
 									ViewBag.Message = "wrongFormat";
 									wrongFormat = true;
@@ -268,22 +293,14 @@ namespace G3.Controllers
 								user.Name = reader.GetValue(1).ToString();
 								user.RoleSettingId = 5;
 								user.Status = true;
-
-								object genderValueCheck = reader.GetValue(2);
-								if (genderValueCheck == null)
+								bool classStatus;
+								if (reader.GetValue(2).ToString().Equals("1"))
 								{
-									ViewBag.Message = "wrongFormat";
-									wrongFormat = true;
-									break;
-								}
-
-								if (reader.GetValue(2).ToString().Equals("Male"))
-								{
-									user.Gender = true;
+									classStatus = true;
 								}
 								else
 								{
-									user.Gender = false;
+									classStatus = false;
 								}
 
 
@@ -294,24 +311,15 @@ namespace G3.Controllers
 
 								if (existingUser == null)
 								{
+									String randomPass = hashService.RandomStringGenerator(8);
+									user.Hash = hashService.HashPassword(randomPass);
+									mailService.SendPassword(user.Email, randomPass);
 									_context.Add(user);
 									await _context.SaveChangesAsync(); // Save the new user
 									existingUser = user; // Update existingUser with the newly added user
 								}
+								
 
-
-								/*int classId = id;
-								var classToAddUserTo = await _context.Classes
-									.Where(c => c.Id == classId)
-									.Include(c => c.Users)
-									.FirstOrDefaultAsync();
-
-								if (classToAddUserTo != null && !classToAddUserTo.Users.Any(u => u.Email == emailToCheck))
-								{
-									// Add the user to the class
-									classToAddUserTo.Users.Add(existingUser);
-									await _context.SaveChangesAsync(); // Save the class-user relationship
-								}*/
 
 								int classId = id;
 
@@ -335,7 +343,9 @@ namespace G3.Controllers
 										{
 											UserId = existingUser.Id,
 											ClassId = classToAddUserTo.ClassId,
-											ProjectId = 1
+											ProjectId = 1,
+											Status = classStatus,
+
 
 											// Set the ProjectId property if applicable
 										};
@@ -350,7 +360,8 @@ namespace G3.Controllers
 						ViewBag.Message = "success";
 					}
 				}
-			}else
+			}
+			else
 			{
 				ViewBag.Message = "empty";
 			}
@@ -386,12 +397,12 @@ namespace G3.Controllers
 			{
 				new DataColumn("Email"),
 				new DataColumn("Name"),
-				new DataColumn("Gender"),
+				new DataColumn("Status"),
 			});
 
 			foreach (var user in users)
 			{
-				string genderString = (user.Gender.HasValue) ? (user.Gender.Value ? "Male" : "Female") : "Unknown";
+				string genderString = (user.Status.HasValue) ? (user.Status.Value ? "1" : "0") : "Unknown";
 				dataTable.Rows.Add(user.Email, user.Name, genderString);
 			}
 
@@ -423,5 +434,10 @@ namespace G3.Controllers
 			return RedirectToAction("UploadExcel");
 		}
 
+		
+		private bool UserExists(int id)
+		{
+			return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
+		}
 	}
 }
