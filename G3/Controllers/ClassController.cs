@@ -187,7 +187,7 @@ namespace G3.Controllers
 
             switch (type)
             {
-                case "CreateMileston":
+                case "CreateMilestone":
                     NGitLab.Models.Milestone milestoneCreate = gitLabClient.GetGroupMilestone((int)groupId).Create(new NGitLab.Models.MilestoneCreate
                     {
                         Title = milestoneDto.Title,
