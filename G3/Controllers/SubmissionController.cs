@@ -72,7 +72,7 @@ namespace G3.Controllers
         [Route("/ManageSubmission/SubmissionCreate")]
         [HttpPost]
 		[RequestSizeLimit(100 * 1024 * 1024)]
-        public async Task<IActionResult> SubmissionCreate(IFormFile file, string key, int classId)
+        public async Task<IActionResult> SubmissionCreate(IFormFile file, string key, int classId, string stuComment)
         {
             if(file != null)
             {
@@ -83,18 +83,25 @@ namespace G3.Controllers
                 var project = await _context.ClassStudentProjects
                                               .Where(project => project.UserId == userId && project.ClassId == classId)
                                               .FirstOrDefaultAsync();
-
+				//remmber to login to team leader acc first or this goona null
 				int projectId = project.ProjectId;
 
                 string folderName = key + "_projectId" + projectId + "_classId" + classId;
 				string fileUrl = await _fileUploadService.UploadFileAsync(file, folderName);
+				String studentComment = string.Empty;
+				if(stuComment != null)
+				{
+					studentComment = stuComment;
+				}
 
 				Submit submit = new Submit()
                 {
                     FileUrl = fileUrl,
                     ProjectId = projectId,
                     SubmitTime = DateTime.Now,
-                    ClassAssignmentId = key
+                    ClassAssignmentId = key,
+					StudentComment = studentComment,
+					StudentCommentTime = DateTime.Now,
                 };
                 _context.Add(submit);
                 _context.SaveChanges();

@@ -3,16 +3,21 @@
 @{
 	ViewData["Title"] = "RolesList";
 	Layout = "~/Views/Shared/AdminLayout.cshtml";
+
+	Pager pager = new Pager();
+
+	int pageNo = 0;
+
+	if (ViewBag.Pager != null)
+	{
+		pager = ViewBag.Pager;
+		pageNo = pager.CurrentPage;
+	}
 }
 
 <h1>Role List</h1>
 
-<form method="get" asp-controller="Admin" asp-action="RolesList">
-	<div class="input-group col-lg-3 float-left">
-		<input type="text" class="form-control rounded" placeholder="Search" name="search" />
-		<input type="submit" value="Search" class="btn btn-outline-primary" />
-	</div>
-</form>
+<vc:search-bar search-pager="@ViewBag.SearchPager"></vc:search-bar>
 
 <br>
 <table class="table table-bordered">

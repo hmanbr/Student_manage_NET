@@ -340,3 +340,12 @@ INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('NWC202
 INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('PRN292', '.NET and C#', 'This is .NET and C# Subject');
 
 INSERT INTO `SWP`.`Class` (`Name`, `Description`, `GitLabGroupId`, `SubjectId`, `Status`) VALUES ('SE1735', 'This is SE1735 class', '76753267', '1', '1');
+
+--Minh insert random row
+INSERT INTO `SWP`.`classassignment` (`Key`, `AssignmentId`, `ClassId`, `StartDate`, `EndDate`)
+VALUES
+    ('PRN192_JP1234_ass1', 1, 2, '2023-11-12 00:00:00.000', '2023-12-12 00:00:00.000'),
+    ('PRN192_SE1735_ass1', 1, 1, '2023-11-12 00:00:00.000', '2023-10-30 13:00:00.000'),
+    ('PRN192_SE1735_ass2', 2, 1, '2023-11-12 00:00:00.000', '2023-12-12 00:00:00.000'),
+    ('PRN192_SE1735_ass3', 3, 1, '2023-11-12 00:00:00.000', '2023-12:12 00:00:00.000');
+

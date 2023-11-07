@@ -140,6 +140,17 @@
 				</td>
 			</tr>
 			<tr>
+				<td>Student comment</td>
+				@if (newestSubmit != null)
+				{
+					<td>@newestSubmit.StudentComment</td>
+				}
+				else
+				{
+					<td>_</td>
+				}
+			</tr>
+			<tr>
 				<td>Teacher comment</td>
 				@if (newestSubmit != null)
 				{

@@ -162,9 +162,9 @@ namespace G3.Controllers
 			}*/
 
 			var classToAddUserTo = await _context.ClassStudentProjects
-	.Where(csp => csp.ClassId == classId)
-	.FirstOrDefaultAsync();
-
+				.Where(csp => csp.ClassId == classId)
+				.FirstOrDefaultAsync();
+	
 			if (classToAddUserTo != null)
 			{
 				// Check if the user is already associated with the class
@@ -190,7 +190,7 @@ namespace G3.Controllers
 
 
 			ViewBag.ClassId = classId;
-			return RedirectToAction("ClassStudents", "Classroom", new { id = classId });
+			return RedirectToAction("ClassStudents", "Classroom", new { classId = classId });
 		}
 
 		[Route("/ManageClassroom/UploadExcel")]
