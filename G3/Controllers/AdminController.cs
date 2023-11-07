@@ -1,4 +1,5 @@
 ﻿using G3.Views.Shared.Components.SearchBar;
+using G3.Views.Shared.Components.SearchBar;
 using Microsoft.AspNetCore.Mvc;
 using System.Xml.Linq;
 
@@ -22,52 +23,54 @@ namespace G3.Controllers
         }
 
 
-		[Route("/Admin/RolesList")]
-		public async Task<IActionResult> RolesList(string search, int pg = 1) //this is a combanation of RoleList and SearchRole though GET
-		{
+        [Route("/Admin/RolesList")]
+        public async Task<IActionResult> RolesList(string search, int pg = 1) //this is a combanation of RoleList and SearchRole though GET
 
-			var settings = await _context.Settings.Where(setting => setting.Type == "ROLE").ToListAsync();
-			if (!string.IsNullOrEmpty(search))
-			{
-				
-				settings = await _context.Settings
-					.Where(setting => setting.Type == "ROLE" && setting.Name.Contains(search))
-					.ToListAsync();
-				// Pass the list of settings to the view.
-			}
-			
-				
-				const int pageSize = 5;
-				if (pg < 1)
-				{
-					pg = 1;
-				}
+        public async Task<IActionResult> RolesList(string search, int pg = 1) //this is a combanation of RoleList and SearchRole though GET
+        {
 
-				int recsCount = settings.Count();
+            var settings = await _context.Settings.Where(setting => setting.Type == "ROLE").ToListAsync();
+            if (!string.IsNullOrEmpty(search))
+            {
 
-				var pager = new Pager(recsCount, pg, pageSize);
+                settings = await _context.Settings
+                    .Where(setting => setting.Type == "ROLE" && setting.Name.Contains(search))
+                    .ToListAsync();
+                // Pass the list of settings to the view.
+            }
 
-				int recSkip = (pg - 1) * pageSize;
 
-				var data = settings.Skip(recSkip).Take(pager.PageSize).ToList();
+            const int pageSize = 5;
+            if (pg < 1)
+            {
+                pg = 1;
+            }
 
-				SPager searchPager = new SPager(recsCount, pg, pageSize)
-				{
-					Action = "RolesList",
-					Controller = "Admin",
-					SearchText = search,
-				};
+            int recsCount = settings.Count();
 
-				this.ViewBag.Pager = pager;
+            var pager = new Pager(recsCount, pg, pageSize);
 
-				ViewBag.SearchString = search;
-				ViewBag.SearchPager = searchPager;
-				// Pass the list of settings to the view.
-				return View("/Views/Admin/RolesList.cshtml", data);
-		}
+            int recSkip = (pg - 1) * pageSize;
 
-		//GET
-		[Route("/Admin/RolesEdit")]
+            var data = settings.Skip(recSkip).Take(pager.PageSize).ToList();
+
+            SPager searchPager = new SPager(recsCount, pg, pageSize)
+            {
+                Action = "RolesList",
+                Controller = "Admin",
+                SearchText = search,
+            };
+
+            this.ViewBag.Pager = pager;
+
+            ViewBag.SearchString = search;
+            ViewBag.SearchPager = searchPager;
+            // Pass the list of settings to the view.
+            return View("/Views/Admin/RolesList.cshtml", data);
+        }
+
+        //GET
+        [Route("/Admin/RolesEdit")]
         public IActionResult Edit(int? id) //edit of system's roles, dont mistake for user edit
         {
             if (id == null || id == 0)
@@ -76,7 +79,7 @@ namespace G3.Controllers
             }
             var settingFromDB = _context.Settings.Find(id);
             if (settingFromDB == null) return NotFound();
-			
+
             settingFromDB.IsActive = !settingFromDB.IsActive;
             _context.SaveChanges();
             return RedirectToAction("RolesList");
@@ -115,9 +118,9 @@ namespace G3.Controllers
             if (ModelState.IsValid)
             {
 
-				string[] words = obj.Name.Split(' ');
+                string[] words = obj.Name.Split(' ');
                 string value = string.Join("_", words).ToUpper();
-				obj.Value = value;
+                obj.Value = value;
                 obj.Type = "ROLE";
                 obj.IsActive = true;
                 _context.Settings.Add(obj);
@@ -182,6 +185,6 @@ namespace G3.Controllers
             return View("UsersRoleEdit", obj);
         }
 
-		
+
     }
 }
