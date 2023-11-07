@@ -25,8 +25,6 @@ namespace G3.Controllers
 
         [Route("/Admin/RolesList")]
         public async Task<IActionResult> RolesList(string search, int pg = 1) //this is a combanation of RoleList and SearchRole though GET
-
-        public async Task<IActionResult> RolesList(string search, int pg = 1) //this is a combanation of RoleList and SearchRole though GET
         {
 
             var settings = await _context.Settings.Where(setting => setting.Type == "ROLE").ToListAsync();

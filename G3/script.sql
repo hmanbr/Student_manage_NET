@@ -359,8 +359,36 @@ VALUES
 ('Inter 2', 'prf inter 2', '1'),
 ('Inter 3', 'prf inter 3', '1');
 
-INSERT INTO classassignment (Key, AssignmentId, ClassId, StartDate, EndDate, MilestoneId)
+INSERT INTO `SWP`.`Milestone`
+(`Id`,
+`Iid`,
+`Title`,
+`Description`,
+`DueDate`,
+`GroupId`,
+`ProjectId`,
+`StartDate`,
+`State`,
+`CreatedAt`,
+`UpdatedAt`)
 VALUES
-('PRJ192_SE1735_ASS1', '1', '1', '2023-09-23 14:32:45.302', '2023-10-23 14:32:45.302', '1'),
-('PRJ192_SE1735_ASS2', '2', '1', '2023-10-23 14:32:45.302', '2023-11-23 14:32:45.302', '1'),
-('PRJ192_SE1735_ASS3', '3', '1', '2023-11-23 14:32:45.302', '2023-11-30 14:32:45.302', '1');
+(4329870,
+5,
+'this is milestone 5',
+null,
+'2023-10-31 00:00:00.000',
+76753267,
+null,
+'2023-10-29 00:00:00.000',
+'active',
+'2023-10-29 00:00:00.000',
+'2023-10-29 00:00:00.000');
+
+
+
+
+INSERT INTO classassignment (`Key`, AssignmentId, ClassId, StartDate, EndDate, MilestoneId)
+VALUES
+('PRJ192_SE1735_ASS1', 1, 1, '2023-09-23 14:32:45.302', '2023-10-23 14:32:45.302', 4329870),
+('PRJ192_SE1735_ASS2', 2, 1, '2023-10-23 14:32:45.302', '2023-11-23 14:32:45.302', 4329870),
+('PRJ192_SE1735_ASS3', 3, 1, '2023-11-23 14:32:45.302', '2023-11-30 14:32:45.302', 4329870);
