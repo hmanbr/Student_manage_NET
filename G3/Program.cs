@@ -3,8 +3,9 @@ using NGitLab;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+Syncfusion.Licensing.SyncfusionLicenseProvider
+    .RegisterLicense("Mgo+DSMBMAY9C3t2VlhhQlVHfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hSn9SdkNjUXxadXVSTmNY");
+builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
 builder.Services.AddDbContext<SWPContext>(options => new SWPContext());

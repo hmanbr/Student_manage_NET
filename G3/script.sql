@@ -340,3 +340,55 @@ INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('NWC202
 INSERT INTO `SWP`.`Subject` (`SubjectCode`,`Name`,`Description`) VALUES ('PRN292', '.NET and C#', 'This is .NET and C# Subject');
 
 INSERT INTO `SWP`.`Class` (`Name`, `Description`, `GitLabGroupId`, `SubjectId`, `Status`) VALUES ('SE1735', 'This is SE1735 class', '76753267', '1', '1');
+
+-- minh insert random
+INSERT INTO project (ProjectCode, EnglishName, GroupName, VietNameseName, Status, Description, MentorId, GitLabProjectId, ClassId)
+VALUES
+( 'SPP', 'student portal', 'G3', 'ngu nhu lon', 'PENDING', 'xam lon', '1', '213124', '76753267'),
+( 'LMS', 'learning stuff', 'G2', 'binh thuong', 'PENDING', 'bruh', '1', '432423', '76753267'),
+( 'CMS', 'CMS fake', 'G1', 'ahhhhhhh', 'PENDING', 'fpt hahaha', '1', '232242', '76753267');
+
+INSERT INTO class (Name, Description, GitLabGroupId, SubjectId, Status)
+VALUES
+('JP1234', 'This is JP1234 class', '12342', '2', '1'),
+('SE9999', 'This is SE9999 class', '4324324', '3', '1');
+
+INSERT INTO assignment (Title, Description, SubjectId)
+VALUES
+('Inter 1', 'prf inter 1', '1'),
+('Inter 2', 'prf inter 2', '1'),
+('Inter 3', 'prf inter 3', '1');
+
+INSERT INTO `SWP`.`Milestone`
+(`Id`,
+`Iid`,
+`Title`,
+`Description`,
+`DueDate`,
+`GroupId`,
+`ProjectId`,
+`StartDate`,
+`State`,
+`CreatedAt`,
+`UpdatedAt`)
+VALUES
+(4329870,
+5,
+'this is milestone 5',
+null,
+'2023-10-31 00:00:00.000',
+76753267,
+null,
+'2023-10-29 00:00:00.000',
+'active',
+'2023-10-29 00:00:00.000',
+'2023-10-29 00:00:00.000');
+
+
+
+
+INSERT INTO classassignment (`Key`, AssignmentId, ClassId, StartDate, EndDate, MilestoneId)
+VALUES
+('PRJ192_SE1735_ASS1', 1, 1, '2023-09-23 14:32:45.302', '2023-10-23 14:32:45.302', 4329870),
+('PRJ192_SE1735_ASS2', 2, 1, '2023-10-23 14:32:45.302', '2023-11-23 14:32:45.302', 4329870),
+('PRJ192_SE1735_ASS3', 3, 1, '2023-11-23 14:32:45.302', '2023-11-30 14:32:45.302', 4329870);

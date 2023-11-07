@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using G3.Views.Shared.Components.SearchBar;
+using G3.Views.Shared.Components.SearchBar;
+using Microsoft.AspNetCore.Mvc;
 using System.Xml.Linq;
 
 namespace G3.Controllers
@@ -21,28 +23,52 @@ namespace G3.Controllers
         }
 
 
-		[Route("/Admin/RolesList")]
-		public async Task<IActionResult> RolesList(string search) //this is a combanation of RoleList and SearchRole though GET
-		{
-			if (string.IsNullOrEmpty(search))
-			{
-				var settings = await _context.Settings.Where(setting => setting.Type == "ROLE").ToListAsync();
-				// Pass the list of settings to the view.
-				return View("/Views/Admin/RolesList.cshtml", settings);
-			}
-			else
-			{
-				var settings = await _context.Settings
-					.Where(setting => setting.Type == "ROLE" && setting.Name.Contains(search))
-					.ToListAsync();
+        [Route("/Admin/RolesList")]
+        public async Task<IActionResult> RolesList(string search, int pg = 1) //this is a combanation of RoleList and SearchRole though GET
+        {
 
-				// Pass the list of settings to the view.
-				return View("/Views/Admin/RolesList.cshtml", settings);
-			}
-		}
+            var settings = await _context.Settings.Where(setting => setting.Type == "ROLE").ToListAsync();
+            if (!string.IsNullOrEmpty(search))
+            {
 
-		//GET
-		[Route("/Admin/RolesEdit")]
+                settings = await _context.Settings
+                    .Where(setting => setting.Type == "ROLE" && setting.Name.Contains(search))
+                    .ToListAsync();
+                // Pass the list of settings to the view.
+            }
+
+
+            const int pageSize = 5;
+            if (pg < 1)
+            {
+                pg = 1;
+            }
+
+            int recsCount = settings.Count();
+
+            var pager = new Pager(recsCount, pg, pageSize);
+
+            int recSkip = (pg - 1) * pageSize;
+
+            var data = settings.Skip(recSkip).Take(pager.PageSize).ToList();
+
+            SPager searchPager = new SPager(recsCount, pg, pageSize)
+            {
+                Action = "RolesList",
+                Controller = "Admin",
+                SearchText = search,
+            };
+
+            this.ViewBag.Pager = pager;
+
+            ViewBag.SearchString = search;
+            ViewBag.SearchPager = searchPager;
+            // Pass the list of settings to the view.
+            return View("/Views/Admin/RolesList.cshtml", data);
+        }
+
+        //GET
+        [Route("/Admin/RolesEdit")]
         public IActionResult Edit(int? id) //edit of system's roles, dont mistake for user edit
         {
             if (id == null || id == 0)
@@ -51,7 +77,7 @@ namespace G3.Controllers
             }
             var settingFromDB = _context.Settings.Find(id);
             if (settingFromDB == null) return NotFound();
-			
+
             settingFromDB.IsActive = !settingFromDB.IsActive;
             _context.SaveChanges();
             return RedirectToAction("RolesList");
@@ -89,18 +115,10 @@ namespace G3.Controllers
         {
             if (ModelState.IsValid)
             {
-				var existedSettings = _context.Settings
-					.Where(setting => setting.Type == "ROLE" && setting.Name.Contains(obj.Name))
-					.ToList();
-				if (existedSettings != null)
-				{
-					ModelState.AddModelError("Name", "The Name already existed in database");
-                    return View("/Views/Admin/RoleCreate.cshtml");
-				}
 
-				string[] words = obj.Name.Split(' ');
+                string[] words = obj.Name.Split(' ');
                 string value = string.Join("_", words).ToUpper();
-				obj.Value = value;
+                obj.Value = value;
                 obj.Type = "ROLE";
                 obj.IsActive = true;
                 _context.Settings.Add(obj);
@@ -165,6 +183,6 @@ namespace G3.Controllers
             return View("UsersRoleEdit", obj);
         }
 
-		
+
     }
 }
